@@ -1,0 +1,558 @@
+
+//////////////////////////////////////////////////////
+/////elementen van main tussen 1256 dan 1700 /////
+//voor normale of medium smartphones
+@media screen and (max-width: 1700px){
+
+    .buttonSupportedContent {
+        margin-right: 5px;
+
+    }
+
+    //title, info en balk
+    .titleboxSupportedContent {
+        padding-left: 5rem;
+
+        &::before {
+            transform: translateX(180%);
+        }
+
+        .titleSupportedContent {
+        }
+
+        .infoSupportedContent {
+            &::before {
+            }
+        }
+    }
+
+    .containerSupportedContent {
+        padding-right: 1rem;
+        padding-left: 1rem;
+    }
+}
+
+
+//////////////////////////////////////////////////////
+/////elementen van main paginas tussen 768 en 1256/////
+//voor normale of medium smartphones
+@media screen and (max-width: 1256px)
+
+{
+
+    .createbuttonSupportedContent {
+        //padding-right: 1rem;
+        font-size: 14px;
+        width: 140px;
+
+        border: none;
+        color: white;
+        padding: 1px 1px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+
+        cursor: pointer;
+
+        padding-bottom: 9px;
+        padding-top: 9px;
+
+        //margin-right: 1rem;
+    }
+
+
+    .formSupportedContent {
+        margin: 0px 0px 0px;
+        margin-block-end: 0em;
+        padding-right: 0px;
+        padding-left: 1rem;
+
+    }
+
+    .buttonSupportedContent {
+        font-size: 14px;
+
+        //ruimte tonen  de knopen
+        margin: 0px 0px;
+
+        //ruimte beneden en boven van de knoppen
+        margin-top: 0px;
+        margin-left: 0px;
+        margin-bottom: 8px;
+
+        left: 0px;
+
+        //spatie binnen de knoppen
+        width: 81px;
+
+        //spatie binnen de knoppen
+        padding-bottom: 7px;
+        padding-top: 7px;
+
+    }
+
+    .tablerowcellSupportedContent {
+        font-size: 14px;
+        //width: 19vh;
+
+    }
+
+    .tableheadSupportedContent {
+        .tableheadfontSupportedContent {
+            font: bold 17px Segoe UI;
+            padding-top: 9px;
+            padding-bottom: 9px;
+        }
+    }
+
+
+    //title, info en balk
+    .titleboxSupportedContent {
+        padding-left: 4rem;
+        //font-weight: 3rem;
+
+        &::before {
+
+            content: ' ';
+            position: absolute;
+            top: 0;
+            left: 0;
+            transform: translateX(100%);
+
+            display: block;
+            width: 20px;
+            height: 85px;
+            background: #85c1d0;
+        }
+
+        .titleSupportedContent {
+            font-size: 32px;
+            font-weight: 600;
+            color: #84C1D1;
+            opacity: 1;
+        }
+
+        .infoSupportedContent {
+            font-size: 14px;
+
+            &::before {
+
+                content: ' ';
+                position: absolute;
+                top: 32px;
+                left: 0;
+                transform: translateY(25%);
+
+                display: block;
+                width: 37px;
+                height: 2.5px;
+                background: #C3C2C2;
+            }
+        }
+    }
+
+
+    //.tableSupportedContent{
+    //    width: 10px;
+    //margin-right: 0.5rem;
+    //margin-left: 0.5rem;
+    //
+    //}
+
+    .containerSupportedContent {
+        padding-right: 0.5rem;
+        padding-left: 0.5rem;
+    }
+}
+
+//////////////////////////////////////////////////////
+/////elementen van main paginas tussen 375 en 768/////
+//voor normale of medium smartphones
+@media screen and (max-width: 768px)
+
+{
+    //col-md: 30%;
+    #navbarSupportedContent {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background-color: #85c1d0;
+        z-index: 9999;
+    }
+
+    .navbar {
+        justify-content: flex-end !important;
+    }
+
+    .createbuttonSupportedContent {
+        //padding-right: 1rem;
+        font-size: 14px;
+        width: 140px;
+
+        border: none;
+        color: white;
+        padding: 1px 1px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+
+        cursor: pointer;
+
+        padding-bottom: 9px;
+        padding-top: 9px;
+
+        //margin-right: 1rem;
+    }
+
+
+    .formSupportedContent {
+        margin: 0px 0px 0px;
+        margin-block-end: 0em;
+        padding-right: 0px;
+        padding-left: 1rem;
+
+    }
+
+    .buttonSupportedContent {
+        font-size: 14px;
+
+        //ruimte tonen  de knopen
+        margin: 0px 0px;
+
+        //ruimte beneden en boven van de knoppen
+        margin-top: 0px;
+        margin-left: 0px;
+        margin-bottom: 8px;
+
+        left: 0px;
+
+        //spatie binnen de knoppen
+        width: 81px;
+
+        //spatie binnen de knoppen
+        padding-bottom: 7px;
+        padding-top: 7px;
+
+    }
+
+    .tablerowcellSupportedContent {
+        font-size: 14px;
+        //width: 19vh;
+
+    }
+
+    .tableheadSupportedContent {
+        .tableheadfontSupportedContent {
+            font: bold 17px Segoe UI;
+            padding-top: 9px;
+            padding-bottom: 9px;
+        }
+    }
+
+
+    //title, info en balk
+    .titleboxSupportedContent {
+        padding-left: 3rem;
+        //font-weight: 3rem;
+
+        &::before {
+
+            content: ' ';
+            position: absolute;
+            top: 0;
+            left: 0;
+            transform: translateX(100%);
+
+            display: block;
+            width: 18px;
+            height: 80px;
+            background: #85c1d0;
+        }
+
+        .titleSupportedContent {
+            font-size: 30px;
+            font-weight: 580;
+            color: #84C1D1;
+            opacity: 1;
+        }
+
+        .infoSupportedContent {
+            font-size: 14px;
+
+            &::before {
+
+                content: ' ';
+                position: absolute;
+                top: 32px;
+                left: 0;
+                transform: translateY(25%);
+
+                display: block;
+                width: 35px;
+                height: 2px;
+                background: #C3C2C2;
+            }
+        }
+    }
+
+
+    //.tableSupportedContent{
+    //    width: 10px;
+    //margin-right: 0.5rem;
+    //margin-left: 0.5rem;
+    //
+    //}
+
+    .containerSupportedContent {
+        padding-right: 0.5rem;
+        padding-left: 0.5rem;
+    }
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+////alementen van main paginas voor kleiner dan 375/////kleine smartphone////
+@media screen and (max-width: 375px){
+
+    //title, info en balk
+    .titleboxSupportedContent {
+        padding-left: 3rem;
+        //font-weight: 3rem;
+
+        &::before {
+
+            content: ' ';
+            position: absolute;
+            top: 0;
+            left: 0;
+            transform: translateX(100%);
+
+            display: block;
+            width: 16px;
+            height: 70px;
+            background: #85c1d0;
+        }
+
+        .titleSupportedContent {
+            font-size: 26px;
+            font-weight: 520;
+            color: #84C1D1;
+            opacity: 1;
+        }
+
+        .infoSupportedContent {
+            font-size: 12px;
+
+            &::before {
+
+                content: ' ';
+                position: absolute;
+                top: 25px;
+                left: 0;
+                transform: translateY(25%);
+
+                display: block;
+                width: 30px;
+                height: 2px;
+                background: #C3C2C2;
+            }
+        }
+    }
+
+.createbuttonSupportedContent {
+        //padding-right: 1rem;
+        font-size: 12px;
+        width: 115px;
+
+        border: none;
+        color: white;
+        padding: 1px 1px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+
+        cursor: pointer;
+
+        padding-bottom: 8px;
+        padding-top: 8px;
+
+        //margin-right: 1rem;
+}
+
+
+    .formSupportedContent {
+    margin: 0px 0px 0px;
+    margin-block-end: 0em;
+    padding-right: 0px;
+    padding-left: 0.5rem;
+
+}
+
+.buttonSupportedContent {
+    font-size: 12px;
+
+    //ruimte tonen  de knopen
+    margin: 0px 0px;
+
+    //ruimte beneden en boven van de knoppen
+    margin-top: 0px;
+    margin-left: 0px;
+    margin-bottom: 6px;
+
+    left: 0px;
+
+    //spatie binnen de knoppen
+    width: 72px;
+
+    //spatie binnen de knoppen
+    padding-bottom: 5px;
+    padding-top: 5px;
+
+}
+
+.tablerowcellSupportedContent {
+    font-size: 12px;
+    //width: 19vh;
+
+}
+
+.tableheadSupportedContent {
+    .tableheadfontSupportedContent {
+        font: bold 13px Segoe UI;
+        padding-top: 5px;
+        padding-bottom: 5px;
+        }
+    }
+}
+
+/////////////////////////////////////////
+///aanpassen en tonen venster////voor groot smartphone
+@media screen and (max-width: 768px){
+
+    //rijd van gegevens invullen of aanpassen of bekijken
+
+//.innersectionSupportedContent{
+//    width: 90%;
+
+        .rowSupportedContent {
+            width: 90%;
+
+            .collumnSupportedContent {
+                //justify-content: center !important;
+                width: 30%;
+
+                .collumntextSupportedContent {
+                    font-size: 14px;
+                }
+            }
+        }
+
+        //rij knop
+        .rowbuttonSupportedContent {
+            width: 100%;
+
+            .collumnbuttonSupportedContent {
+                //justify-content: center !important;
+                width: 15%;
+            }
+        }
+    }
+//}
+
+
+/////////////////////////////////////////
+///aanpassen en tonen venster////voor medium smartphone
+@media screen and (max-width: 568px){
+
+    //rijd van gegevens invullen of aanpassen of bekijken
+    .rowSupportedContent {
+        width: 105%;
+
+        .collumnSupportedContent {
+            //justify-content: center !important;
+            width: 30%;
+
+            .collumntextSupportedContent {
+                font-size: 14px;
+            }
+        }
+    }
+    //rij knop
+    .rowbuttonSupportedContent {
+        width: 106%;
+
+        .collumnbuttonSupportedContent {
+            //justify-content: center !important;
+            width: 35%;
+        }
+    }
+}
+
+/////////////////////////////////////////
+///aanpassen en tonenvenster ////voor kleine smartphone
+@media screen and (max-width: 375px){
+
+    //rijd van gegevens invullen of aanpassen of bekijken
+    .rowSupportedContent {
+        width: 80%;
+
+        .collumnSupportedContent {
+            //justify-content: center !important;
+            width: 30%;
+
+            .collumntextSupportedContent {
+                font-size: 14px;
+            }
+        }
+    }
+    //rij knop
+    .rowbuttonSupportedContent {
+        width: 100%;
+
+        .collumnbuttonSupportedContent {
+            //justify-content: center !important;
+            width: 50%;
+        }
+    }
+}
+
+@media screen and (max-width: 375px){
+
+    //rijd van gegevens invullen of aanpassen of bekijken
+    .max375pxrowSupportedContent {
+        width: 110%;
+
+        .max375pxcollumnSupportedContent {
+            //justify-content: center !important;
+            width: 40%;
+
+            .max375pxcollumntextSupportedContent {
+                font-size: 14px;
+            }
+        }
+    }
+    //rij knop
+    .max375pxrowbuttonSupportedContent {
+        width: 100%;
+
+        .max375pxcollumnbuttonSupportedContent {
+            //justify-content: center !important;
+            width: 50%;
+        }
+    }
+}
+
+.fontcolorwhite{
+    color: white;
+}
+
+
+@media screen and (max-width: 900px) {
+
+    .profilecontainerSupportContent{
+        width: 100vh;
+    }
+
+}

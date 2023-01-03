@@ -1,0 +1,117 @@
+:root {
+    --head-font-family: 'Montserrat', sans-serif;
+}
+
+h1,h2,h3,h4,h5,h6 {
+    font-family: var(--head-font-family);
+}
+
+/* binnen tabel knoppen*/
+.button {
+    background-color: #4A99C3; /* Green */
+    border: none;
+    color: white;
+    padding: 1px 5px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 10px 10px;
+    cursor: pointer;
+
+    border-radius: 7px;
+    top: 487px;
+    left: 1251px;
+    width: 100px;
+    height: 46px;
+    border-radius: 7px;
+    opacity: 1;
+}
+
+.button2 {background-color: #A5A5A5;} /* Blue */
+.button3 {background-color: #AE7931;} /* Red */
+
+/*buiten tabel of create knop*/
+.createbutton {
+    background-color: #AE7931; /* Green */
+    border: none;
+    color: white;
+    padding: 1px 1px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+
+    top: 310px;
+    left: 1638px;
+    width: 155px;
+    height: 47px;
+    /* UI Properties */
+    background: var(--unnamed-color-ae7931) 0% 0% no-repeat padding-box;
+    background: #AE7931 0% 0% no-repeat padding-box;
+    border-radius: 25px;
+    opacity: 1;
+}
+
+/*titel van elke pagina*/
+.title {
+    top: 201px;
+    left: 94px;
+    width: 294px;
+    height: 49px;
+    font: var(--unnamed-font-style-normal) normal var(--unnamed-font-weight-600) var(--unnamed-font-size-40)/var(--unnamed-line-spacing-49) var(--unnamed-font-family-montserrat);
+    letter-spacing: var(--unnamed-character-spacing-0);
+    color: var(--unnamed-color-84c1d1);
+    text-align: left;
+    font: normal normal 600 40px/49px Montserrat;
+    letter-spacing: 0px;
+    color: #84C1D1;
+    opacity: 1;
+}
+
+/*tabel head*/
+.tablehead {
+    top: 374px;
+    left: 86px;
+    width: 1742px;
+    height: 77px;
+    /* UI Properties */
+    background: var(--unnamed-color-ae7931) 0% 0% no-repeat padding-box;
+    background: #AE7931 0% 0% no-repeat padding-box;
+    border: 1px solid #707070;
+    opacity: 0.22;
+}
+/*tableheadfont*/
+.tableheadfont {
+    /* Layout Properties */
+    top: 403px;
+    left: 743px;
+    width: 120px;
+    height: 23px;
+    /* UI Properties */
+    font: var(--unnamed-font-style-normal) normal var(--unnamed-font-weight-bold) var(--unnamed-font-size-19)/var(--unnamed-line-spacing-24) var(--unnamed-font-family-helvetica-neue);
+    letter-spacing: var(--unnamed-character-spacing-0);
+    color: var(--unnamed-color-000000);
+    text-align: left;
+    font: normal normal bold 19px/24px Helvetica Neue;
+    letter-spacing: 0px;
+    color: #000000;
+    opacity: 1;
+}
+
+
+/*tabel rij*/
+.tablerow {
+    /* Layout Properties */
+    /*top: 451px;*/
+    /*left: 86px;*/
+    /*width: 1742px;*/
+    /*height: 128px;*/
+    /* UI Properties */
+    background: #ECE0D0 0% 0% no-repeat padding-box;
+    border: 1px solid #707070;
+    opacity: 0.21;
+}
+
