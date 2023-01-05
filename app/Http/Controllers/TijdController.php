@@ -7,6 +7,7 @@ use App\Models\Tarief;
 use App\Models\Tijd;
 use App\Models\User;
 use App\Models\Toeslag;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -84,8 +85,14 @@ class TijdController extends Controller
 //
 //        Bedrijf::eindtijd()
 //            ->format('%H:%I:%S');
+foreach ($tijden as $tijd){
+        $start = new Carbon($tijd->begintijd);
+        $end = new Carbon($tijd->eindtijd);
 
-        return view('layouts.user.UrenToevoegen',compact('tijden', 'bedrijven'))
+        $tijd->uren = $start->diffInHours($end);
+    }
+
+        return view('layouts.user.UrenToevoegen',compact('tijden', 'bedrijven', 'tijd'))
            ->with('i', (request()->input('page', 1) - 1) * 4);
 
   //      $users = Auth::users()->load('tijden');
@@ -171,7 +178,59 @@ class TijdController extends Controller
         $tarieven = Tarief::where('user_id', auth()->user()->id)->get();
 
 
-        return view('layouts.user.functietoevoegen.show',compact('toeslag', 'tarieven'));
+        $totaalToeslagBedrag = 0;
+        $totaalstandaardBedrag = 0;
+        $uren = 0;
+        $toeslaguren = 0;
+        $toonuren = 0;
+        $toontoeslaguren = 0;
+
+
+//            tarief per tijd en toeslag
+            $tarief = \Auth::user()->tarief()
+                ->where('id', $toeslag->tarief_id)
+                ->where('tarieven.user_id', auth()->user()->id)
+//                ->where('tarieven.user_id', auth()->user()->id)
+                ->first();
+
+//////////////////uren in minuten berekenen/////////////////////
+            $start = new Carbon($tijd->begintijd);
+            $end = new Carbon($tijd->eindtijd);
+
+            $tijd->uren = $start->diffInMinutes($end);
+//////////////////uren in uren tonen/////////////////////
+            $tijd->toonuren = $start->diffInHours($end);
+
+//////////////////toeslaguren in minuten berekenen/////////////////////
+            $starttoe = new Carbon($toeslag->toeslagbegintijd);
+            $endtoe = new Carbon($toeslag->toeslageindtijd);
+            $tijd->toeslaguren = $starttoe->diffInMinutes($endtoe);
+
+//////////////////toeslaguren in uren tonen/////////////////////
+//            $toonstarttoe = new Carbon($toeslag->toeslagbegintijd);
+//            $toonendtoe = new Carbon($toeslag->toeslageindtijd);
+            $tijd->toontoeslaguren = $starttoe->diffInHours($endtoe);
+
+//            $tijd->toeslaguren = $starttoe->diff($endtoe)->format('%H:%i:%s');
+
+            $tijd->totaalToeslagBedrag += $tijd->toeslaguren * (($tarief->bedrag / 60) * ($toeslag->toeslagpercentage / 100));
+//            $tijd->totaalToeslagBedrag = round($tijd->totaalToeslagBedrag, 2);
+
+            $tijd->totaalstandaardBedrag += ($tarief->bedrag / 60) * ($tijd->uren - $tijd->toeslaguren);
+//            $tijd->totaalstandaardBedrag = round($tijd->totaalstandaardBedrag, 2);
+
+            $tijd->totaalBedrag += $tijd->totaalToeslagBedrag + $tijd->totaalstandaardBedrag;
+//            $tijd->totaalBedrag = round($tijd->totaalBedrag, 2);
+
+            $tijd->btw += $tijd->totaalBedrag * 0.21;
+//            $tijd->btw = round($tijd->btw, 2);
+
+            $tijd->uitbetaling += $tijd->btw + $tijd->totaalBedrag;
+//            $tijd->uitbetaling = round($tijd->uitbetaling, 2);
+
+
+
+        return view('layouts.user.functietoevoegen.show',compact('toeslag', 'tarieven', 'tijd'));
     }
 
     /**
@@ -227,5 +286,8 @@ class TijdController extends Controller
             ->with('success','Uren en toeslag zijn verwijderd');
 
     }
+
+
+
 
 }

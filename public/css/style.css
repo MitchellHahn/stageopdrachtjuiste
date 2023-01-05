@@ -9908,6 +9908,11 @@ main {
   height: 5%;
 }
 
+.nav-item .nav-link.active {
+  font-weight: bold;
+  background-color: red;
+}
+
 @media screen and (max-width: 1700px) {
   .buttonSupportedContent {
     margin-right: 5px;

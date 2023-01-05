@@ -8,6 +8,7 @@ use App\Models\Tijd;
 use App\Models\User;
 use App\Models\Toeslag;
 use Auth;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -54,11 +55,18 @@ $toeslagen = Toeslag::where('user_id', \Auth::user()?->id)
     ->get();
 
 
-
+// tarief tonen per toeslag
         $tarieven = Tarief::where('user_id', auth()->user()->id)->get();
 
+      //aantal uren tonen per toeslag
+        foreach ($toeslagen as $toeslag){
+            $starttoe = new Carbon($toeslag->toeslagbegintijd);
+            $endtoe = new Carbon($toeslag->toeslageindtijd);
 
-        return view('layouts.user.IngediendeToeslag', compact('toeslagen','tarieven'))
+            $toeslag->toeslaguren = $starttoe->diffInHours($endtoe);
+        }
+
+        return view('layouts.user.IngediendeToeslag', compact('toeslagen','tarieven', 'toeslag'))
             ->with('i', (request()->input('page', 1) - 1) * 4);
 
         //      $users = Auth::users()->load('tijden');

@@ -140,6 +140,12 @@ Route::patch('user/bprofiel/edit/{user}/update', [\App\Http\Controllers\UserProf
 //Route::get('user/bprofiel/tarief', [\App\Http\Controllers\TariefController::class, 'index'])->name('BProfieltarief.index');;
 Route::get('user/bprofiel/create', [\App\Http\Controllers\TariefController::class, 'create'])->name('BProfieltarief.create');;
 Route::post('user/bprofiel/store', [\App\Http\Controllers\TariefController::class, 'store'])->name('BProfieltarief.store');;
+///////////////////route voor CC: email op profiel////////////////
+//Route::get('user/contact/new', [\App\Http\Controllers\FactuurController::class, 'create'])->name('Brouwerscontact.create');
+//Route::post('user/contact', [\App\Http\Controllers\FactuurController::class, 'store'])->name('Brouwerscontact.store');
+//Route::get('user/contact/{brouwerscontact}', [\App\Http\Controllers\FactuurController::class, 'edit'])->name('Brouwerscontact.edit');
+//Route::patch('user/contact/{brouwerscontact}', [\App\Http\Controllers\FactuurController::class, 'update'])->name('Brouwerscontact.update');;
+//Route::delete('user/contact/{brouwerscontact}', [\App\Http\Controllers\FactuurController::class, 'destroy'])->name('Brouwerscontact.destroy');;
 
 /////////////alleen data van tabel tijd voor ingelogde gebruiker tonen(user/zpper)//////////////
 Route::get('tijden/user', function () {

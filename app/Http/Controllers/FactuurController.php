@@ -408,11 +408,11 @@ class FactuurController extends Controller
 //        sturen naar CC: e-mail(brouwers)
         $bemail = \Auth::user()->brouwerscontact->email;
 //        subject
-        $subject = "Factuur-{$bedrijf->user->name} {$bedrijf->user->tussenvoegsel} {$bedrijf->user->achternaam}-{$factuur->startdatum}-{$factuur->einddatum}";
+        $subject = "Factuur van {$bedrijf->user->name} {$bedrijf->user->tussenvoegsel} {$bedrijf->user->achternaam} voor de periode {$factuur->startdatum->format('d-m-Y')} t/m {$factuur->einddatum->format('d-m-Y')}";
 //        sendPDF name
         $sendpdfnaam = "Factuur-".$factuur->naam.".pdf";
 //        invoice maand
-        $invoicemaand = "{$factuur->startdatum} {$factuur->einddatum}";
+        $invoicemaand = "{$factuur->startdatum->format('d-m-Y')} t/m {$factuur->einddatum->format('d-m-Y')}";
 //        sender
         $sender = "{$user->name} {$user->tussenvoegsel} {$user->achternaam}";
 //        ontvanger

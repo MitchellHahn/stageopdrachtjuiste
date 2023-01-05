@@ -68,7 +68,9 @@
 {{--                        <div class="col-md">--}}
                             <th class="tableheadfont tableheadfontSupportedContent">Klantnaam</th>
 {{--                        </div>--}}
-{{--                        <div class="col-md">--}}
+                            <th class="tableheadfont tableheadfontSupportedContent">Totaal</th>
+
+                    {{--                        <div class="col-md">--}}
                             <th class="tableheadfont tableheadfontSupportedContent"></th>
 {{--                        </div>--}}
                     {{--toeslag--}}
@@ -100,7 +102,9 @@
 {{--                            </div>--}}
 {{--                            <div class="col-md">--}}
                                 <td class="tablerowcell tablerowcellSupportedContent">{{ $tijd->bedrijf->bedrijfsnaam }}</td>
-{{--                            </div>--}}
+                                <td class="tablerowcell tablerowcellSupportedContent">{{ $tijd->uren }} uren</td>
+
+                            {{--                            </div>--}}
 
 {{--                            <div class="col-md">--}}
                                 <td class="tablerowcell ">

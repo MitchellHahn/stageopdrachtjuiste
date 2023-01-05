@@ -72,7 +72,9 @@
         {{--                <div class="col-sm">--}}
 {{--                    <th class="tableheadfont d-none d-md-table-cell tableheadfontSupportedContent">Toeslagsoort</th>--}}
         {{--                </div>--}}
-        {{--                <div class="col-sm">--}}
+                    <th class="tableheadfont tableheadfontSupportedContent">Totaal</th>
+
+                {{--                <div class="col-sm">--}}
                     <th class="tableheadfont tableheadfontSupportedContent">Percentage</th>
         {{--                </div>--}}
         {{--                <div class="col-sm">--}}
@@ -120,7 +122,9 @@
 {{--                <div class="col-sm">--}}
 {{--                    <td class="tablerowcell  d-none d-md-table-cell tablerowcellSupportedContent">{{ $toeslag->toeslagsoort }}</td>--}}
 {{--                </div>--}}
-{{--                <div class="col-sm">--}}
+                    <td class="tablerowcell tablerowcellSupportedContent">{{ $toeslag->toeslaguren }} uren</td>
+
+                {{--                <div class="col-sm">--}}
                     <td class="tablerowcell tablerowcellSupportedContent">{{ $toeslag->toeslagpercentage }}%</td>
 {{--                </div>--}}
 {{--                <div class="col-sm">--}}

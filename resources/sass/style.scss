@@ -742,5 +742,9 @@ main {
     height: 5%;
 }
 
+.nav-item .nav-link.active {
+    font-weight: bold;
+    background-color: red;
+}
 
 @import 'media';
