@@ -72,7 +72,7 @@
         {{--                <div class="col-sm">--}}
 {{--                    <th class="tableheadfont d-none d-md-table-cell tableheadfontSupportedContent">Toeslagsoort</th>--}}
         {{--                </div>--}}
-                    <th class="tableheadfont tableheadfontSupportedContent">Totaal</th>
+                    <th class="tableheadfont d-none d-md-table-cell tableheadfontSupportedContent">Totaal</th>
 
                 {{--                <div class="col-sm">--}}
                     <th class="tableheadfont tableheadfontSupportedContent">Percentage</th>
@@ -109,7 +109,8 @@
                         {{ date('H:i', strtotime($toeslag->toeslagbegintijd)) }}<br/>
                         {{ date('H:i', strtotime($toeslag->toeslageindtijd)) }}<br/>
 {{--                        {{ $toeslag->toeslagsoort }}<br/>--}}
-                        €{{ $toeslag->tarief->bedrag }}
+                        €{{ $toeslag->tarief->bedrag }}<br/>
+                         {{ $toeslag->toeslaguren }} uren
                         </div>
                     </td>
 {{--                </div>--}}
@@ -122,7 +123,7 @@
 {{--                <div class="col-sm">--}}
 {{--                    <td class="tablerowcell  d-none d-md-table-cell tablerowcellSupportedContent">{{ $toeslag->toeslagsoort }}</td>--}}
 {{--                </div>--}}
-                    <td class="tablerowcell tablerowcellSupportedContent">{{ $toeslag->toeslaguren }} uren</td>
+                    <td class="tablerowcell d-none d-md-table-cell tablerowcellSupportedContent">{{ $toeslag->toeslaguren }} uren</td>
 
                 {{--                <div class="col-sm">--}}
                     <td class="tablerowcell tablerowcellSupportedContent">{{ $toeslag->toeslagpercentage }}%</td>

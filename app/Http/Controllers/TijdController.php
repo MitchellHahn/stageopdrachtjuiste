@@ -287,7 +287,4 @@ foreach ($tijden as $tijd){
 
     }
 
-
-
-
 }

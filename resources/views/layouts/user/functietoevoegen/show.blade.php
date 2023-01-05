@@ -141,11 +141,17 @@
 
                 <div class="row justify-content-center">
                     <div class="col-8 col-sm-5">
+                        <strong></strong>
+                    </div>
+                </div>
+
+                <div class="row justify-content-center">
+                    <div class="col-8 col-sm-5">
                         <strong>Uitbetaling:</strong>
                     </div>
                     <div class="col-8 col-sm-7">
                         <label>
-                            <input type="text" name="bedrag" value="{{ $tijd->uitbetaling }}" class="form-control" placeholder="bedrag">
+                            <input type="text" name="bedrag" value="€{{ $tijd->uitbetaling }}" class="form-control" placeholder="bedrag">
                         </label>
                     </div>
                 </div>
