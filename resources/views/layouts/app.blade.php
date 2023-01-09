@@ -29,7 +29,7 @@
         <div class="row align-items-center navbarbox">
 
             <div class="col-3">
-{{--                <div class="row align-items-center" style="background-color: red;">--}}
+                <div class="row align-items-left">
 
                 <img class="navbar-logo" src="{{ url('images/logos/brouwerslogo.png') }}" />
 {{--                <img src="/storage/app/public/uploads/logos/48876.jpg" alt="Logo" style="width:100px;height:50px;">--}}
@@ -41,7 +41,7 @@
 
 {{--                {{ asset('storage/test.png') }}--}}
 
-{{--            </div>--}}
+                </div>
             </div>
 
             <nav class="col-9 col-md-6 navbar justify-content-center navbar-expand-md" style="position:static">

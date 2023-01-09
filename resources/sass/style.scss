@@ -2,6 +2,11 @@
 @import '~bootstrap/scss/bootstrap';
 @import './_hamburgers.scss';
 
+@font-face {
+    font-family:'Segoe UI';
+    font-weight: bold;
+    src: url("/storage/app/public/Fonts/segoeuib.ttf");
+}
 body {
     overflow-x: hidden;
     height: auto;
@@ -235,7 +240,9 @@ main {
         /* UI Properties */
         letter-spacing: var(--unnamed-character-spacing-0);
         text-align: left;
-        font: bold 19px Segoe UI;
+        font-family: 'Segoe UI';
+        font-weight: bold;
+
         letter-spacing: 0px;
         color: black;
         //opacity: 1;
@@ -390,6 +397,7 @@ main {
         width: 100%;
         max-width: 100px;
         margin: 5px 0 0 25px;
+        margin-left: 2.5rem;
     }
 
     @media screen and (max-width: 768px) {

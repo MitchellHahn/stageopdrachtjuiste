@@ -1,18 +1,28 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="row">
-        <div class="col-lg-12 margin-tb">
-            {{--            <div class="pull-left">--}}
-            {{--                <h2>Uren</h2>--}}
-            {{--            </div>--}}
-            {{--            <div class="pull-right">--}}
-            {{--                <a class="btn btn-primary" href="{{ route('UToevoegen.index') }}"> Back</a>--}}
-            {{--            </div>--}}
-        </div>
-    </div>
+    <section class="section">
+        {{--    <div class="section" >--}}
 
-    @if ($errors->any())
+        <div class="container-xl height100 containerSupportedContent">
+            <div class="row">
+                <div class="col-lg">
+                    <div class="titlebox titleboxSupportedContent">
+
+                        <h2 class="title titleSupportedContent">Bevestigen</h2>
+                        <h class="info infoSupportedContent">Maak een wachtwoord aan.</h>
+
+                    </div>
+                </div>
+            </div>
+
+            </br>
+
+            <div class="container-lg height70">
+                <div class="row height100 justify-content-center">
+                    <div class="col-md-12 height100 sectioninner" style="align-self:flex-end;">
+
+                    @if ($errors->any())
         <div class="alert alert-danger">
             <strong>Woops!</strong> There were some problems with your input.<br><br>
             <ul>
@@ -28,38 +38,45 @@
 
         <input type="hidden" name="token" value="{{ $request->token }}">
 
-     <div class="row">
-         <div class="col-xs-12 col-sm-12 col-md-12">
-             <div class="form-group">
-                 <strong>E-mail:</strong>
-                 <label>
-                     <input type="text" name="email" value="{{ $request->email }}" class="form-control" placeholder="E-mail">
-                 </label>
-             </div>
-         </div>
+        <div class="row justify-content-center">
+            <div class="col-sm-5">
 
+                 <div class="row justify-content-center">
+                     <div class="col-8 col-sm-5">
+                         <strong>E-mail:</strong>
+                     </div>
+                     <div class="col-8 col-sm-7">
+                         <label>
+                                 <input type="text" name="email" value="{{ $request->email }}" class="form-control" placeholder="E-mail">
+                         </label>
+                     </div>
+                 </div>
 
-         <div class="form-group row">
-             <label for="password" class="col-md-4 col-form-label text-md-right">Wachtwoord</label>
+                <div class="row justify-content-center">
+                    <div class="col-8 col-sm-5">
+                        <strong>Wachtwoord:</strong>
+                    </div>
+                    <div class="col-8 col-sm-7">
+                         <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="current-password">
 
-             <div class="col-md-6">
-                 <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="current-password">
+                         @error('password')
+                         <span class="invalid-feedback" role="alert">
+                             <strong>{{ $message }}</strong>
+                         </span>
+                         @enderror
+                     </div>
+                 </div>
 
-                 @error('password')
-                 <span class="invalid-feedback" role="alert">
-                <strong>{{ $message }}</strong>
-            </span>
-                 @enderror
-             </div>
-         </div>
-
-         <div class="form-group row">
-             <label for="password" class="col-md-4 col-form-label text-md-right">Wachtwoord bevestigen</label>
-
-             <div class="col-md-6">
-                 <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password_confirmation" required autocomplete="current-password">
-             </div>
-         </div>
+                <div class="row justify-content-center">
+                    <div class="col-8 col-sm-5">
+                        <strong>Wachtwoord bevestigen:</strong>
+                    </div>
+                    <div class="col-8 col-sm-7">
+                        <label>
+                            <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password_confirmation" required autocomplete="current-password">
+                        </label>
+                    </div>
+                </div>
 {{--         <div class="col-xs-12 col-sm-12 col-md-12">--}}
 {{--             <div class="form-group">--}}
 {{--                 <strong>password:</strong>--}}
@@ -69,10 +86,17 @@
 {{--             </div>--}}
 {{--         </div>--}}
 
-            <div class="col-xs-12 col-sm-12 col-md-12 text-center">
-                <button type="submit" class="btn btn-primary">Bevestigen</button>
+                <div class="col-xs-12 col-sm-12 col-md-12 text-center">
+                    <button type="submit" class="btn btn-primary createbutton createbuttonSupportedContent">Bevestigen</button>
+                </div>
+
             </div>
         </div>
-
     </form>
+
+                               </div>
+                        </div>
+                  </div>
+            </div>
+    </section>
 @endsection

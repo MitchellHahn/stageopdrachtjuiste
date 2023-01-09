@@ -22,8 +22,8 @@
             </div>
         @endif
 
-        <div class="container-xxl height100 justify-content-lg-start" style="background-color:saddlebrown;">
-            <div class="row no-margin height100" style="background-color:green;">
+        <div class="container-xxl height100 justify-content-lg-start">
+            <div class="row no-margin height100" >
 
                 <div class="col-lg-3 profilesectionleft" >
 
