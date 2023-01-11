@@ -606,4 +606,5 @@ class FactuurController extends Controller
 
 
     }
+
 }

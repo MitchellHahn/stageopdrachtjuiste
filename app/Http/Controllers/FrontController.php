@@ -104,4 +104,14 @@ class FrontController extends Controller
         return view('layouts.admin.Gebruikers');
     }
 
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Http\Response
+     */
+    public function Toeslag()
+    {
+        return view('layouts.admin.Toeslagen');
+    }
+
 }

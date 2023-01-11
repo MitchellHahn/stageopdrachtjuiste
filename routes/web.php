@@ -275,6 +275,12 @@ Route::get('user/registratie/create', [\App\Http\Controllers\RegistratieControll
 Route::get('user/lijst', [\App\Http\Controllers\GebruikerController::class, 'index'])->name('Gebruikers.index');;
 Route::post('user/lijst', [\App\Http\Controllers\GebruikerController::class, 'store'])->name('Gebruikers.store');;
 
+///////////////pagina toeslagen voor DMIN MODULE////////////////////
+Route::get('user/toeslag', [\App\Http\Controllers\GebruikerController::class, 'toeslagenindex'])->name('Toeslagen.index');;
+Route::post('user/toeslag', [\App\Http\Controllers\GebruikerController::class, 'toeslagenuserstore'])->name('Toeslagen.store');;
+Route::get('user/toeslag/create/{user}', [\App\Http\Controllers\GebruikerController::class, 'createtoeslag'])->name('Toeslagen.create');;
+Route::get('user/toeslag/destroy', [\App\Http\Controllers\GebruikerController::class, 'createtoeslag'])->name('Toeslagen.destroy');;
+
 //Route::get('tijden/lijstcreate', [\App\Http\Controllers\GebruikerController::class, 'create'])->name('Gebruikers.create');;
 //Route::get('user/layout', [\App\Http\Controllers\GebruikerController::class, 'layout'])->name('Gebruikers.layouts');;
 

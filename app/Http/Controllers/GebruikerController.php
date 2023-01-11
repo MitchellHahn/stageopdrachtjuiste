@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Tijd;
+use App\Models\Toeslag;
 use App\Models\User;
 use App\Models\UserProfiel;
 use Illuminate\Http\Request;
@@ -180,5 +181,119 @@ class GebruikerController extends Controller
 
     }
 
+/////////////////VOOR TOESLAGEN/////////////////////////
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     */
+    public function toeslagenindex(Request $request, User $user)
+    {
 
+        $users = User::orderBy('name', 'ASC')
+            ->where('account_type', '0')
+            ->paginate(1000);
+
+        return view('layouts.admin.Toeslagen',compact('request','users', 'user'))
+            ->with('i', (request()->input('page', 1) - 1) * 4);
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     * @param  \App\Models\User $user
+     * @return \Illuminate\Contracts\View\View
+     */
+    public function createtoeslag(User $user)
+    {
+        dd($user->id);
+
+        return view('layouts.admin.toeslagen.create',compact('user'));
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @param  \App\Models\User $user
+     * @param  \App\Models\Toeslag $toeslag
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function toeslagenuserstore(Request $request, User $user, Toeslag $toeslag)
+    {
+
+        $request->validate([
+            //tabel users
+            'datum' => '',
+            'toeslagbegintijd' => 'required',
+            'toeslageindtijd' => 'required',
+            'toeslagsoort' => 'required',
+//            'soort' => 'required',
+            'toeslagpercentage' => 'required',
+
+            'tarief_id' => '',
+            'user_id' => '',
+//            'account_type' => 'required',
+
+        ]);
+
+        $toeslag = Toeslag::create($request->all());
+
+//        $toeslag->user_id = User::where('id')->get();
+        $toeslag->user_id = $user->id;
+
+//        $toeslag->tarief_id = Tarief::where('user_id', auth()->user()->id)->latest('created_at')->first()->id;
+
+        $toeslag->save();
+
+        return redirect()->route('Toeslagen.index',compact('toeslag', 'user'))
+            ->with('success', 'Gegevens zijn aangepast');
+    }
+
+
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @param  \App\Models\User $user
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function toeslagenuserupdate(Request $request, User $user)
+    {
+        $request->validate([
+            //tabel users
+            'name' => 'required',
+            'tussenvoegsel' => '',
+            'achternaam' => 'required',
+            'straat' => 'required',
+            'huisnummer' => 'required',
+            'toevoeging' => 'required',
+            'postcode' => 'required',
+            'stad' => 'required',
+            'land' => 'required',
+            'telefoonnumer' => '',
+            'email' => 'required',
+//            'account_type' => 'required',
+
+        ]);
+
+        $user->update($request->all());
+
+        return redirect()->route('Gebruikers.index')
+            ->with('success', 'Gegevens zijn aangepast');
+    }
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param \App\Models\Toeslag $toeslag
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function toeslagenuserdestroy(Toeslag $toeslag)
+    {
+        $toeslag->delete();
+
+        return redirect()->route('Toeslagen.destroy')
+            ->with('success', 'Uren en toeslag zijn verwijderd');
+
+    }
 }
