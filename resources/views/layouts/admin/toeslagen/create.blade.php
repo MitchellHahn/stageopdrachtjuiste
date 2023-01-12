@@ -97,22 +97,22 @@
                                 </div>
                             </div>
 
-                            </br>
+{{--                            </br>--}}
 
-                            <div class="row justify-content-center" >
-                                <div class="col-sm-9" >
-                                    <div class="row justify-content-center max375pxrowSupportedContent rowSupportedContent">
-                                        <div class="col-sm-3 max375pxcollumnSupportedContent collumnSupportedContent">
-                                            <strong class="max375pxcollumntextSupportedContent collumntextSupportedContent">Naam:</strong>
-                                        </div>
-                                        <div class="col-sm-4 max375pxcollumnSupportedContent collumnSupportedContent" >
-                                            <label>
-                                                <input type="text" name="toeslagsoort" class="form-control max375pxcollumntextSupportedContent" placeholder="naam">
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+{{--                            <div class="row justify-content-center" >--}}
+{{--                                <div class="col-sm-9" >--}}
+{{--                                    <div class="row justify-content-center max375pxrowSupportedContent rowSupportedContent">--}}
+{{--                                        <div class="col-sm-3 max375pxcollumnSupportedContent collumnSupportedContent">--}}
+{{--                                            <strong class="max375pxcollumntextSupportedContent collumntextSupportedContent">Naam:</strong>--}}
+{{--                                        </div>--}}
+{{--                                        <div class="col-sm-4 max375pxcollumnSupportedContent collumnSupportedContent" >--}}
+{{--                                            <label>--}}
+{{--                                                <input type="text" name="toeslagsoort" class="form-control max375pxcollumntextSupportedContent" placeholder="naam">--}}
+{{--                                            </label>--}}
+{{--                                        </div>--}}
+{{--                                    </div>--}}
+{{--                                </div>--}}
+{{--                            </div>--}}
 
                             </br>
 
@@ -132,6 +132,28 @@
                             </div>
 
                             </br>
+
+                            <div class="row justify-content-center">
+                                <div class="col-sm-9">
+                                    <div class="row justify-content-center max375pxrowSupportedContent rowSupportedContent" >
+                                        <div class="col-sm-3 max375pxcollumnSupportedContent collumnSupportedContent" >
+                                            <strong class="max375pxcollumntextSupportedContent collumntextSupportedContent" >Soort:</strong>
+                                        </div>
+                                        <div class="col-sm-4 max375pxcollumnSupportedContent collumnSupportedContent" >
+                                            <label>
+                                                <select name="soort" class="form-control">
+                                                    <option value="1">Ochtend (Week)</option>
+                                                    <option value="2">Avond (Week)</option>
+                                                    <option value="3">Nacht (Week)</option>
+                                                    <option value="4">Ochtend (Weekend)</option>
+                                                    <option value="5">Avond (Weekend)</option>
+                                                    <option value="6">Nacht (Weekend)</option>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                             </br>
 
                             {{--knop voor aanpassen--}}

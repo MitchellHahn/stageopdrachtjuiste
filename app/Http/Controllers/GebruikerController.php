@@ -205,8 +205,7 @@ class GebruikerController extends Controller
      */
     public function createtoeslag(User $user)
     {
-        dd($user->id);
-
+//        dd($user->id);
         return view('layouts.admin.toeslagen.create',compact('user'));
     }
 
@@ -226,11 +225,12 @@ class GebruikerController extends Controller
             'datum' => '',
             'toeslagbegintijd' => 'required',
             'toeslageindtijd' => 'required',
-            'toeslagsoort' => 'required',
+            'toeslagsoort' => '',
 //            'soort' => 'required',
             'toeslagpercentage' => 'required',
+            'soort' => 'required',
 
-            'tarief_id' => '',
+//            'tarief_id' => '',
             'user_id' => '',
 //            'account_type' => 'required',
 
@@ -238,10 +238,7 @@ class GebruikerController extends Controller
 
         $toeslag = Toeslag::create($request->all());
 
-//        $toeslag->user_id = User::where('id')->get();
         $toeslag->user_id = $user->id;
-
-//        $toeslag->tarief_id = Tarief::where('user_id', auth()->user()->id)->latest('created_at')->first()->id;
 
         $toeslag->save();
 

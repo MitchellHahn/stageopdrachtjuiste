@@ -29,7 +29,7 @@ class Tijd extends Model
 
     public function toeslag()
     {
-    return $this->belongsTo(Toeslag::class );
+    return $this->belongsToMany(Toeslag::class );
     }
 
     public function tarief()
