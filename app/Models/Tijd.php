@@ -15,7 +15,7 @@ class Tijd extends Model
 
     protected $fillable = [
         //table tijd
-        'datum', 'begintijd', 'eindtijd', 'toeslag_id', 'bedrijf_id',
+        'datum', 'begintijd', 'eindtijd', 'toeslag_idavond', 'toeslag_idnacht', 'toeslag_idavond', 'bedrijf_id', 'tarief_id',
     ];
 
     protected $casts = [
@@ -31,6 +31,22 @@ class Tijd extends Model
     {
     return $this->belongsToMany(Toeslag::class );
     }
+
+    public function toeslagochtend()
+    {
+    return $this->belongsTo(Toeslag::class, 'toeslag_idochtend');
+    }
+
+    public function toeslagavond()
+    {
+    return $this->belongsTo(Toeslag::class, 'toeslag_idavond');
+    }
+
+    public function toeslagnacht()
+    {
+    return $this->belongsTo(Toeslag::class, 'toeslag_idnacht');
+    }
+
 
     public function tarief()
     {

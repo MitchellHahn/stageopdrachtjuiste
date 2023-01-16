@@ -19,7 +19,7 @@ class Toeslag extends Model
 
     public function tijden()
     {
-        return $this->hasMany(Tijd::class, );
+        return $this->hasMany(Tijd::class );
     }
 
     public function users()

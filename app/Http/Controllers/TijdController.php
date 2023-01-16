@@ -42,9 +42,9 @@ class TijdController extends Controller
 //        $tijden = Tijd::with('toeslagen')->get();
 
 ////////// toon tijden voor ingelogde user////////////
-                                                                  $tijden = auth()->user()->tijden()->orderByDesc('datum')->get();
+//                                                                  $tijden = auth()->user()->tijden()->orderByDesc('datum')->get();
 
-//        $tijden = Tijd::orderBy('datum','DESC');
+        $tijden = Tijd::orderBy('datum','DESC');
 
 //        dd($tijden);
 
@@ -92,7 +92,7 @@ foreach ($tijden as $tijd){
         $tijd->uren = $start->diffInHours($end);
     }
 
-        return view('layouts.user.UrenToevoegen',compact('tijden', 'bedrijven', 'tijd'))
+        return view('layouts.user.UrenToevoegen',compact('tijden', 'bedrijven'))
            ->with('i', (request()->input('page', 1) - 1) * 4);
 
   //      $users = Auth::users()->load('tijden');
@@ -116,18 +116,21 @@ foreach ($tijden as $tijd){
 
     /**
      * Store a newly created resource in storage.
-     *
+
+    *@param  \App\Models\Toeslag $toeslag
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function store(Request $request)
+    public function store(Request $request, Toeslag $toeslag)
     {
 
         $request->validate([
             //table tijd
             'begintijd' => 'required',
             'eindtijd' => 'required',
-            'toeslag_id' => '',
+            'toeslag_idochtend' => '',
+            'toeslag_idavond' => '',
+            'toeslag_idnacht' => '',
             'datum' => 'required',
 
             'bedrijf_id' => 'required',
@@ -136,7 +139,99 @@ foreach ($tijden as $tijd){
 //// om toeslag_id automatisch op te slaan wanneer er een tijd wordt aangemaakt/gestoort
         $tijd = Tijd::create($request->all());
 
-        $tijd->toeslag_id = Toeslag::where('user_id', auth()->user()->id)->latest('created_at')->first()->id;
+
+//////////////////////////////////toeslagen foreign key invullen///////////////////////////
+        $date = $tijd->datum;
+
+//        $datumweek = Carbon::getWeekEndsAt($tijd->datum)->;
+//        $datumweek = Carbon::getWeekdays($tijd->datum)->;
+
+//        $datumweekend = Carbon::getWeekendDays($date);
+//        $datumweek = Carbon::getWeekDays($date);
+
+//        $datumweek = Carbon::now($tijd->datum)->dayOfWeek;
+//        $datumweekend = Carbon::now($tijd->datum)->dayOfWeekIso;
+
+        $datumweekend = Carbon::now()->isWeekend();
+        $datumweek = Carbon::now()->isWeekday();
+
+//        $datumweek = Carbon::isWeekday();
+//        $datumweekend = Carbon::isWeekend();
+
+        $dagbegintijd = new Carbon($tijd->begintijd);
+        $dageindtijd = new Carbon($tijd->eindtijd);
+
+        ////////meeste recente toeslagen voor weekdagen(ochtend, avond en nacht)/////////////
+        $toeslagweekochtend = Toeslag::where('soort', '1', auth()->user()->id)->latest('created_at')->first()->id;
+        $toeslagweekavond = Toeslag::where('soort', '2', auth()->user()->id)->latest('created_at')->first()->id;
+        $toeslagweeknacht = Toeslag::where('soort', '3', auth()->user()->id)->latest('created_at')->first()->id;
+
+        ////////meeste recente toeslagen voor weekenddagen(ochtend, avond en nacht)/////////////
+        $toeslagweekendochtend = Toeslag::where('soort', '4', auth()->user()->id)->latest('created_at')->first()->id;
+        $toeslagweekendavond = Toeslag::where('soort', '5', auth()->user()->id)->latest('created_at')->first()->id;
+        $toeslagweekendnacht = Toeslag::where('soort', '6', auth()->user()->id)->latest('created_at')->first()->id;
+
+        ////////meeste recente toeslagen voor weekdagen(ochtend, avond en nacht)/////////////
+        $toeslagweekochtendbegintijd = Toeslag::where('soort', '1', auth()->user()->id)->latest('created_at')->first()->id->get('toeslagbegintijd');
+//        $toeslagweekochtendbegintijd = Carbon::createFromTimestamp($dagbegintijd, $dageindtijd);
+
+        $toeslagweekavondbegintijd = new Carbon($toeslag->toeslagbegintijd->where('soort', '2', auth()->user()->id)->latest('created_at')->first()->id);
+        $toeslagweeknachtbegintijd = new Carbon($toeslag->toeslagbegintijd->where('soort', '3', auth()->user()->id)->latest('created_at')->first()->id);
+
+        ////////meeste recente toeslagen voor weekdagen(ochtend, avond en nacht)/////////////
+        $toeslagweekendochtendbegintijd = new Carbon($toeslag->toeslagbegintijd->where('soort', '4', auth()->user()->id)->latest('created_at')->first());
+        $toeslagweekendavondbegintijd = new Carbon($toeslag->toeslagbegintijd->where('soort', '5', auth()->user()->id)->latest('created_at')->first());
+        $toeslagweekendnachtbegintijd = new Carbon($toeslag->toeslagbegintijd->where('soort', '6', auth()->user()->id)->latest('created_at')->first());
+
+        $toeslag = Toeslag::selectRaw('*, TIMESTAMPDIFF(HOUR, toeslagbegintijd, toeslageindtijd) as toeslagauren')->where('id', $tijd->toeslag_id)
+            ->where('toeslagen.user_id', auth()->user()->id)
+            ->first();
+
+        if ($tijd->datum == $datumweek) {
+          {
+                if ($toeslagweekochtendbegintijd = Carbon::now()->between($dagbegintijd, $dageindtijd, true)) {
+                    $tijd->toeslag_idochtend = $toeslagweekochtend->get('id');
+                } else {
+                    $tijd->toeslag_idochtend = 'NULL';
+                }
+                if ($toeslagweekavondbegintijd = Carbon::now()->between($dagbegintijd, $dageindtijd, true)) {
+                    $tijd->toeslag_idavond = $toeslagweekavond->get('id');
+                } else {
+                    $tijd->toeslag_idavond = 'NULL';
+                }
+                if ($toeslagweeknachtbegintijd = Carbon::now()->between($dagbegintijd, $dageindtijd, true)) {
+                    $tijd->toeslag_idnacht = $toeslagweeknacht->get('id');
+                } else {
+                    $tijd->toeslag_idnacht = 'NULL';
+                }
+            };
+
+        }else{
+           {
+                if ($toeslagweekendochtend->begintijd = Carbon::now()->between($dagbegintijd, $dageindtijd, true)) {
+                    $tijd->toeslag_idochtend = $toeslagweekendochtend->get('id');
+                } else {
+                    $tijd->toeslag_idochtend = 'NULL';
+                }
+                if ($toeslagweekendavond->begintijd = Carbon::now()->between($dagbegintijd, $dageindtijd, true)) {
+                    $tijd->toeslag_idavond = $toeslagweekendavond->get('id');
+                } else {
+                    $tijd->toeslag_idavond = 'NULL';
+                }
+                if ($toeslagweekendnacht->begintijd = Carbon::now()->between($dagbegintijd, $dageindtijd, true)) {
+                    $tijd->toeslag_idnacht = $toeslagweekendnacht->get('id');
+                } else {
+                    $tijd->toeslag_idnacht = 'NULL';
+                }
+            };
+        }
+
+
+//        $tijd->toeslag_idochtend = Toeslag::where('user_id', auth()->user()->id)->latest('created_at')->first()->id;
+//        $tijd->toeslag_idavond = Toeslag::where('user_id', auth()->user()->id)->latest('created_at')->first()->id;
+//        $tijd->toeslag_idnacht = Toeslag::where('user_id', auth()->user()->id)->latest('created_at')->first()->id;
+
+
                    //             ->isRelation(key: 'user_id', string: 'user');
   //      $tijd->datum = Toeslag::where('datum', auth()->user()->id)->latest('created_at')->first()->datum;
 
