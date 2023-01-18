@@ -15,7 +15,7 @@ class Tijd extends Model
 
     protected $fillable = [
         //table tijd
-        'datum', 'begintijd', 'eindtijd', 'toeslag_idavond', 'toeslag_idnacht', 'toeslag_idavond', 'bedrijf_id', 'tarief_id',
+        'datum', 'begintijd', 'eindtijd', 'toeslag_idavond', 'toeslag_idnacht', 'toeslag_idavond', 'bedrijf_id', 'tarief_id', 'user_id'
     ];
 
     protected $casts = [
@@ -53,9 +53,14 @@ class Tijd extends Model
     return $this->hasOneThrough(Tarief::class, Toeslag::class );
     }
 
-    public function users()
+//    public function users()
+//    {
+//    return $this->hasOneThrough( related: User::class, through: Toeslag::class );
+//    }
+
+    public function user()
     {
-    return $this->hasOneThrough( related: User::class, through: Toeslag::class );
+        return $this->belongsTo(User::class );
     }
 
     public function bedrijf()

@@ -65,7 +65,7 @@ class User extends Authenticatable
     public function tijden()
     {
 //        return $this->hasManyThrough( related: Tijd::class, through: Toeslag::class, firstKey:  );
-        return $this->hasManyThrough( related: Tijd::class );
+        return $this->hasMany( Tijd::class );
     }
 
 //    public function tarief()

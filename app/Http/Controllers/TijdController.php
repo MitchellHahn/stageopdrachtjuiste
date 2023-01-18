@@ -46,7 +46,11 @@ class TijdController extends Controller
 ////////// toon tijden voor ingelogde user////////////
 //                                                                  $tijden = auth()->user()->tijden()->orderByDesc('datum')->get();
 
-        $tijden = Tijd::orderBy('datum','DESC');
+//        $tijden = Tijd::orderBy('datum','DESC');
+
+        $tijden = Tijd::where('user_id', \Auth::user()?->id)
+            ->orderBy('id', 'DESC')
+            ->get();
 
 //        dd($tijden);
 
@@ -135,7 +139,7 @@ foreach ($tijden as $tijd){
             'toeslag_idavond' => '',
             'toeslag_idnacht' => '',
             'datum' => 'required',
-
+            'user_id' => '',
             'bedrijf_id' => 'required',
 
         ]);
@@ -333,6 +337,9 @@ foreach ($tijden as $tijd){
           }
 
       }
+/////////////////////////////////////
+        $tijd->user_id = Auth::user()->id;
+        $tijd->tarief_id = Tarief::where('user_id', auth()->user()->id)->latest('created_at')->first()->id;
 
         $tijd->save();
 
