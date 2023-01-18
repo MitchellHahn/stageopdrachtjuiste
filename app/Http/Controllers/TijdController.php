@@ -7,7 +7,9 @@ use App\Models\Tarief;
 use App\Models\Tijd;
 use App\Models\User;
 use App\Models\Toeslag;
+use App\Models\Feestdag;
 use Carbon\Carbon;
+use DASPRiD\EnumTest\WeekDay;
 use Illuminate\Http\Request;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -118,10 +120,11 @@ foreach ($tijden as $tijd){
      * Store a newly created resource in storage.
 
     *@param  \App\Models\Toeslag $toeslag
+    *@param  \App\Models\Feestdag $feestdag
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function store(Request $request, Toeslag $toeslag)
+    public function store(Request $request, Toeslag $toeslag, Feestdag $feestdag)
     {
 
         $request->validate([
@@ -140,112 +143,196 @@ foreach ($tijden as $tijd){
         $tijd = Tijd::create($request->all());
 
 
-//////////////////////////////////toeslagen foreign key invullen///////////////////////////
-        $date = $tijd->datum;
+///////////////////////////////////carbon voor datum///////////////////////////
+        $datum = new Carbon($tijd->datum);
 
-//        $datumweek = Carbon::getWeekEndsAt($tijd->datum)->;
-//        $datumweek = Carbon::getWeekdays($tijd->datum)->;
+        $feestdagen = Feestdag::all('datum')->pluck('datum')->toArray();
 
-//        $datumweekend = Carbon::getWeekendDays($date);
-//        $datumweek = Carbon::getWeekDays($date);
 
-//        $datumweek = Carbon::now($tijd->datum)->dayOfWeek;
-//        $datumweekend = Carbon::now($tijd->datum)->dayOfWeekIso;
-
-        $datumweekend = Carbon::now()->isWeekend();
-        $datumweek = Carbon::now()->isWeekday();
-
-//        $datumweek = Carbon::isWeekday();
-//        $datumweekend = Carbon::isWeekend();
-
+///////////////carbon voor begin en eindtijd van dag///////////////
         $dagbegintijd = new Carbon($tijd->begintijd);
         $dageindtijd = new Carbon($tijd->eindtijd);
 
-        ////////meeste recente toeslagen voor weekdagen(ochtend, avond en nacht)/////////////
-        $toeslagweekochtend = Toeslag::where('soort', '1', auth()->user()->id)->latest('created_at')->first()->id;
-        $toeslagweekavond = Toeslag::where('soort', '2', auth()->user()->id)->latest('created_at')->first()->id;
-        $toeslagweeknacht = Toeslag::where('soort', '3', auth()->user()->id)->latest('created_at')->first()->id;
+////////////////////////////////////////////////////////week//////////////////////////////////////////
+        ////////(begintijd)meeste recente toeslagen voor weekdagen(ochtend, avond en nacht)/////////////
+        $toeslagweekochtendbegintijd = Toeslag::where('soort', '1')->where('user_id', auth()->user()->id)->latest('created_at')->first()->toeslagbegintijd;
+        $toeslagweekavondbegintijd = Toeslag::where('soort', '2')->where('user_id', auth()->user()->id)->latest('created_at')->first()->toeslagbegintijd;
+        $toeslagweeknachtbegintijd = Toeslag::where('soort', '3')->where('user_id', auth()->user()->id)->latest('created_at')->first()->toeslagbegintijd;
 
-        ////////meeste recente toeslagen voor weekenddagen(ochtend, avond en nacht)/////////////
-        $toeslagweekendochtend = Toeslag::where('soort', '4', auth()->user()->id)->latest('created_at')->first()->id;
-        $toeslagweekendavond = Toeslag::where('soort', '5', auth()->user()->id)->latest('created_at')->first()->id;
-        $toeslagweekendnacht = Toeslag::where('soort', '6', auth()->user()->id)->latest('created_at')->first()->id;
-
-        ////////meeste recente toeslagen voor weekdagen(ochtend, avond en nacht)/////////////
-        $toeslagweekochtendbegintijd = Toeslag::where('soort', '1', auth()->user()->id)->latest('created_at')->first()->id->get('toeslagbegintijd');
-//        $toeslagweekochtendbegintijd = Carbon::createFromTimestamp($dagbegintijd, $dageindtijd);
-
-        $toeslagweekavondbegintijd = new Carbon($toeslag->toeslagbegintijd->where('soort', '2', auth()->user()->id)->latest('created_at')->first()->id);
-        $toeslagweeknachtbegintijd = new Carbon($toeslag->toeslagbegintijd->where('soort', '3', auth()->user()->id)->latest('created_at')->first()->id);
-
-        ////////meeste recente toeslagen voor weekdagen(ochtend, avond en nacht)/////////////
-        $toeslagweekendochtendbegintijd = new Carbon($toeslag->toeslagbegintijd->where('soort', '4', auth()->user()->id)->latest('created_at')->first());
-        $toeslagweekendavondbegintijd = new Carbon($toeslag->toeslagbegintijd->where('soort', '5', auth()->user()->id)->latest('created_at')->first());
-        $toeslagweekendnachtbegintijd = new Carbon($toeslag->toeslagbegintijd->where('soort', '6', auth()->user()->id)->latest('created_at')->first());
-
-        $toeslag = Toeslag::selectRaw('*, TIMESTAMPDIFF(HOUR, toeslagbegintijd, toeslageindtijd) as toeslagauren')->where('id', $tijd->toeslag_id)
-            ->where('toeslagen.user_id', auth()->user()->id)
-            ->first();
-
-        if ($tijd->datum == $datumweek) {
-          {
-                if ($toeslagweekochtendbegintijd = Carbon::now()->between($dagbegintijd, $dageindtijd, true)) {
-                    $tijd->toeslag_idochtend = $toeslagweekochtend->get('id');
-                } else {
-                    $tijd->toeslag_idochtend = 'NULL';
-                }
-                if ($toeslagweekavondbegintijd = Carbon::now()->between($dagbegintijd, $dageindtijd, true)) {
-                    $tijd->toeslag_idavond = $toeslagweekavond->get('id');
-                } else {
-                    $tijd->toeslag_idavond = 'NULL';
-                }
-                if ($toeslagweeknachtbegintijd = Carbon::now()->between($dagbegintijd, $dageindtijd, true)) {
-                    $tijd->toeslag_idnacht = $toeslagweeknacht->get('id');
-                } else {
-                    $tijd->toeslag_idnacht = 'NULL';
-                }
-            };
-
-        }else{
-           {
-                if ($toeslagweekendochtend->begintijd = Carbon::now()->between($dagbegintijd, $dageindtijd, true)) {
-                    $tijd->toeslag_idochtend = $toeslagweekendochtend->get('id');
-                } else {
-                    $tijd->toeslag_idochtend = 'NULL';
-                }
-                if ($toeslagweekendavond->begintijd = Carbon::now()->between($dagbegintijd, $dageindtijd, true)) {
-                    $tijd->toeslag_idavond = $toeslagweekendavond->get('id');
-                } else {
-                    $tijd->toeslag_idavond = 'NULL';
-                }
-                if ($toeslagweekendnacht->begintijd = Carbon::now()->between($dagbegintijd, $dageindtijd, true)) {
-                    $tijd->toeslag_idnacht = $toeslagweekendnacht->get('id');
-                } else {
-                    $tijd->toeslag_idnacht = 'NULL';
-                }
-            };
-        }
+        ////////(eindtijd)meeste recente toeslagen voor weekdagen(ochtend, avond en nacht)/////////////
+        $toeslagweekochtendeindtijd = Toeslag::where('soort', '1')->where('user_id', auth()->user()->id)->latest('created_at')->first()->toeslageindtijd;
+        $toeslagweekavondeindtijd = Toeslag::where('soort', '2')->where('user_id', auth()->user()->id)->latest('created_at')->first()->toeslageindtijd;
+        $toeslagweeknachteindtijd = Toeslag::where('soort', '3')->where('user_id', auth()->user()->id)->latest('created_at')->first()->toeslageindtijd;
 
 
-//        $tijd->toeslag_idochtend = Toeslag::where('user_id', auth()->user()->id)->latest('created_at')->first()->id;
-//        $tijd->toeslag_idavond = Toeslag::where('user_id', auth()->user()->id)->latest('created_at')->first()->id;
-//        $tijd->toeslag_idnacht = Toeslag::where('user_id', auth()->user()->id)->latest('created_at')->first()->id;
+        ////////(id)meeste recente toeslagen voor weekdagen(ochtend, avond en nacht)/////////////
+        $toeslagweekochtendid = Toeslag::where('soort', '1')->where('user_id', auth()->user()->id)->latest('created_at')->first()->id;
+        $toeslagweekavondid = Toeslag::where('soort', '2')->where('user_id', auth()->user()->id)->latest('created_at')->first()->id;
+        $toeslagweeknachtid = Toeslag::where('soort', '3')->where('user_id', auth()->user()->id)->latest('created_at')->first()->id;
 
 
-                   //             ->isRelation(key: 'user_id', string: 'user');
-  //      $tijd->datum = Toeslag::where('datum', auth()->user()->id)->latest('created_at')->first()->datum;
+/////////////////////////////////////////////weekend////////////////////////////////////////////////////////
+        ////////(begintijd)meeste recente toeslagen voor weekenddagen(ochtend, avond en nacht)/////////////
+        $toeslagweekendochtendbegintijd = Toeslag::where('soort', '4')->where('user_id', auth()->user()->id)->latest('created_at')->first()->toeslagbegintijd;
+        $toeslagweekendavondbegintijd = Toeslag::where('soort', '5')->where('user_id', auth()->user()->id)->latest('created_at')->first()->toeslagbegintijd;
+        $toeslagweekendnachtbegintijd = Toeslag::where('soort', '6')->where('user_id', auth()->user()->id)->latest('created_at')->first()->toeslagbegintijd;
 
-       // $tijd->uren = Tijd::where();
+        ////////(eindtijd)meeste recente toeslagen voor weekenddagen(ochtend, avond en nacht)/////////////
+        $toeslagweekendochtendeindtijd = Toeslag::where('soort', '4')->where('user_id', auth()->user()->id)->latest('created_at')->first()->toeslageindtijd;
+        $toeslagweekendavondeindtijd = Toeslag::where('soort', '5')->where('user_id', auth()->user()->id)->latest('created_at')->first()->toeslageindtijd;
+        $toeslagweekendnachteindtijd = Toeslag::where('soort', '6')->where('user_id', auth()->user()->id)->latest('created_at')->first()->toeslageindtijd;
 
-//        $to = Carbon::createFromFormat('Y-m-d H:i:s', $tijd->begintijd);
-//        $from = Carbon::createFromFormat('Y-m-d H:i:s', $tijd->eindtijd);
-//        $tijd->uren = $to->diffInDays($from);
+        ////////(id)meeste recente toeslagen voor weekdagen(ochtend, avond en nacht)/////////////
+        $toeslagweekendochtendid = Toeslag::where('soort', '4')->where('user_id', auth()->user()->id)->latest('created_at')->first()->id;
+        $toeslagweekendavondid = Toeslag::where('soort', '5')->where('user_id', auth()->user()->id)->latest('created_at')->first()->id;
+        $toeslagweekendnachtid = Toeslag::where('soort', '6')->where('user_id', auth()->user()->id)->latest('created_at')->first()->id;
 
-//        $startTime = Carbon::parse('begintijd');
-//        $endTime = Carbon::parse('eindtijd');
+/////////////////////////////////////////////weekdag///////////////////////////////////////////////////////////////////////////
+////////////////als geregistreerde begintijd van weektoeslag binnen de tijd week valt. begintijd van week toeslag///////////////////////////////////
+        $carbontoeslagweekochtendbegintijd = new Carbon($toeslagweekochtendbegintijd);
+        $carbontoeslagweekavondbegintijd = new Carbon($toeslagweekavondbegintijd);
+        $carbontoeslagweeknachtbegintijd = new Carbon($toeslagweeknachtbegintijd);
 
-//        $tijd->uren =  $startTime->diff($endTime)->format('%H:%I:%S')." Hours";
-//        dd($totalDuration);
+        $weekochtendbegin = $carbontoeslagweekochtendbegintijd->isBetween($dagbegintijd, $dageindtijd);
+        $weekavondbegin = $carbontoeslagweekavondbegintijd->isBetween($dagbegintijd, $dageindtijd);
+        $weeknachtbegin = $carbontoeslagweeknachtbegintijd->isBetween($dagbegintijd, $dageindtijd);
+////////////////als geregistreerde eind tijd van de toeslag binnen de tijd week valt. eindtijd van weektoeslag///////////////////////////////////
+        $carbontoeslagweekochtendeindtijd = new Carbon($toeslagweekochtendeindtijd);
+        $carbontoeslagweekavondeindtijd = new Carbon($toeslagweekavondeindtijd);
+        $carbontoeslagweeknachteindtijd = new Carbon($toeslagweeknachteindtijd);
+
+        $weekochtendeind = $carbontoeslagweekochtendeindtijd->isBetween($dagbegintijd, $dageindtijd);
+        $weekavondeind = $carbontoeslagweekavondeindtijd->isBetween($dagbegintijd, $dageindtijd);
+        $weeknachteind = $carbontoeslagweeknachteindtijd->isBetween($dagbegintijd, $dageindtijd);
+//////////als geregistreerde tijd binnen de toeslag week valt. begintijd////////////////
+        $weekochtendbegintijd = $dagbegintijd->isBetween($carbontoeslagweekochtendbegintijd, $carbontoeslagweekochtendeindtijd);
+        $weekavondbegintijd = $dagbegintijd->isBetween($carbontoeslagweekavondbegintijd, $carbontoeslagweekavondeindtijd);
+        $weeknachtbegintijd = $dagbegintijd->isBetween($carbontoeslagweeknachtbegintijd, $carbontoeslagweeknachteindtijd);
+
+/////////////////////////////////////////////weekenddag/////////////////////////////////////////////////////////////////////////////////
+////////////////als geregistreerde begintijd van weekendtoeslag binnen de tijd weekend valt. begintijd van weekend toeslag///////////////////////////////////
+        $carbontoeslagweekendochtendbegintijd = new Carbon($toeslagweekendochtendbegintijd);
+        $carbontoeslagweekendavondbegintijd = new Carbon($toeslagweekendavondbegintijd);
+        $carbontoeslagweekendnachtbegintijd = new Carbon($toeslagweekendnachtbegintijd);
+
+        $weekendochtendbegin = $carbontoeslagweekendochtendbegintijd->isBetween($dagbegintijd, $dageindtijd);
+        $weekendavondbegin = $carbontoeslagweekendavondbegintijd->isBetween($dagbegintijd, $dageindtijd);
+        $weekendnachtbegin = $carbontoeslagweekendnachtbegintijd->isBetween($dagbegintijd, $dageindtijd);
+////////////////als geregistreerde eindtijd van weekendtoeslag binnen de tijd weekend valt. eindtijd van weekend toeslag///////////////////////////////////
+        $carbontoeslagweekendochtendeindtijd = new Carbon($toeslagweekendochtendeindtijd);
+        $carbontoeslagweekendavondeindtijd = new Carbon($toeslagweekendavondeindtijd);
+        $carbontoeslagweekendnachteindtijd = new Carbon($toeslagweekendnachteindtijd);
+
+        $weekendochtendeind = $carbontoeslagweekendochtendeindtijd->isBetween($dagbegintijd, $dageindtijd);
+        $weekendavondeind = $carbontoeslagweekendavondeindtijd->isBetween($dagbegintijd, $dageindtijd);
+        $weekendnachteind = $carbontoeslagweekendnachteindtijd->isBetween($dagbegintijd, $dageindtijd);
+//////////als geregistreerde tijd binnen de toeslag week valt. begintijd////////////////
+        $weekendochtendbegintijd = $dagbegintijd->isBetween($carbontoeslagweekochtendbegintijd, $carbontoeslagweekochtendeindtijd);
+        $weekendavondbegintijd = $dagbegintijd->isBetween($carbontoeslagweekavondbegintijd, $carbontoeslagweekavondeindtijd);
+        $weekendnachtbegintijd = $dagbegintijd->isBetween($carbontoeslagweeknachtbegintijd, $carbontoeslagweeknachteindtijd);
+
+
+        //////////////controleren als het datum een feestdag is en weekendtoeslag koppelen///////////////////
+        if(in_array($datum->format('Y-m-d'), $feestdagen)) {
+
+          if ($toeslagweekendochtendbegintijd = $weekendochtendbegin) {
+              $tijd->toeslag_idochtend = $toeslagweekendochtendid;
+          } elseif ($toeslagweekendochtendeindtijd = $weekendochtendeind) {
+              $tijd->toeslag_idochtend = $toeslagweekendochtendid;
+          } elseif ($dagbegintijd = $weekendochtendbegintijd){
+              $tijd->toeslag_idochtend = $toeslagweekendochtendid;
+          } else {
+              $tijd->toeslag_idochtend = null;
+          }
+
+          if ($toeslagweekendavondbegintijd = $weekendavondbegin) {
+              $tijd->toeslag_idavond = $toeslagweekendavondid;
+          } elseif ($toeslagweekendavondeindtijd = $weekendavondeind){
+              $tijd->toeslag_idavond = $toeslagweekendavondid;
+          } elseif ($dagbegintijd = $weekendavondbegintijd){
+              $tijd->toeslag_idavond = $toeslagweekendavondid;
+          } else {
+              $tijd->toeslag_idavond = null;
+          }
+
+          if ($toeslagweekendnachtbegintijd = $weekendnachtbegin) {
+              $tijd->toeslag_idnacht = $toeslagweekendnachtid;
+          } elseif ($toeslagweekendnachteindtijd = $weekendnachteind){
+              $tijd->toeslag_idnacht = $toeslagweekendnachtid;
+          } elseif ($dagbegintijd = $weekendnachtbegintijd){
+              $tijd->toeslag_idnacht = $toeslagweekendnachtid;
+          } else {
+              $tijd->toeslag_idnacht = null;
+          }
+
+          //////////////controleren als het datum een weekenddag is en weekendtoeslag koppelen///////////////////
+
+      } elseif ($datum->isWeekend()) {
+
+            if ($toeslagweekendochtendbegintijd = $weekendochtendbegin) {
+                $tijd->toeslag_idochtend = $toeslagweekendochtendid;
+            } elseif ($toeslagweekendochtendeindtijd = $weekendochtendeind) {
+                $tijd->toeslag_idochtend = $toeslagweekendochtendid;
+            } elseif ($dagbegintijd = $weekendochtendbegintijd){
+                $tijd->toeslag_idochtend = $toeslagweekendochtendid;
+            } else {
+                $tijd->toeslag_idochtend = null;
+            }
+
+            if ($toeslagweekendavondbegintijd = $weekendavondbegin) {
+                $tijd->toeslag_idavond = $toeslagweekendavondid;
+            } elseif ($toeslagweekendavondeindtijd = $weekendavondeind){
+                $tijd->toeslag_idavond = $toeslagweekendavondid;
+            } elseif ($dagbegintijd = $weekendavondbegintijd){
+                $tijd->toeslag_idavond = $toeslagweekendavondid;
+            } else {
+                $tijd->toeslag_idavond = null;
+            }
+
+            if ($toeslagweekendnachtbegintijd = $weekendnachtbegin) {
+                $tijd->toeslag_idnacht = $toeslagweekendnachtid;
+            } elseif ($toeslagweekendnachteindtijd = $weekendnachteind){
+                $tijd->toeslag_idnacht = $toeslagweekendnachtid;
+            } elseif ($dagbegintijd = $weekendnachtbegintijd){
+                $tijd->toeslag_idnacht = $toeslagweekendnachtid;
+            } else {
+                $tijd->toeslag_idnacht = null;
+            }
+
+            //////////////controleren als het datum een weekdag is en weektoeslag koppelen///////////////////
+      } elseif ($datum->isWeekday ()) {
+
+          if ($toeslagweekochtendbegintijd = $weekochtendbegin) {
+              $tijd->toeslag_idochtend = $toeslagweekochtendid;
+          } elseif ($toeslagweekochtendeindtijd = $weekochtendeind){
+              $tijd->toeslag_idochtend = $toeslagweekochtendid;
+          } elseif ($dagbegintijd = $weekochtendbegintijd){
+              $tijd->toeslag_idochtend = $toeslagweekochtendid;
+          } else {
+              $tijd->toeslag_idochtend = null;
+          }
+
+          if ($toeslagweekochtendbegintijd = $weekavondbegin) {
+              $tijd->toeslag_idavond = $toeslagweekavondid;
+          } elseif ($toeslagweekavondeindtijd = $weekavondeind){
+              $tijd->toeslag_idavond = $toeslagweekavondid;
+          } elseif($dagbegintijd = $weekavondbegintijd) {
+              $tijd->toeslag_idavond = $toeslagweekavondid;
+          }  else {
+              $tijd->toeslag_idavond = null;
+          }
+
+          if ($toeslagweekochtendbegintijd = $weeknachtbegin) {
+              $tijd->toeslag_idnacht = $toeslagweeknachtid;
+          } elseif($toeslagweeknachteindtijd = $weeknachteind) {
+              $tijd->toeslag_idnacht = $toeslagweeknachtid;
+          } elseif($dagbegintijd = $weeknachtbegintijd) {
+              $tijd->toeslag_idnacht = $toeslagweeknachtid;
+          } else {
+              $tijd->toeslag_idnacht = null;
+          }
+
+      }
 
         $tijd->save();
 
