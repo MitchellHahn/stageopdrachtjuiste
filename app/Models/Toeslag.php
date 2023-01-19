@@ -22,6 +22,11 @@ class Toeslag extends Model
         return $this->hasMany(Tijd::class );
     }
 
+    public function tijden()
+    {
+        return $this->hasMany(Tijd::class );
+    }
+
     public function users()
     {
         return $this->belongsTo( related: User::class);

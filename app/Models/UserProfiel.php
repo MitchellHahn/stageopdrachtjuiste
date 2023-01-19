@@ -20,10 +20,10 @@ class UserProfiel extends Model
         return $this->hasMany( related: Toeslag::class);
     }
 
-    public function tijden()
-    {
-        return $this->hasManyThrough( related: Tijd::class, through: Toeslag::class );
-    }
+//    public function tijden()
+//    {
+//        return $this->hasManyThrough( related: Tijd::class, through: Toeslag::class );
+//    }
 
     public function bedrijven()
     {
