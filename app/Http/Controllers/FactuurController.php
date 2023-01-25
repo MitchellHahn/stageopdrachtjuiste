@@ -480,7 +480,7 @@ class FactuurController extends Controller
         $sdate = $factuur->startdatum;
         $fdate = $factuur->einddatum;
 
-        $tijden = Tijd::selectRaw('tijden.datum AS tijden_datum, toeslagochtend.datum AS toeslagochtend_datum, toeslagavond.datum AS toeslagavond_datum, toeslagnacht.datum AS toeslagnacht_datum, toeslagochtend.*, toeslagavond.*, toeslagnacht.*, toeslagen.*, tijden.*, TIMESTAMPDIFF(HOUR, begintijd, eindtijd) as uren')
+        $tijden = Tijd::selectRaw('tijden.datum AS tijden_datum, toeslagochtend.datum AS toeslagochtend_datum, toeslagavond.datum AS toeslagavond_datum, toeslagnacht.datum AS toeslagnacht_datum, toeslagochtend.*, toeslagavond.*, toeslagnacht.*, tijden.*, TIMESTAMPDIFF(HOUR, begintijd, eindtijd) as uren')
 //        $tijden = Tijd::selectRaw('tijden.datum AS tijden_datum, tijden.*, TIMESTAMPDIFF(HOUR, begintijd, eindtijd) as uren')
             ->leftJoin('toeslagen as toeslagochtend', 'tijden.toeslag_idochtend', '=', 'toeslagochtend.id')
             ->leftJoin('toeslagen as toeslagavond', 'tijden.toeslag_idavond', '=', 'toeslagavond.id')
@@ -491,7 +491,7 @@ class FactuurController extends Controller
             //            tarief voor tijd en toeslag
             ->leftJoin('tarieven', 'tijden.tarief_id', '=', 'tarieven.id')
             //            user info voor tijd en toeslag
-            ->leftJoin('users', 'toeslagen.user_id', '=', 'users.id')
+            ->leftJoin('users', 'toeslagochtend.user_id', '=', 'users.id')
 //            ->leftJoin('users', 'tarieven.user_id', '=', 'users.id')
 
 
@@ -538,10 +538,11 @@ class FactuurController extends Controller
                 ->where('id', $tijd->toeslag_idavond)
                 ->where('id', $tijd->toeslag_idnacht)
 
-//                ->where('toeslagen.user_id', auth()->user()->id)
-                ->where('toeslagochtend.user_id', auth()->user()->id)
-                ->where('toeslagavond.user_id', auth()->user()->id)
-                ->where('toeslagnacht.user_id', auth()->user()->id)
+                ->where('toeslagen.user_id', auth()->user()->id)
+                ///////////////////aparte queries maken voor elke toeslag//////////////////////
+//                ->where('toeslagochtend.user_id', auth()->user()->id)
+//                ->where('toeslagavond.user_id', auth()->user()->id)
+//                ->where('toeslagnacht.user_id', auth()->user()->id)
                 ->first();
 
 //            tarief per tijd en toeslag
@@ -650,7 +651,7 @@ class FactuurController extends Controller
 //        download pdf naam
         $downloadpdfnaam = "Factuur-".$factuur->naam.".pdf";
 
-
+dd( $tijd->ochtendtoeslaguren );
         //$pdf = PDF::loadView('layouts.user.functietoevoegen.factuur.pdf', compact( 'fdate', 'sdate', 'tijden', 'request'));
         $pdf = PDF::loadView('layouts.user.functietoevoegen.factuur.pdf', compact( 'fdate', 'sdate', 'tijden', 'request', 'uren', 'ochtendtoeslaguren', 'avondtoeslaguren', 'nachttoeslaguren','maandTotaalBedrag', 'totaalOchtendToeslagBedrag', 'totaalAvondToeslagBedrag', 'totaalNachtToeslagBedrag', 'totaalstandaardBedrag', 'toonuren', 'bedrijf', 'bedrijven', 'user', 'maandbtw', 'maanduitbetaling', 'factuur' ));
         $pdf->setPaper('a4');
