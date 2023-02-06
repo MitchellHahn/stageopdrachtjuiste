@@ -75,6 +75,42 @@ $toeslagen = Toeslag::where('user_id', \Auth::user()?->id)
     }
 
     /**
+     * controller voor het indienen van uren en toeslag. gekoppeld aan Toevoegen.blade
+     */
+    /**
+     * /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     */
+    public function toeslagenindexvoorzpperinadminmodule()
+    {
+
+        $toeslagen = Toeslag::where('user_id', \Auth::user()?->id)
+            ->orderBy('id', 'DESC')
+            ->get();
+
+
+// tarief tonen per toeslag
+//        $tarieven = Tarief::where('user_id', auth()->user()->id)->get();
+
+        //aantal uren tonen per toeslag
+        foreach ($toeslagen as $toeslag){
+            $starttoe = new Carbon($toeslag->toeslagbegintijd);
+            $endtoe = new Carbon($toeslag->toeslageindtijd);
+
+            $toeslag->toeslaguren = $starttoe->diffInHours($endtoe);
+        }
+
+        return view('layouts.admin.toeslagen.show', compact('toeslagen','toeslag'))
+            ->with('i', (request()->input('page', 1) - 1) * 4);
+
+        //      $users = Auth::users()->load('tijden');
+        //      return view('layouts.user.Toevoegen', ['users' => $users]);
+
+    }
+
+    /**
      * Show the form for creating a new resource.
      *
      * @return \Illuminate\Contracts\View\View

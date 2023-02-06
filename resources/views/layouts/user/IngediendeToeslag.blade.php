@@ -38,13 +38,7 @@
         </br>
         </br>
 
-        <div class="row">
-          <div class="col-lg">
-            <div class="float-right">
-                <a class="createbutton createbuttonSupportedContent" href="{{ route('UToevoegenToeslag.create') }}">Toeslag toevoegen</a>
-            </div>
-          </div>
-        </div>
+
     </div>
 
     @if ($message = Session::get('success'))
@@ -72,16 +66,15 @@
         {{--                <div class="col-sm">--}}
 {{--                    <th class="tableheadfont d-none d-md-table-cell tableheadfontSupportedContent">Toeslagsoort</th>--}}
         {{--                </div>--}}
-                    <th class="tableheadfont d-none d-md-table-cell tableheadfontSupportedContent">Totaal</th>
+                    <th class="tableheadfont d-none d-md-table-cell tableheadfontSupportedContent">Aantal</th>
 
                 {{--                <div class="col-sm">--}}
                     <th class="tableheadfont tableheadfontSupportedContent">Percentage</th>
         {{--                </div>--}}
         {{--                <div class="col-sm">--}}
-                    <th class="tableheadfont d-none d-md-table-cell tableheadfontSupportedContent">Uurtarief</th>
+{{--                    <th class="tableheadfont d-none d-md-table-cell tableheadfontSupportedContent">Uurtarief</th>--}}
         {{--                </div>--}}
         {{--                <div class="col-sm">--}}
-                    <th class="tableheadfont tableheadfontSupportedContent"></th>
         {{--                </div>--}}
                     {{--toeslag--}}
                     {{--            <th>toeslag begintijd</th>--}}
@@ -109,7 +102,7 @@
                         {{ date('H:i', strtotime($toeslag->toeslagbegintijd)) }}<br/>
                         {{ date('H:i', strtotime($toeslag->toeslageindtijd)) }}<br/>
 {{--                        {{ $toeslag->toeslagsoort }}<br/>--}}
-                        €{{ $toeslag->tarief->bedrag }}<br/>
+{{--                        €{{ $toeslag->tarief->bedrag }}<br/>--}}
                          {{ $toeslag->toeslaguren }} uren
                         </div>
                     </td>
@@ -129,7 +122,7 @@
                     <td class="tablerowcell tablerowcellSupportedContent">{{ $toeslag->toeslagpercentage }}%</td>
 {{--                </div>--}}
 {{--                <div class="col-sm">--}}
-                    <td class="tablerowcell  d-none d-md-table-cell tablerowcellSupportedContent">€{{ $toeslag->tarief->bedrag }}</td>
+{{--                    <td class="tablerowcell  d-none d-md-table-cell tablerowcellSupportedContent">€{{ $toeslag->tarief->bedrag }}</td>--}}
 {{--                </div>--}}
 
                     {{--                <td>{{ $toeslag->user_id }}</td>--}}
@@ -141,19 +134,19 @@
 
                 {{--toon toeslagen op basis van de tijd--}}
                 {{--                    <td>{{ $tijd->toeslagen->count() }}</td>--}}
-                    <td class="tablerowcell">
-                    <form action="{{ route('UToevoegenToeslag.destroy',$toeslag->id) }}" class="formSupportedContent" method="POST">
+{{--                    <td class="tablerowcell">--}}
+{{--                    <form action="{{ route('UToevoegenToeslag.destroy',$toeslag->id) }}" class="formSupportedContent" method="POST">--}}
 
-                        <a class="button buttonSupportedContent" href="{{ route('UToevoegenToeslag.show',$toeslag->id) }}">Tonen</a>
+{{--                        <a class="button buttonSupportedContent" href="{{ route('UToevoegenToeslag.show',$toeslag->id) }}">Tonen</a>--}}
 
-                        <a class="button button2 buttonSupportedContent" href="{{ route('UToevoegenToeslag.edit',$toeslag->id) }}">Wijzigen</a>
+{{--                        <a class="button button2 buttonSupportedContent" href="{{ route('UToevoegenToeslag.edit',$toeslag->id) }}">Wijzigen</a>--}}
 
-                        @csrf
-                        @method('DELETE')
+{{--                        @csrf--}}
+{{--                        @method('DELETE')--}}
 
-                        <button type="submit" class="button button3 buttonSupportedContent">Verwijderen</button>
-                    </form>
-                </td>
+{{--                        <button type="submit" class="button button3 buttonSupportedContent">Verwijderen</button>--}}
+{{--                    </form>--}}
+{{--                </td>--}}
               </div>
             </tr>
         </div>

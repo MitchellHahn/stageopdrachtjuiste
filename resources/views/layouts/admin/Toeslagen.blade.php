@@ -99,7 +99,7 @@
                     <td class="tablerowcell col-xl-4">
                         <form action="{{ route('Gebruikers.destroy',$user->id) }}" class="formSupportedContent" method="POST">
 
-{{--                            <a class="klantenbutton buttonSupportedContent" href="{{ route('Gebruikers.show',$user->id) }}">Tonen</a>--}}
+                            <a class="klantenbutton buttonSupportedContent" href="{{ route('Gebruikers.show',$user->id) }}">Tonen</a>
 
                             <a class="klantenbutton klantenbutton1 buttonSupportedContent" href="{{ route('Toeslagen.create',$user->id) }}">Aanmaken</a>
 

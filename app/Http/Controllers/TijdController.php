@@ -448,11 +448,15 @@ foreach ($tijden as $tijd){
             //table tijd
             'begintijd' => 'required',
             'eindtijd' => 'required',
-//            'toeslag_id' => '',
+            'toeslag_idochtend' => '',
+            'toeslag_idavond' => '',
+            'toeslag_idnacht' => '',
             'datum' => 'required',
+            'user_id' => '',
             'bedrijf_id' => 'required',
-
         ]);
+
+//      $tijd = new Tijd();
 
         $tijd->update($validated);
 

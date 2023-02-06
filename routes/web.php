@@ -278,6 +278,10 @@ Route::post('user/lijst', [\App\Http\Controllers\GebruikerController::class, 'st
 ///////////////pagina toeslagen voor DMIN MODULE////////////////////
 Route::get('user/toeslag', [\App\Http\Controllers\GebruikerController::class, 'toeslagenindex'])->name('Toeslagen.index');;
 Route::post('user/toeslag/{user}', [\App\Http\Controllers\GebruikerController::class, 'toeslagenuserstore'])->name('Toeslagen.store');;
+
+//Route::post('user/toeslag/{user}', [\App\Http\Controllers\GebruikerController::class, 'toeslagenuserstore'])->name('Toeslagen.store');;
+
+
 Route::get('user/toeslag/create/{user}', [\App\Http\Controllers\GebruikerController::class, 'createtoeslag'])->name('Toeslagen.create');;
 Route::get('user/toeslag/destroy', [\App\Http\Controllers\GebruikerController::class, 'createtoeslag'])->name('Toeslagen.destroy');;
 
