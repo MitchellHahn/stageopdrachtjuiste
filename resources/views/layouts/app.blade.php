@@ -76,7 +76,7 @@
         {{--impersonation verbinding verbreken--}}
         <div class="pull-right">
             @impersonating($guard = null)
-            <a href="{{ route('impersonate.leave') }}">Verbinding verbreken</a>
+            <a href="{{ route('overname_stoppen') }}">Verbinding verbreken</a>
             @endImpersonating
         </div>
         {{--logout knop--}}

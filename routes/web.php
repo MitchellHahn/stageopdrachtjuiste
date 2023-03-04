@@ -22,12 +22,6 @@ use App\Http\Controllers\ToeslagController;
 |
 */
 
-//Route::get('/', function () {
-//    return view('layouts.master');
-//});
-
-Route::get('users', [\App\Http\Controllers\UserController::class, 'index'])->name('user.index');
-
 
 /////////inloggen///////
 Route::get('login', [SessionController::class, 'create'])->name('login')->middleware('guest');
@@ -36,7 +30,6 @@ Route::post('login', [SessionController::class, 'store'])->middleware('guest');
 Route::post('logout', [SessionController::class, 'destroy'])->name('logout')->middleware('auth');
 /////inglogd als//////
 Route::get('loggedinas', [\App\Http\Controllers\LoggedisasController::class, 'index'])->name('loggedinas');
-//Route::get('loggedinas', [\App\Http\Controllers\SessionController::class, 'loggedinas'])->name('loggedinas');
 
 
 ////////////controleren als het admin of gebruiker is///////////
@@ -48,104 +41,77 @@ Route::get('/', [HomeController::class, 'home'])->middleware('user');
 /////////// route voor de menu balk en buttons en paginas voor zpper op pc///////////////
 Route::get('MijnProfiel', [\App\Http\Controllers\FrontController::class, 'MijnProfiel'])->name('BProfiel');
 
-//Route::get('Klanten', [\App\Http\Controllers\FrontController::class, 'Klanten'])->name('Klanten.index');
 
-//Route::get('Factuur', [\App\Http\Controllers\FrontController::class, 'Factuur'])->name('Factuur.index');
-
-Route::get('Toevoegen', [\App\Http\Controllers\FrontController::class, 'Toevoegen'])->name('UToevoegen.index');
+Route::get('Toevoegen', [\App\Http\Controllers\FrontController::class, 'Toevoegen'])->name('UToevoegen.overzicht_gewerkte_dagen');
 
 Route::get('IngediendeToeslag', [\App\Http\Controllers\FrontController::class, 'IngediendeToeslag'])->name('UToevoegenToeslag.index');
 
 ///////////rout voor ZZPer module, pagina, venster en functie tijd indienen//////////
 //Route::get('UenTToevoegen', [\App\Http\Controllers\UenTToevoegenController::class, 'UenTToevoegen']);
-Route::get('tijden', [\App\Http\Controllers\TijdController::class, 'index'])->name('UToevoegen.index');;
-Route::post('tijden', [\App\Http\Controllers\TijdController::class, 'store'])->name('UToevoegen.store');;
+Route::get('tijden', [\App\Http\Controllers\TijdController::class, 'overzicht_van_alle_gewerkte_dagen_van_zpper'])->name('UToevoegen.overzicht_gewerkte_dagen');;
+Route::post('tijden', [\App\Http\Controllers\TijdController::class, 'opslaan'])->name('UToevoegen.opslaan');;
 
-Route::patch('tijden/edit{tijd}/update', [\App\Http\Controllers\TijdController::class, 'update'])->name('UToevoegen.update');;
+Route::patch('tijden/wijzigen{tijd}/WijzigingOpslaan', [\App\Http\Controllers\TijdController::class, 'WijzigingOpslaan'])->name('UToevoegen.WijzigingOpslaan');;
 
-Route::get('tijden/create', [\App\Http\Controllers\TijdController::class, 'create'])->name('UToevoegen.create');;
+Route::get('tijden/aanmaken', [\App\Http\Controllers\TijdController::class, 'aanmaken'])->name('UToevoegen.aanmaken');;
 Route::get('tijden/layout', [\App\Http\Controllers\TijdController::class, 'layout'])->name('UToevoegen.layouts');;
 
-Route::delete('tijden{tijd}', [\App\Http\Controllers\TijdController::class, 'destroy'])->name('UToevoegen.destroy');;
-Route::get('tijden/show{tijd}', [\App\Http\Controllers\TijdController::class, 'show'])->name('UToevoegen.show');;
-Route::get('tijden/edit{tijd}', [\App\Http\Controllers\TijdController::class, 'edit'])->name('UToevoegen.edit');;
+Route::delete('tijden{tijd}', [\App\Http\Controllers\TijdController::class, 'verwijderen'])->name('UToevoegen.verwijderen');;
+Route::get('tijden/tonen{tijd}', [\App\Http\Controllers\TijdController::class, 'tonen'])->name('UToevoegen.tonen');;
+Route::get('tijden/wijzigen{tijd}', [\App\Http\Controllers\TijdController::class, 'wijzigen'])->name('UToevoegen.wijzigen');;
 
 
-//Route::get('toeslagen{tijd}', [\App\Http\Controllers\TijdController::class, 'index'])->name('UToevoegen.index');;
 
 ///////////rout voor ZZPer module, pagina, venster en functie toeslag indienen//////////
-Route::get('toeslagen', [\App\Http\Controllers\ToeslagController::class, 'index'])->name('UToevoegenToeslag.index');;
+Route::get('toeslagen', [\App\Http\Controllers\ToeslagController::class, 'overzicht_van_alle_toeslagen_van_zpper'])->name('UToevoegenToeslag.overzicht_alle_toeslagen');;
 
-Route::post('toeslagen/store', [\App\Http\Controllers\ToeslagController::class, 'store'])->name('UToevoegenToeslag.store');;
-
-//Route::patch('toeslagen/update', [\App\Http\Controllers\ToeslagController::class, 'update'])->name('UToevoegenToeslag.update');;
-
-Route::patch('toeslagen/edit/{toeslag}/update', [\App\Http\Controllers\ToeslagController::class, 'update'])->name('UToevoegenToeslag.update');;
-
-Route::get('toeslagen/create', [\App\Http\Controllers\ToeslagController::class, 'create'])->name('UToevoegenToeslag.create');;
-Route::get('toeslagen/layout', [\App\Http\Controllers\ToeslagController::class, 'layout'])->name('UToevoegenToeslag.layouts');;
-
-Route::delete('toeslagen{toeslag}', [\App\Http\Controllers\ToeslagController::class, 'destroy'])->name('UToevoegenToeslag.destroy');;
-Route::get('toeslagen/show/{toeslag}', [\App\Http\Controllers\ToeslagController::class, 'show'])->name('UToevoegenToeslag.show');;
-Route::get('toeslagen/edit/{toeslag}', [\App\Http\Controllers\ToeslagController::class, 'edit'])->name('UToevoegenToeslag.edit');;
 
 ////////////////////route voor bedrijven pagina(zzpermodule)//////////////////////
-Route::get('klanten', [\App\Http\Controllers\BedrijfController::class, 'index'])->name('Klanten.index');;
+Route::get('klanten', [\App\Http\Controllers\BedrijfController::class, 'overzicht_van_alle_klanten'])->name('Klanten.overzicht_alle_klanten');;
 
-Route::post('klanten/store', [\App\Http\Controllers\BedrijfController::class, 'store'])->name('Klanten.store');;
+Route::post('klanten/opslaan', [\App\Http\Controllers\BedrijfController::class, 'opslaan'])->name('Klanten.opslaan');;
 
-//Route::patch('bedrijven/update', [\App\Http\Controllers\BedrijfController::class, 'update'])->name('Bedrijven.update');;
 
-Route::patch('klanten/edit/{bedrijf}/update', [\App\Http\Controllers\BedrijfController::class, 'update'])->name('Klanten.update');;
+Route::patch('klanten/wijzigen/{bedrijf}/WijzigingOpslaan', [\App\Http\Controllers\BedrijfController::class, 'WijzigingOpslaan'])->name('Klanten.WijzigingOpslaan');;
 
-Route::get('klanten/create', [\App\Http\Controllers\BedrijfController::class, 'create'])->name('Klanten.create');;
+Route::get('klanten/aanmaken', [\App\Http\Controllers\BedrijfController::class, 'aanmaken'])->name('Klanten.aanmaken');;
 Route::get('klanten/layout', [\App\Http\Controllers\BedrijfController::class, 'layout'])->name('Klanten.layouts');;
 
-Route::delete('klanten{bedrijf}', [\App\Http\Controllers\BedrijfController::class, 'destroy'])->name('Klanten.destroy');;
-Route::get('klanten/show/{bedrijf}', [\App\Http\Controllers\BedrijfController::class, 'show'])->name('Klanten.show');;
-Route::get('klanten/edit/{bedrijf}', [\App\Http\Controllers\BedrijfController::class, 'edit'])->name('Klanten.edit');;
+Route::delete('klanten{bedrijf}', [\App\Http\Controllers\BedrijfController::class, 'verwijderen'])->name('Klanten.verwijderen');;
+Route::get('klanten/tonen/{bedrijf}', [\App\Http\Controllers\BedrijfController::class, 'tonen'])->name('Klanten.tonen');;
+Route::get('klanten/wijzigen/{bedrijf}', [\App\Http\Controllers\BedrijfController::class, 'wijzigen'])->name('Klanten.wijzigen');;
 
 ////////////////////route voor factuur pagina(zzpermodule)//////////////////////
-Route::get('factuur/{bedrijf}', [\App\Http\Controllers\FactuurController::class, 'index'])->name('Factuur.index');;
-Route::get('factuur/{bedrijf}/select', [\App\Http\Controllers\FactuurController::class, 'getBedrijf'])->name('Factuur.select');;
+//Route::get('factuur/{bedrijf}', [\App\Http\Controllers\FactuurController::class, 'index'])->name('Factuur.index');;
+Route::get('factuur/{bedrijf}/maand_selecteren', [\App\Http\Controllers\FactuurController::class, 'gemaakte_facturen_van_klant_tonen'])->name('Factuur.gemaakte_facturen_van_klant_tonen');;
 
-Route::get('factuur/{bedrijf}/create', [\App\Http\Controllers\FactuurController::class, 'getDate'])->name('Factuurmaand.select');;
+Route::get('factuur/{bedrijf}/factuur_opties', [\App\Http\Controllers\FactuurController::class, 'uren_van_maand_tonen'])->name('Factuurmaand.uren_van_maand_tonen');;
 
-Route::get('downloadPDF/{factuur}/send', '\App\Http\Controllers\FactuurController@sendPDF')->name('Factuursend.pdf');
+Route::get('factuur_verzenden/{factuur}', '\App\Http\Controllers\FactuurController@factuur_maken_en_verzenden')->name('Factuurverzenden.pdf');
 
-Route::get('downloadPDF/{factuur}', '\App\Http\Controllers\FactuurController@downloadPDF')->name('Factuur.pdf');
+Route::get('factuur_downloaden/{factuur}', '\App\Http\Controllers\FactuurController@factuur_maken_en_downloaden')->name('Factuurdownloaden.pdf');
 
-//Route::delete('factuur/{bedrijf}/downloadPDF/{user}', '\App\Http\Controllers\FactuurController@getuserinfo')->name('Factuuruser.pdf');;
+
+///////////////rout voor CC: e-mail aanmaken pagina pagina (zzpermodule)//////////////////
+Route::get('factuur/contact/new', [\App\Http\Controllers\FactuurController::class, 'CC_aanmaken'])->name('Factuuremail.CC_aanmaken');
+Route::post('factuur/contact', [\App\Http\Controllers\FactuurController::class, 'CC_opslaan'])->name('Factuuremail.CC_opslaan');
+Route::get('factuur/contact/{brouwerscontact}', [\App\Http\Controllers\FactuurController::class, 'CC_wijzigen'])->name('Factuuremail.CC_wijzigen');
+Route::patch('factuur/contact/{brouwerscontact}', [\App\Http\Controllers\FactuurController::class, 'CC_wijziging_opslaan'])->name('Factuuremail.CC_wijziging_opslaan');;
+Route::delete('factuur/contact/{brouwerscontact}', [\App\Http\Controllers\FactuurController::class, 'CC_verwijderen'])->name('Factuuremail.CC_verwijderen');;
+
 
 ///////////////rout voor profiel pagina (zzpermodule)//////////////////
-Route::get('factuur/contact/new', [\App\Http\Controllers\FactuurController::class, 'create'])->name('Factuuremail.create');
-Route::post('factuur/contact', [\App\Http\Controllers\FactuurController::class, 'store'])->name('Factuuremail.store');
-Route::get('factuur/contact/{brouwerscontact}', [\App\Http\Controllers\FactuurController::class, 'edit'])->name('Factuuremail.edit');
-Route::patch('factuur/contact/{brouwerscontact}', [\App\Http\Controllers\FactuurController::class, 'update'])->name('Factuuremail.update');;
-Route::delete('factuur/contact/{brouwerscontact}', [\App\Http\Controllers\FactuurController::class, 'destroy'])->name('Factuuremail.destroy');;
-
-
-///////////////rout voor profiel pagina (zzpermodule)//////////////////
-Route::get('user/bprofiel', [\App\Http\Controllers\UserProfielController::class, 'index'])->name('BProfiel.index');;
-
-//Route::post('user/bprofiel/store', [\App\Http\Controllers\UserProfielController::class, 'store'])->name('BProfiel.store');;
-//Route::get('user/bprofiel/create', [\App\Http\Controllers\UserProfielController::class, 'create'])->name('BProfiel.create');;
+Route::get('user/bprofiel', [\App\Http\Controllers\UserProfielController::class, 'overzicht_profiel_gegevens'])->name('BProfiel.overzicht_profiel_gegevens');;
 
 Route::get('user/bprofiel/layout', [\App\Http\Controllers\UserProfielController::class, 'layout'])->name('BProfiel.layouts');;
-Route::delete('user/bprofiel/{user}', [\App\Http\Controllers\UserProfielController::class, 'destroy'])->name('BProfiel.destroy');;
+Route::delete('user/bprofiel/{user}', [\App\Http\Controllers\UserProfielController::class, 'verwijderen'])->name('BProfiel.verwijderen');;
 //Route::get('user/show/{user}', [\App\Http\Controllers\UserProfielController::class, 'show'])->name('BProfiel.show');;
-Route::get('user/bprofiel/edit/{user}', [\App\Http\Controllers\UserProfielController::class, 'edit'])->name('BProfiel.edit');;
-Route::patch('user/bprofiel/edit/{user}/update', [\App\Http\Controllers\UserProfielController::class, 'update'])->name('BProfiel.update');;
+Route::get('user/bprofiel/wijzigen/{user}', [\App\Http\Controllers\UserProfielController::class, 'wijzigen'])->name('BProfiel.wijzigen');;
+Route::patch('user/bprofiel/wijzigen/{user}/WijzigingOpslaan', [\App\Http\Controllers\UserProfielController::class, 'WijzigingOpslaan'])->name('BProfiel.WijzigingOpslaan');;
 /////////////////////////route voor tariefen///////////////////////////////////
 //Route::get('user/bprofiel/tarief', [\App\Http\Controllers\TariefController::class, 'index'])->name('BProfieltarief.index');;
-Route::get('user/bprofiel/create', [\App\Http\Controllers\TariefController::class, 'create'])->name('BProfieltarief.create');;
-Route::post('user/bprofiel/store', [\App\Http\Controllers\TariefController::class, 'store'])->name('BProfieltarief.store');;
-///////////////////route voor CC: email op profiel////////////////
-//Route::get('user/contact/new', [\App\Http\Controllers\FactuurController::class, 'create'])->name('Brouwerscontact.create');
-//Route::post('user/contact', [\App\Http\Controllers\FactuurController::class, 'store'])->name('Brouwerscontact.store');
-//Route::get('user/contact/{brouwerscontact}', [\App\Http\Controllers\FactuurController::class, 'edit'])->name('Brouwerscontact.edit');
-//Route::patch('user/contact/{brouwerscontact}', [\App\Http\Controllers\FactuurController::class, 'update'])->name('Brouwerscontact.update');;
-//Route::delete('user/contact/{brouwerscontact}', [\App\Http\Controllers\FactuurController::class, 'destroy'])->name('Brouwerscontact.destroy');;
+Route::get('user/bprofiel/aanmaken', [\App\Http\Controllers\TariefController::class, 'aanmaken'])->name('BProfieltarief.aanmaken');;
+Route::post('user/bprofiel/opslaan', [\App\Http\Controllers\TariefController::class, 'opslaan'])->name('BProfieltarief.opslaan');;
 
 /////////////alleen data van tabel tijd voor ingelogde gebruiker tonen(user/zpper)//////////////
 Route::get('tijden/user', function () {
@@ -237,16 +203,13 @@ $tijd = 'bedrijf_id';
 
 Route::post('tijden/bedrijf{bedrijf_id}', function (\Illuminate\Http\Request $request) use ($bedrijf, $user) {
 
-//    $tijd = new Tijd();
-//    $tijd-> begintijd = $request->begintijd;
-
 
     return redirect()->route('Bedrijf.index')
         ->with('success', ' bedrijf_id is opgeslagen');
 });
 
 /////////////////////////////////////////////////////////////////////
-////////////////////////////admin routs//////////////////////////////
+////////////////////////////admin/b-medewerker routs//////////////////////////////
 /////////////////////////////////////////////////////////////////////
 
 ///////////////////////navbar//////////////////////
@@ -255,49 +218,36 @@ Route::get('Registratie', [\App\Http\Controllers\FrontController::class, 'Regist
 Route::get('Gebruikers', [\App\Http\Controllers\FrontController::class, 'Gebruikers'])->name('Gebruikers');
 
 /////////////pagina profiel voor admin module ///////////////////////
-Route::get('user/', [\App\Http\Controllers\AdminProfielController::class, 'index'])->name('AProfiel.index');;
-
-//Route::post('user/', [\App\Http\Controllers\AdminProfielController::class, 'store'])->name('AProfiel.store');;
-//Route::get('user/create', [\App\Http\Controllers\AdminProfielController::class, 'create'])->name('AProfiel.create');;
+Route::get('user/', [\App\Http\Controllers\AdminProfielController::class, 'overzicht_profiel_gegevens'])->name('AProfiel.profiel');;
 
 Route::get('user/layout', [\App\Http\Controllers\AdminProfielController::class, 'layout'])->name('AProfiel.layouts');;
 Route::delete('user{user}', [\App\Http\Controllers\AdminProfielController::class, 'destroy'])->name('AProfiel.destroy');;
-Route::get('user/show/{user}', [\App\Http\Controllers\AdminProfielController::class, 'show'])->name('AProfiel.show');;
-Route::get('user/edit/{user}', [\App\Http\Controllers\AdminProfielController::class, 'edit'])->name('AProfiel.edit');;
-Route::patch('user/edit/{user}/update', [\App\Http\Controllers\AdminProfielController::class, 'update'])->name('AProfiel.update');;
+Route::get('user/gegevens_wijzigen/{user}', [\App\Http\Controllers\AdminProfielController::class, 'gegevens_wijzigen'])->name('AProfiel.gegevens_wijzigen');;
+Route::patch('user/gegevens_wijzigen/{user}/wijziging_opslaan', [\App\Http\Controllers\AdminProfielController::class, 'wijziging_opslaan'])->name('AProfiel.wijziging_opslaan');;
 
 /////////////pagina registratie voor admin module ///////////////////////
-Route::get('user/registratie', [\App\Http\Controllers\RegistratieController::class, 'index'])->name('Registratie.index');;
-Route::post('user/registratie', [\App\Http\Controllers\RegistratieController::class, 'store'])->name('Registratie.store');;
-Route::get('user/registratie/create', [\App\Http\Controllers\RegistratieController::class, 'create'])->name('Registratie.create');;
-
-///////////////pagina gebruikers voor DMIN MODULE////////////////////
-Route::get('user/lijst', [\App\Http\Controllers\GebruikerController::class, 'index'])->name('Gebruikers.index');;
-Route::post('user/lijst', [\App\Http\Controllers\GebruikerController::class, 'store'])->name('Gebruikers.store');;
+Route::get('user/registratie', [\App\Http\Controllers\RegistratieController::class, 'registratie_formulier'])->name('Registratie.registratie_formulier');;
+Route::post('user/registratie', [\App\Http\Controllers\RegistratieController::class, 'gebruiker_registreren'])->name('Registratie.gebruiker_registreren');;
 
 ///////////////pagina toeslagen voor DMIN MODULE////////////////////
-Route::get('user/toeslag', [\App\Http\Controllers\GebruikerController::class, 'toeslagenindex'])->name('Toeslagen.index');;
-Route::post('user/toeslag/{user}', [\App\Http\Controllers\GebruikerController::class, 'toeslagenuserstore'])->name('Toeslagen.store');;
+Route::get('user/toeslag', [\App\Http\Controllers\GebruikerController::class, 'overzicht_van_alle_zppers'])->name('Toeslagen.zppers');;
 
-//Route::post('user/toeslag/{user}', [\App\Http\Controllers\GebruikerController::class, 'toeslagenuserstore'])->name('Toeslagen.store');;
+Route::get('user/toeslag/aanmaken/{user}', [\App\Http\Controllers\GebruikerController::class, 'toeslagaanmaken'])->name('Toeslagen.aanmaken');;
+Route::post('user/toeslag/{user}', [\App\Http\Controllers\GebruikerController::class, 'gebruikerstoeslagopslaan'])->name('Toeslagen.gebruikerstoeslagopslaan');;
 
+////////////////////////pagina gebruikers voor ADMIN Module ///////////////////////////////////
+Route::get('user/lijst', [\App\Http\Controllers\GebruikerController::class, 'overzicht_van_alle_gebruikers'])->name('Gebruikers.overzicht');;
 
-Route::get('user/toeslag/create/{user}', [\App\Http\Controllers\GebruikerController::class, 'createtoeslag'])->name('Toeslagen.create');;
-Route::get('user/toeslag/destroy', [\App\Http\Controllers\GebruikerController::class, 'createtoeslag'])->name('Toeslagen.destroy');;
+Route::delete('user/lijst/{user}', [\App\Http\Controllers\GebruikerController::class, 'gebruiker_verwijderen'])->name('Gebruikers.gebruiker_verwijderen');;
+Route::get('user/lijst/tonen/{user}', [\App\Http\Controllers\GebruikerController::class, 'gegevens_tonen'])->name('Gebruikers.gegevens_tonen');;
+Route::get('user/lijst/wijzigen/{user}', [\App\Http\Controllers\GebruikerController::class, 'gegevens_wijzigen'])->name('Gebruikers.gegevens_wijzigen');;
+Route::patch('user/lijst/wijzigen/{user}/wijziging_opslaan', [\App\Http\Controllers\GebruikerController::class, 'wijziging_opslaan'])->name('Gebruikers.wijziging_opslaan');;
 
-//Route::get('tijden/lijstcreate', [\App\Http\Controllers\GebruikerController::class, 'create'])->name('Gebruikers.create');;
-//Route::get('user/layout', [\App\Http\Controllers\GebruikerController::class, 'layout'])->name('Gebruikers.layouts');;
-
-Route::delete('user/lijst/{user}', [\App\Http\Controllers\GebruikerController::class, 'destroy'])->name('Gebruikers.destroy');;
-Route::get('user/lijst/show/{user}', [\App\Http\Controllers\GebruikerController::class, 'show'])->name('Gebruikers.show');;
-Route::get('user/lijst/edit/{user}', [\App\Http\Controllers\GebruikerController::class, 'edit'])->name('Gebruikers.edit');;
-Route::patch('user/lijst/edit/{user}/update', [\App\Http\Controllers\GebruikerController::class, 'update'])->name('Gebruikers.update');;
-
-///////////////routes voor user impersonate functie/////////////////////
+///////////////routes voor user impersonate(overnemen) functie/////////////////////
 Route::group(['middleware' => ['auth']], function () {
-   Route::get('user/lijst/takeover',   [\App\Http\Controllers\GebruikerController::class, 'index'])->name('index');
-   Route::get('/impersonate/{id}',  [\App\Http\Controllers\GebruikerController::class, 'impersonate'])->name('impersonate');
-   Route::get('/impersonate_leave',  [\App\Http\Controllers\GebruikerController::class, 'impersonate_leave'])->name('impersonate.leave');
+   Route::get('user/lijst/overnemen',   [\App\Http\Controllers\GebruikerController::class, 'index'])->name('index');
+   Route::get('/gebruiker_overnemen/{id}',  [\App\Http\Controllers\GebruikerController::class, 'gebruiker_overnemen'])->name('gebruiker_overnemen');
+   Route::get('/overname_stoppen',  [\App\Http\Controllers\GebruikerController::class, 'overname_stoppen'])->name('overname_stoppen');
 
 });
 

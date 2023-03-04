@@ -8,9 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class Navbar extends Model
     /**
-     * model voor elementen van navbar ZZPer/user
+     * model voor elementen van navbar
      */
 {
+
     use HasFactory;
 
     protected $fillable = [

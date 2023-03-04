@@ -1,9 +1,28 @@
+<IfModule headers_module>
+    ####### beveiliging voor cookies ########
+	# https://owasp.org/www-project-secure-headers/
+	Header set Cross-Origin-Opener-Policy "same-origin"
+	Header set Cross-Origin-Resource-Policy "same-origin"
+	Header set Strict-Transport-Security "max-age=2678400 ; preload"
+	Header set X-Content-Type-Options "nosniff"
+	Header set X-Frame-Options "SAMEORIGIN"
+</IfModule>
+
 <IfModule mod_rewrite.c>
     <IfModule mod_negotiation.c>
         Options -MultiViews -Indexes
     </IfModule>
 
     RewriteEngine On
+
+    ###### Beveiliging voor SSL ######
+#    RewriteCond %{HTTP_HOST} !^www\.
+#    RewriteCond %{SERVER_ADDR} !=127.0.0.1
+#    RewriteRule ^(.*)$ https://www.%{HTTP_HOST}/$1 [L,R=308]
+#    RewriteCond %{HTTPS} off
+#    RewriteCond %{SERVER_ADDR} !=127.0.0.1
+#    RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=308]
+    ##################################
 
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
@@ -18,4 +37,5 @@
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
+
 </IfModule>

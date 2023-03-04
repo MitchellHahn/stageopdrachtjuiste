@@ -101,7 +101,7 @@ class TariefController extends Controller
         $newToeslag->save();
    //     dd($newToeslag);
 /////////////////////////////////
-        return redirect()->route('BProfiel.index')
+        return redirect()->route('BProfiel.overzicht_profiel_gegevens')
             ->with('success','Tarief is aangepast');
     }
 

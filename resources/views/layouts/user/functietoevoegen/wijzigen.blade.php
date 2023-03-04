@@ -5,12 +5,13 @@
 @section('content')
 
 <section class="section">
+    {{-- pagina voor het wijzgen van de gegevens van de gebruiker (medewerkers module)--}}
 
     <div class="container-md height100">
         <div class="row">
             <div class="col-md" >
                 <div class="titlebox titleboxSupportedContent">
-
+                    {{-- Titel en beshcrijving van de pagina --}}
                     <h2 class="title titleSupportedContent">Uren wijzigen</h2>
                     <h class="info infoSupportedContent">Geselecteerde tijd wijzigen.</h>
 
@@ -18,23 +19,20 @@
             </div>
         </div>
 
-{{--    </div>--}}
-
     </br>
     </br>
     </br>
 
-{{--    <div class="container-md" style="background-color:black;">--}}
 
     <div class="row justify-content-center">
         <div class="col-sm-9">
             <div class="float-right">
-                <a class="createbutton createbuttonSupportedContent" href="{{ route('UToevoegen.index') }}">Terug</a>
+                {{-- Knop om terug te gaan naar de uren overzicht pagina --}}
+                <a class="createbutton createbuttonSupportedContent" href="{{ route('UToevoegen.overzicht_gewerkte_dagen') }}">Terug</a>
             </div>
         </div>
     </div>
 
-{{--                <a class="btn btn-primary" href="{{ route('UToevoegen.index') }}"> Back</a>--}}
 
     <div class="container-md height73 " style="background-color:;align-self:flex-end">
         <div class="row height100 justify-content-center">
@@ -52,7 +50,8 @@
         </div>
     @endif
 
-    <form action="{{ route('UToevoegen.update',$tijd->id) }}" method="POST">
+        {{-- voert de functie uit om de gegevens van de bedrijf te wijzigen --}}
+        <form action="{{ route('UToevoegen.WijzigingOpslaan',$tijd->id) }}" method="POST">
         @csrf
         @method('PATCH')
 
@@ -60,6 +59,7 @@
 
         <div class="row justify-content-center" >
             <div class="col-sm-9">
+                {{--   toont de woord "Datum" en de Datum van de dag in de invoervak om het aan te passen --}}
                 <div class="row justify-content-center rowSupportedContent" >
                     <div class="col-sm-3 collumnSupportedContent" >
                         <strong class="collumntextSupportedContent">Datum:</strong>
@@ -78,6 +78,7 @@
 
         <div class="row justify-content-center" >
             <div class="col-sm-9" >
+                {{--   toont de woord "Begintijd" en de Begintijd van de dag in de invoervak om het aan te passen --}}
                 <div class="row justify-content-center rowSupportedContent" >
                     <div class="col-sm-3 collumnSupportedContent" >
                         <strong class="collumntextSupportedContent">Begintijd:</strong>
@@ -95,6 +96,7 @@
 
         <div class="row justify-content-center" >
             <div class="col-sm-9" >
+                {{--   toont de woord "Eindtijd" en de Eindtijd van de dag in de invoervak om het aan te passen --}}
                 <div class="row justify-content-center rowSupportedContent" >
                     <div class="col-sm-3 collumnSupportedContent">
                         <strong class="collumntextSupportedContent">Eindtijd:</strong>
@@ -112,6 +114,7 @@
 
         <div class="row justify-content-center" >
             <div class="col-sm-9">
+                {{--   toont de woord "Klant" en de Klant van de dag in de invoervak om het aan te passen --}}
                 <div class="row justify-content-center rowSupportedContent">
                     <div class="col-sm-3 collumnSupportedContent">
                         <strong class="collumntextSupportedContent">Klant:</strong>
@@ -132,13 +135,12 @@
         </br>
         </br>
 
-            {{--knop voor aanpassen--}}
+            {{--knop voor de wijziging van de gegevens van de gewerkte dag, opslaan--}}
         <div class="row justify-content-center rowbuttonSupportedContent">
             <div class="col-sm-3 collumnbuttonSupportedContent">
                 <button type="submit" class="createbutton createbuttonSupportedContent">Aanpassen</button>
             </div>
         </div>
-{{--        </div>--}}
 
     </form>
 </div>

@@ -19,110 +19,100 @@ use DB;
 
 class FactuurController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @param  \App\Models\Bedrijf  $bedrijf
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
-     *
-     */
-    public function index(Bedrijf $bedrijf)
-    {
-
-//        $tijden = auth()->user()->tijden;
-//        return view('layouts.user.Factuur', compact('tijden'));
-        return view('layouts.user.Factuur', compact('bedrijf'));
-    }
 
     /**
-     * Show the form for creating a new resource.
+     * Deze toont de venster waarin de e-mailadress van de brouwers contactpseroon wordt aangemaakt, wanneer een factuur wordt verzonden.
+     * Dit wordt opgeslagen in tabel "Brouwers contacten"
      *
      * @return \Illuminate\Http\Response
      */
-    public function create(Request $request) {
+    public function CC_aanmaken(Request $request) {
+
+        // stuurt de klant (bedrijf) mee omdat de factuur voor de klant is aangemaakt
         $bedrijfId = $request->bedrijf;
-        return view('layouts.user.functietoevoegen.factuur.edit', compact('bedrijfId'));
+
+        return view('layouts.user.functietoevoegen.factuur.cc_e-mail_doorgeven', compact('bedrijfId'));
     }
 
+
     /**
-     * Store a newly created resource in storage.
+     * Deze functie slaat de gegevens in de "Brouwers contactpersoon aanmaken" venster zijn ingevoert, op in tabel "brouwers contacten"
+     * De e-mailadres van deze persoon zal in de CC staan van elke e-mail dat wordt gestuurd.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function CC_opslaan(Request $request)
     {
+        // haalt de ingevoerde gegevens van de Brouwers contactpersoon op
         $request->validate([
             //tabel brouwerscontacten
             'email' => 'required',
-            //   'user_id' => '',
 
         ]);
 
+        // maakt een nieuwe brouwers contactpersoon aan met de registreerde gegevens
         $brouwerscontact = new Brouwerscontact($request->all());
 
+        // slaat de brouwers contactpersoon op en verbindt het met de ingelogde gebruiker
         Auth::user()->brouwerscontact()->save($brouwerscontact);
 
-        return redirect()->route('Factuurmaand.select', ['brouwerscontact' => $brouwerscontact, 'bedrijf' => $request->bedrijf])
+        return redirect()->route('Factuurmaand.uren_van_maand_tonen', ['brouwerscontact' => $brouwerscontact, 'bedrijf' => $request->bedrijf])
             ->with('success', 'Brouwers contact info is aangepast');
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
 
-//////////////////Brouwers CC: email/////BEGIN////////////////
     /**
-     * Show the form for editing the specified resource.
+     * Deze toont de venster waarin de e-mailadres van de brouwers contactpseroon wordt aangepast.
+     *
      * @param  Brouwerscontact $brouwerscontact
      * @return \Illuminate\Http\Response
      */
-    public function edit(Request $request, Brouwerscontact $brouwerscontact)
+    public function CC_wijzigen(Request $request, Brouwerscontact $brouwerscontact)
     {
+        // stuurt de klant (bedrijf) mee omdat de factuur voor de klant is aangemaakt
         $bedrijfId = $request->bedrijf;
 
 
-        return view('layouts.user.functietoevoegen.factuur.edit', compact('brouwerscontact', 'bedrijfId'));
+        return view('layouts.user.functietoevoegen.factuur.cc_e-mail_doorgeven', compact('brouwerscontact', 'bedrijfId'));
     }
 
+
     /**
-     * Update the specified resource in storage.
+     * Deze functie slaat de  nieuwe gegevens dat in de "Brouwers contactpersoon aanmaken" venster zijn ingevoert, op in tabel "brouwers contacten"
+     * De nieuwe ingevoerde gegevens zullen de huidige gegevens vervangen.
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \App\Models\Brouwerscontact $brouwerscontact
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(Request $request, Brouwerscontact $brouwerscontact)
+    public function CC_wijziging_opslaan(Request $request, Brouwerscontact $brouwerscontact)
     {
+        // haalt de ingevoerde gegevens van de Brouwers contactpersoon op
         $request->validate([
             //tabel brouwerscontacten
             'email' => 'required',
-            //   'user_id' => '',
 
         ]);
 
+        // vervangt de huidige gegevens van de Brouwers contactpersoon met de nieuwe gegevens
         \Auth::user()->brouwerscontact->id;
         $brouwerscontact->update($request->all());
 
-        return redirect()->route('Factuurmaand.select', ['brouwerscontact' => $brouwerscontact, 'bedrijf' => $request->bedrijf])
+        return redirect()->route('Factuurmaand.uren_van_maand_tonen', ['brouwerscontact' => $brouwerscontact, 'bedrijf' => $request->bedrijf])
             ->with('success', 'Brouwers contact info is aangepast');
     }
 
+
     /**
-     * Remove the specified resource from storage.
+     * Deze functie verwijdert de e-maildres van de Brouwers contact persoon.
      *
      * @param  \App\Models\Brouwerscontact  $brouwerscontact
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function destroy(Brouwerscontact  $brouwerscontact)
+    public function CC_verwijderen(Brouwerscontact  $brouwerscontact)
     {
+        // verwijder de e-maildres van de Brouwers contactpersoon van tabel "Brouwers contacten"
         $brouwerscontact->delete();
 
         return redirect()->route('Factuuremail.destroy', [$brouwerscontact])
@@ -131,58 +121,53 @@ class FactuurController extends Controller
 /////////////////////////Brouwers CC: email///////END///////////////////////////
 
     /**
-     * Remove the specified resource from storage.
+     * Deze functie toont de gemaakt facturen dat voor de gekozen klant is gemaakt.
      *
      * @param Request $request
      * @return \Illuminate\Http\Response
      */
-    public function getBedrijf(Request $request, Bedrijf $bedrijf)
+    public function gemaakte_facturen_van_klant_tonen(Request $request, Bedrijf $bedrijf)
     {
-        ///////////////////facturen voor gekozen bedrijf zoeken/////////////
-//        $bedrijven = auth()->user()->bedrijven;
-//
-//
-//        $bedrijf = $request->bedrijf;
-
-//        $bedrijven = Bedrijf::where('user_id', auth()->user()->id)->get();
-
-
+        //de gemaakte facturen dat voor de gekozen klant zijn aangemaakt, zoeken en tonen
         $facturen = DB::table('facturen')->leftJoin('bedrijven', 'facturen.bedrijf_id', '=', 'bedrijven.id')
             ->where('facturen.bedrijf_id', [$bedrijf->id])
             ->where('bedrijven.user_id', auth()->user()->id)
             ->get();
-//dd($facturen);
-        return view('layouts.user.functietoevoegen.factuur.maandenjaar', compact('facturen', 'bedrijf'));
+
+        //venster voor het doorgeven van maand en jaar, tonen
+        return view('layouts.user.functietoevoegen.factuur.maand_en_jaar_doorgeven', compact('facturen', 'bedrijf'));
 
     }
 
+
     /**
-     * Remove the specified resource from storage.
+     * Deze functie toont alle geregistreerde facuteren voor de gekozen klant.
+     * Slaat de gegevens van de factuur op in tabel (facturen) van de periode dat is geslecteeerd
      *
      * @param Request $request
      * @return \Illuminate\Http\Response
      */
-    public function getDate(Request $request, Bedrijf $bedrijf)
+    public function uren_van_maand_tonen(Request $request, Bedrijf $bedrijf)
     {
-//        $fdate = $request->fdate;
-//        $sdate = $request->sdate;
+
         ///////////////////uren voor gekozen maand en bedrijf zoeken/////////////
 
-/////////////bedrijven zoeken voor ingelogde user//////////////
+        //klant (bedrijf) gegevens opsturen zodat de gewerkte dagen van deze bedrijf gebruikt kan worden
         $bedrijven = auth()->user()->bedrijven;
 
-
+        // haalt de ingevoerd maand en jaar op
         $year = $request->year;
         $month = $request->month;
 
-
+        // carbon variable maken voor het periode van de factuur zodat er binnen deze periode naar de gewerkte dagen kan worden gezogd
         $sdate = Carbon::createFromDate($year, $month)->startOfMonth();
         $fdate = Carbon::createFromDate($year, $month)->endOfMonth();
 
-//        dd($sdate, $fdate, auth()->user()->id);
 
+        // gegevens ophalen van tabel tijden
         $tijden = DB::table('tijden')
-            //////////tijden leftjoinen met de drie toeslagen, zodat de gekoppelde toeslag gebruikt kan worden. conditie "NULL" en "NOT NULL"//////////
+
+            // tabel tijden leftjoinen met de drie toeslagen (vreemde sleutels), zodat de gekoppelde toeslag gebruikt kan worden.
             ->leftJoin('toeslagen as toeslagochtend', function(\Illuminate\Database\Query\JoinClause $join) {
                 $join->on('tijden.toeslag_idochtend', '=', 'toeslagochtend.id');
                 $join->on('toeslagochtend.user_id', '=', 'tijden.user_id');
@@ -196,43 +181,43 @@ class FactuurController extends Controller
                 $join->on('toeslagnacht.user_id', '=', 'tijden.user_id');
             })
 
-//            ->leftJoin('toeslagen as toeslagochtend', 'tijden.toeslag_idochtend', '=', 'toeslagochtend.id')
-//            ->leftJoin('toeslagen as toeslagavond', 'tijden.toeslag_idavond', '=', 'toeslagavond.id')
-//            ->leftJoin('toeslagen as toeslagnacht', 'tijden.toeslag_idnacht', '=', 'toeslagnacht.id')
-
+            // tijd verbinden met de bedrijf
             ->leftJoin('bedrijven', 'tijden.bedrijf_id', '=', 'bedrijven.id')
 
-            /////////////datum invoer controleren bij tabel tijden////////////
+            // zoeken naar de datum van alle gegiregistreerde dagen voor de doorgegeven periode
             ->whereBetween('tijden.datum', [$sdate, $fdate])
 
-            /////////////bedrijf invoer controleren////////////
+            //tijden op zoeken dat gekopplt zijn aan het bedrijf
             ->where('tijden.bedrijf_id', [$bedrijf->id])
-            /////////////bedrijf invoer filteren op user////////////
+
+            // bedrijf zoeken dat gekoppelt is aan de gebruiker
             ->where('bedrijven.user_id', auth()->user()->id)
 
-            /////////tijden zoeken bij toeslagen van de gebruiker/////////
-//            ->where('toeslagochtend.user_id', auth()->user()->id)
-//            ->where('toeslagavond.user_id', auth()->user()->id)
-//            ->where('toeslagnacht.user_id', auth()->user()->id)
-            ////////datum van tabel tijden en toeslagen onderscheiden////////
-//            ->get(['tijden.datum AS tijden_datum', 'toeslagen.datum AS toeslagen_datum', 'toeslagen.*', 'tijden.*']);
             ->get(['tijden.datum AS tijden_datum', 'toeslagochtend.datum AS toeslagochtend_datum', 'toeslagavond.datum AS toeslagavond_datum', 'toeslagnacht.datum AS toeslagnacht_datum', 'toeslagochtend.*', 'toeslagavond.*', 'toeslagnacht.*', 'tijden.*']);
-        // ->get();
 
-        /////////////maand en jaar in tabel factuur doorgeven wanneer knop wordt gedrukt////////////
+
+        /////////////maand en jaar in tabel "factuur" opslaan wanneer knop wordt gedrukt////////////
+
         if(count($tijden) >= 1) {
+
+            // in de "user_id" vreemde sleutel van tabel "tijden", naar de "id" van de gebruiker
             $user_id = auth()->user()->id;
+
+            // all gewerkte tijden op zoeken in het begin van en periode en aan het eind van de periode
             $startDatum = Carbon::createFromDate($year, $month, 1);
             $eindDatum = Carbon::createFromDate($year, $month)->endOfMonth();
 
+            // gewerkte tijden opzoeken voor de gekozen jaar
             $currentYear = $startDatum->format('Y');
 
+            // factuur naam
             $laatsteFactuur = Factuur::whereRaw('YEAR(startdatum) = ?', $currentYear)
                 ->where('user_id', '=', Auth::user()->id)
                 ->orderByRaw('LENGTH(naam) DESC')
                 ->orderByDesc('naam')
                 ->first();
 
+            // de factuur nummer wordt met 1 verhoogd wanneer er een niwue factuur wordt gemaakt voor de zelfde klant
             if($laatsteFactuur) {
                 $latestInvoiceId = $laatsteFactuur->naam;
                 $latestNr = substr($latestInvoiceId, strpos($latestInvoiceId, '-') + 1);
@@ -241,6 +226,8 @@ class FactuurController extends Controller
                 $name = $currentYear.'-0001';
             }
 
+            // factuur gegevens opslaan in tabel "facturen" voor de gekozen periode en klant
+            // dit is een soort log dat gebruiker kan zien voor elke maand dat hij een factuur heeft gemaakt voor de klant
             $factuur = new Factuur();
             $factuur->bedrijf_id = $bedrijf->id;
             $factuur->startdatum = $startDatum;
@@ -248,666 +235,645 @@ class FactuurController extends Controller
             $factuur->naam = $name;
             $factuur->user_id = Auth::user()->id;
             $factuur->save();
-//            Factuur::insertOrIgnore([
-//                "bedrijf_id" => $bedrijf->id,
-//                "startdatum" => $startDatum,
-//                "einddatum" => $eindDatum,
-////                "naam" => "Factuur-{$year}-{$month}_{$bedrijf->bedrijfsnaam}-
-//                "naam" => $name,
-//                "user_id" => Auth::user()->id,
-//
-//            ]);
+
         }
-        /*
-
-        */
-
-//        dd(Auth::user()->id);
 
 
-
-
-        return view('layouts.user.functietoevoegen.factuur.result', compact('tijden', 'fdate', 'sdate', 'year', 'month', 'bedrijven', 'bedrijf', 'factuur'));
+        return view('layouts.user.functietoevoegen.factuur.factuur_opties', compact('tijden', 'fdate', 'sdate', 'year', 'month', 'bedrijven', 'bedrijf', 'factuur'));
     }
 
 
 
 
     /**
-     * Remove the specified resource from storage.
+     * Deze functie maakt een factuur aan en toont het in een PFD bestand.
+     * Daarna wordt de PDF bestand in een mail toegvoegd opgestuurd naar e-mailadres van de klant en Brouwers contact persoon.
+     * Deze functie schrijft ook automatisch de e-mail dat wordt opgestuurt.
+     * Deze functie berekent ook automatisch de totaal maandbedrag exclusief BTW, de totaal maandbedrag inclusief BTW en
+     * de BTW bedrag.
      *
      * @param Request $request
      * @return \Illuminate\Http\Response
      */
-    public function sendPDF(Request $request, Factuur $factuur)
+    public function factuur_maken_en_verzenden(Request $request, Factuur $factuur)
     {
+
         $user = auth()->user();
+
+        //
         $bedrijf = $factuur->bedrijf;
 
+        // stuurt de klanten van de gebruiker mee, zodat in deze lijst de gekozen klant wordt gevonden
         $bedrijven = Bedrijf::where('user_id', auth()->user()->id)->get();
 
+        // start en einddatum dat is doorgegeven om de factuur te maken, ophalen zodat de factuur voor de dagen van deze
+        // periode wordt aangemaakt
         $sdate = $factuur->startdatum;
         $fdate = $factuur->einddatum;
 
+        // gegevens aan "tijden" leftjoinen zodat de gegevens dat aan de gewerkte dagen gekoppeld zijn, makkelijk gebruikt kunnen worden
         $tijden = Tijd::selectRaw('tijden.datum AS tijden_datum, toeslagochtend.datum AS toeslagochtend_datum, toeslagavond.datum AS toeslagavond_datum, toeslagnacht.datum AS toeslagnacht_datum, toeslagochtend.*, toeslagavond.*, toeslagnacht.*, tijden.*, TIMESTAMPDIFF(HOUR, begintijd, eindtijd) as uren')
-//        $tijden = Tijd::selectRaw('tijden.datum AS tijden_datum, tijden.*, TIMESTAMPDIFF(HOUR, begintijd, eindtijd) as uren')
 
+            // vreemde sleutel "toeslag_idochtend" van de tijd verbinden met tabel "toeslagen" zodat de "id of waarde" van de vreemde sleutel,
+            // in tabel "toeslagen" gevonden kan worden.
             ->leftJoin('toeslagen as toeslagochtend', function(\Illuminate\Database\Query\JoinClause $join) {
                 $join->on('tijden.toeslag_idochtend', '=', 'toeslagochtend.id');
                 $join->on('toeslagochtend.user_id', '=', 'tijden.user_id');
             })
+            // vreemde sleutel "toeslag_idavond" van de tijd verbinden met tabel "toeslagen" zodat de "id of waarde" van de vreemde sleutel,
+            // in tabel "toeslagen" gevonden kan worden.
             ->leftJoin('toeslagen as toeslagavond', function(\Illuminate\Database\Query\JoinClause$join) {
                 $join->on('tijden.toeslag_idavond', '=', 'toeslagavond.id');
                 $join->on('toeslagavond.user_id', '=', 'tijden.user_id');
             })
+            // vreemde sleutel "toeslag_idnacht" van de tijd verbinden met tabel "toeslagen" zodat de "id of waarde" van de vreemde sleutel,
+            // in tabel "toeslagen" gevonden kan worden.
             ->leftJoin('toeslagen as toeslagnacht', function(\Illuminate\Database\Query\JoinClause$join) {
                 $join->on('tijden.toeslag_idnacht', '=', 'toeslagnacht.id');
                 $join->on('toeslagnacht.user_id', '=', 'tijden.user_id');
             })
-//            ->leftJoin('toeslagen as toeslagochtend', 'tijden.toeslag_idochtend', '=', 'toeslagochtend.id')
-//            ->leftJoin('toeslagen as toeslagavond', 'tijden.toeslag_idavond', '=', 'toeslagavond.id')
-//            ->leftJoin('toeslagen as toeslagnacht', 'tijden.toeslag_idnacht', '=', 'toeslagnacht.id')
 
+            // vreemde sleutel "bedrijf_id" van tijd verbinden met met tabel "bedrijven" zodat de "id of waarde" van de vreemde sleutel,
+            // in tabel "bedrijven" gevonden kan worden.
             ->leftJoin('bedrijven', 'tijden.bedrijf_id', '=', 'bedrijven.id')
 
-            //            tarief voor tijd en toeslag
+            // vreemde sleutel "tarief_id" van tijd verbinden met met tabel "tarieven" zodat de "id of waarde" van de vreemde sleutel,
+            // in tabel "tarieven" gevonden kan worden.
             ->leftJoin('tarieven', 'tijden.tarief_id', '=', 'tarieven.id')
-            //            user info voor tijd en toeslag
+
+            // vreemde sleutel "user_id" van tijd verbinden met met tabel "users" zodat de "id of waarde" van de vreemde sleutel,
+            // in tabel "users" gevonden kan worden.
             ->leftJoin('users', 'tijden.user_id', '=', 'users.id')
 
-//            ->leftJoin('users', 'tarieven.user_id', '=', 'users.id')
-
-
+            // naar de datum van alle gewerkte dagen zoeken voor de doorgeven begin en eind van de gekozen maand (periode), zoeken
             ->whereBetween('tijden.datum', [$sdate, $fdate])
 
+            // naar alle gewerkte dagen zoeken van de doorgeven klant
             ->where('tijden.bedrijf_id', [$bedrijf->id])
+
+            // zoekt voor alle klanten (bedrijven) dat gebruker heeft geregistreerd
             ->where('bedrijven.user_id', auth()->user()->id)
 
-//            ->where('toeslagochtend.user_id', auth()->user()->id)
-//            ->where('toeslagavond.user_id', auth()->user()->id)
-//            ->where('toeslagnacht.user_id', auth()->user()->id)
-
-            //            tarief voor user
+            // zoekt voor alle tarieven dat gebruiker heeft geregistreerd
             ->where('tarieven.user_id', auth()->user()->id)
-            //              userinfoz
+
+            // zoekt naar de "id" van de ingelogde gebruiker
             ->where('users.id', auth()->user()->id)
 
             ->get();
 
+        // zoet naat de e-adress van brouwers contactpersoon dat de gebruiker heeft aangemaakt,
+        // zodat het in de CC: van de e-mail kan worden toegevoegd
         $brouwerscontacten = DB::table('brouwerscontacten')
             ->where('brouwerscontacten.user_id', auth()->user()->id)
             ->get();
 
+
+        ////// variables aanmaken voor de berekening/////
+
+        // variable voor bedragen
+        // variable voor de bedragen van het totaal maandbedrag exlusief btw, het totaal maandbedrag inclusief btw, en BTW bedrag
         $maanduitbetaling = 0;
         $maandbtw = 0;
         $maandTotaalBedrag = 0;
 
+        // variable voor de bedragen van het ochtend, avond en nachttoeslag
         $totaalOchtendToeslagBedrag = 0;
         $totaalAvondToeslagBedrag = 0;
         $totaalNachtToeslagBedrag = 0;
 
+        // variable voor het bedrag van het uitbetaling (exclusief BTW) van een gewerkte dag
         $totaalstandaardBedrag = 0;
 
-        /////////variable voor alle minuten van het hele dag// tussen begin en eindtijd/////
+
+        // variable voor tijden
+
+        // variable voor alle minuten van de gewerkte dag
         $uren = 0;
 
+        // variable voor alle minuten van de ochtend toeslag
         $ochtendtoeslaguren = 0;
+        // variable voor alle minuten van de avond toeslag
         $avondtoeslaguren = 0;
+        // variable voor alle minuten van de nacht toeslag
         $nachttoeslaguren = 0;
 
+        // variable voor de tijd van de gewerkte dag en toeslagen in uren te tonen
         $toonuren = 0;
         $toontoeslaguren = 0;
 
-        /////////variable voor het hele dag// tussen begin en eind tijd/////
         $dag = new Carbon();
-//dd($tijden);
+
+
+        // statements voor elke gewerkte dag
         foreach($tijden as $tijd) {
+            // voor elke gewerkte dag de vreemde sleutels van de ochtend, avond en nachttoeslag zoeken in tabek "toeslagen"
             $toeslag = Toeslag::selectRaw('*, TIMESTAMPDIFF(HOUR, toeslagbegintijd, toeslageindtijd) as toeslagauren')->where('id', $tijd->toeslag_idochtend)
                 ->where('id', $tijd->toeslag_idavond)
                 ->where('id', $tijd->toeslag_idnacht)
 
+                // zoekt alle voor de toeslagen dat met de gebruiker is gekoppld
                 ->where('toeslagen.user_id', auth()->user()->id)
-                ///////////////////aparte queries maken voor elke toeslag//////////////////////
-//                ->where('toeslagochtend.user_id', auth()->user()->id)
-//                ->where('toeslagavond.user_id', auth()->user()->id)
-//                ->where('toeslagnacht.user_id', auth()->user()->id)
+
+                // pakt de laatste gemaakte toeslag van elke toeslag
                 ->first();
 
-//            tarief per tijd en toeslag
+
+            // de meeste recente tarief dat de gebruiker heeft geregistreerd opzoeken
             $tarief = \Auth::user()->tarief()
+                // zoekt de uurtarief dat is gekoppelt de geregistreerde dag(tijd)
                 ->where('id', $tijd->tarief_id)
+
+                // zoekt de uurtarief dat is gekoppet aan de ingelogde gebruiker
                 ->where('tarieven.user_id', auth()->user()->id)
-//                ->where('tarieven.user_id', auth()->user()->id)
                 ->first();
 
-///////////////////////////////////////////////////////gebruiken voor nieuwe berekening/////////////////14-12-2022///////////////////////////
-//            $tijdBeginDatum = Carbon::createFromFormat('Y-m-d H:i:s', $tijd->tijden_datum.' '.$tijd->begintijd);
-//            $tijdEindDatum = Carbon::createFromFormat('Y-m-d H:i:s', $tijd->tijden_datum.' '.$tijd->eindtijd);
-//
-//            $startAvond = Carbon::createFromFormat('Y-m-d H:i:s', $tijd->tijden_datum.' 18:00:00');
-//
-//            if() { // Toeslang niet bestaat
-//                 100%
-//            } elseif($tijdBeginDatum->isWeekend()) {
-//                 weekend tarief
-//            } else {
-//
-//                 dagtarief = verschil tussen $tijdBeginDatum en $startAvond
-//                 avondtarief = verschil tussen $startAvond en $tijdEindDatum
-//
-//            }
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////uren in minuten berekenen/////////////////////
+
+            // carbon maken voor begintijd en eintijd van de geregistreerde dag, zodat het gebruikt kan worden
             $beginvandag = new Carbon($tijd->begintijd);
             $eindvandag = new Carbon($tijd->eindtijd);
 
-            ////////////alle minuten van een ingediende dag////////////
+            // alle minuten van een ingediende dag
             $tijd->uren = $beginvandag->diffInMinutes($eindvandag);
 
 
-
-//////////////////uren in uren tonen/////////////////////
-//            $tijd->toonuren = $start->diffInHours($end);
-
-//////////////////toeslaguren in minuten berekenen/////////////////////
-//            $starttoe = new Carbon($toeslag->toeslagbegintijd);
-//            $endtoe = new Carbon($toeslag->toeslageindtijd);
-
-//            $tijd->toeslaguren = $starttoe->diffInMinutes($endtoe);
-
-
-            /////////carbon voor het begin en eindtijd van alle drie toeslagen. wordt gebruikt in berekening/////////////
-
-
-
-
-
-            ///////alle minuten van elk verschillend toeslag (die door de Brouwers medewerker is ingesteld)/////
-
-            ///////////tussen begin en eind tijd van de ingediende dag////////////
-//            $geregistreerdedag = $dag->isBetween($start, $end);
-
-            //////////////////////////vergelijking die in de if statement voor bet berkenen van elke toeslag wordt gebruikt.////////////
-            ///////////als de begin en eindtijd van toeslagochtend binnen het geregistreerde dag is/////////////
-
-
-            ///////////als de begin en eindtijd van toeslagavond binnen het geregistreerde dag is/////////////
-
-
-            ///////////als de begin en eindtijd van toeslagnacht binnen het geregistreerde dag is/////////////
-
-
-            ///////////////////vergelijking die in de if statement voor bet berkenen van elke toeslag wordt gebruikt.////////////
-            ///////////als de begin en eindtijd van het dag binnen het begin en eindtijd van ochtendtoeslag is geregistreerd/////////////
-
-
-            ///////////als de begin en eindtijd van het dag binnen het begin en eindtijd van avondtoeslag is geregistreerd/////////////
-
-
-            ///////////als de begin en eindtijd van het dag binnen het begin en eindtijd van nachttoeslag is geregistreerd/////////////
-
-
-
-///////////////////vergelijking die in de if statement voor bet berkenen van elke toeslag wordt gebruikt.////////////
-///////////als alleen het begin van het dag binnen het begin en eindtijd van ochtendtoeslag is geregistreerd/////////////
-
-///////////als alleen het begin van het dag binnen het begin en eindtijd van avondtoeslag is geregistreerd/////////////
-
-///////////als alleen het begin van het dag binnen het begin en eindtijd van nachttoeslag is geregistreerd/////////////
-
-
-///////////////////vergelijking die in de if statement voor bet berkenen van elke toeslag wordt gebruikt.////////////
-///////////als alleen het begin van het dag binnen het begin en eindtijd van ochtendtoeslag is geregistreerd/////////////
-
-///////////als alleen het begin van het dag binnen het begin en eindtijd van avondtoeslag is geregistreerd/////////////
-
-///////////als alleen het begin van het dag binnen het begin en eindtijd van nachttoeslag is geregistreerd/////////////
-
-//////////////////berekening voor elk dag van de gekozen maand. factuur berekening///////////////////
-
-
-
             /////////////toeslagen voor elke dag berekenen//////////////
-            ///////////////////////berekenen van avondtoeslag voor elke dag////////////////////////////////////
 
+
+            ///////berekenen van avondtoeslag voor elke regestreerde dag//////
+
+            // als de geregistreerde dag geen "id" van een toeslag in de "ochten toeslag" vreemde sleutel bevat,
+            // is het bedrag van de ochtentoeslag, 0.
             if (!$tijd->toeslagochtend){
                 $tijd->totaalOchtendToeslagBedrag = null;
 
+                // als de geregistreerde dag wel een "id" van een toeslag in de "ochten toeslag" vreemde sleutel bevat,
+                // wordt de onstaande deel van de statement uitgevoerd.
             } else {
 
+                // carbon voor begintijd en eind tijd van ochten toeslag zodat het kan worden gebruikt
                 $beginvantoeslagochtend = new Carbon($tijd->toeslagochtend->toeslagbegintijd);
                 $eindvantoeslagochtend = new Carbon($tijd->toeslagochtend->toeslageindtijd);
 
+                // totaal minuten van de ochtend toeslag
                 $tijd->ochtendtoeslaguren = $beginvantoeslagochtend->diffInMinutes($eindvantoeslagochtend);
 
+                // conditie maken voor als de begin en eindtijd van de ochtend toelslag tussen de begin en eindtijd van de dag valt
                 $BeginVanToeslagochtendIsInDag = $beginvantoeslagochtend->isBetween($beginvandag, $eindvandag);
                 $EindVanToeslagochtendIsInDag = $eindvantoeslagochtend->isBetween($beginvandag, $eindvandag);
 
+                // conditie maken voor als de begin en eindtijd van de dag tussen de begin en eindtijd van de ochtendtoeslag valt
                 $BeginVanDagIsInOchtendtoeslag =  $beginvandag->isBetween($beginvantoeslagochtend, $eindvantoeslagochtend);
                 $EindVanDagIsInOchtendtoeslag =  $eindvandag->isBetween($beginvantoeslagochtend, $eindvantoeslagochtend);
 
+                // aantal minuten tussen de begin van het dag en het eind van het toeslag
                 $tijd->BeginVanOchtendtoeslagurenIsIncompleet = $beginvandag->diffInMinutes($eindvantoeslagochtend);
 
+                // aantal minuten tussen de begin van het ochtentoeslag en het eind van het dag
                 $tijd->EindVanOchtendtoeslagurenIsIncompleet = $eindvandag->diffInMinutes($beginvantoeslagochtend);
 
-                ///////////als begin en eindtijd van ochtendtoeslag binnen de ingediende tijd valt, gebruikt het de volle tijd van het ingestelde toeslag//////////
+
+                // als de begin en eindtijd van ochtendtoeslag tussen het begin en eindtijd van de dag ligt, gebruikt het de volle tijd van het ochtendtoeslag
+                // tijd van ochtendtoeslag * (uurtarief * toeslag percentage) = ochtendtoeslag bedrag
                 if ( $BeginVanToeslagochtendIsInDag && $EindVanToeslagochtendIsInDag) {
                     $tijd->totaalOchtendToeslagBedrag += $tijd->ochtendtoeslaguren * (($tarief->bedrag / 60) * ($tijd->toeslagochtend->toeslagpercentage / 100));
 
+                    // als het begin en eindtijd van de geregistreerde dag in tussen het begin en eindtijd van de ochtendtoeslag ligt,
+                    // tijd van dag * (uurtarief * toeslag percentage) = ochtendtoeslag bedrag
                 } elseif ($BeginVanDagIsInOchtendtoeslag && $EindVanDagIsInOchtendtoeslag) {
                     $tijd->totaalOchtendToeslagBedrag += $tijd->uren * (($tarief->bedrag / 60) * ($tijd->toeslagochtend->toeslagpercentage / 100));//
 
-
+                    // als alleen het begin de dag in tussen het begin en eindtijd van de ochtendtoeslag ligt,
+                    // tijd tussen "begintijd" van het dag en "eindtijd" van ochtend toeslag * (uurtarief * toeslag percentage) = ochtendtoeslag bedrag
                 } elseif ( $BeginVanDagIsInOchtendtoeslag ) {
                     $tijd->totaalOchtendToeslagBedrag += $tijd->BeginVanOchtendtoeslagurenIsIncompleet * (($tarief->bedrag / 60) * ($tijd->toeslagochtend->toeslagpercentage / 100));
 
+                    // als alleen het eind de dag in tussen het begin en eindtijd van de ochtendtoeslag ligt,
+                    // tijd tussen "eindtijd" van het dag en "begintijd" van ochtend toeslag * (uurtarief * toeslag percentage) = ochtendtoeslag bedrag
                 } elseif ( $EindVanDagIsInOchtendtoeslag ) {
                     $tijd->totaalOchtendToeslagBedrag += $tijd->EindVanOchtendtoeslagurenIsIncompleet * (($tarief->bedrag / 60) * ($tijd->toeslagochtend->toeslagpercentage / 100));
 
+                    // als geen van de boventsaand statements zijn uitgevoert, is het ochtendtoeslag bedrag 0
                 } else {
                     $tijd->totaalOchtendToeslagBedrag = null;
                 }
             }
 
-            ///////////////////////berekenen van avondtoeslag voor elke dag//////////////////////
+            //////////////berekenen van avondtoeslag voor elke dag/////////////
 
+            // als de geregistreerde dag geen "id" van een toeslag in de "avondtoeslag" vreemde sleutel bevat,
+            // is het bedrag van de avondtoeslag, 0.
             if (!$tijd->toeslagavond){
                 $tijd->totaalAvondToeslagBedrag = null;
 
+                // als de geregistreerde dag wel een "id" van een toeslag in de "avondtoeslag" vreemde sleutel bevat,
+                // wordt de onstaande deel van de statement uitgevoerd.
             } else {
 
+                // carbon voor begintijd en eind tijd van avondtoeslag zodat het kan worden gebruikt
                 $beginvantoeslagavond = new Carbon($tijd->toeslagavond->toeslagbegintijd);
                 $eindvantoeslagavond = new Carbon($tijd->toeslagavond->toeslageindtijd);
 
+                // totaal minuten van de avondtoeslag
                 $tijd->avondtoeslaguren = $beginvantoeslagavond->diffInMinutes($eindvantoeslagavond);
 
+                // conditie maken voor als de begin en eindtijd van de avondtoeslag tussen de begin en eindtijd van de dag valt
                 $BeginVanToeslagavondIsInDag = $beginvantoeslagavond->isBetween($beginvandag, $eindvandag);
                 $EindVanToeslagavondIsInDag = $eindvantoeslagavond->isBetween($beginvandag, $eindvandag);
 
+                // conditie maken voor als de begin en eindtijd van de dag tussen de begin en eindtijd van de avondtoeslag valt
                 $BeginVanDagIsInAvondtoeslag =  $beginvandag->isBetween($beginvantoeslagavond, $eindvantoeslagavond);
                 $EindVanDagIsInAvondtoeslag =  $eindvandag->isBetween($beginvantoeslagavond, $eindvantoeslagavond);
 
+                // aantal minuten tussen de begin van het dag en het eind van het avondtoeslag
                 $tijd->BeginVanAvondtoeslagurenIsIncompleet = $beginvandag->diffInMinutes($eindvantoeslagavond);
 
+                // aantal minuten tussen de begin van het avondtoeslag en het eind van het dag
                 $tijd->EindVanAvondtoeslagurenIsIncompleet = $eindvandag->diffInMinutes($beginvantoeslagavond);
 
 
-                ///////////als begin en eindtijd van avondtoeslag binnen de ingediende tijd valt, gebruikt het de volle tijd van het ingestelde toeslag//////////
+                // als de begin en eindtijd van avondtoeslag tussen het begin en eindtijd van de dag ligt, gebruikt het de volle tijd van het avondtoeslag
+                // tijd van avondtoeslag * (uurtarief * toeslag percentage) = avondtoeslag bedrag
                 if ($BeginVanToeslagavondIsInDag && $EindVanToeslagavondIsInDag) {
                     $tijd->totaalAvondToeslagBedrag += $tijd->avondtoeslaguren * (($tarief->bedrag / 60) * ($tijd->toeslagavond->toeslagpercentage / 100));
 
+                    // als het begin en eindtijd van de geregistreerde dag in tussen het begin en eindtijd van de avondtoeslag ligt,
+                    // tijd van dag * (uurtarief * toeslag percentage) = avondtoeslag bedrag
                 } elseif ( $BeginVanDagIsInAvondtoeslag && $EindVanDagIsInAvondtoeslag) {
                     $tijd->totaalAvondToeslagBedrag += $tijd->uren * (($tarief->bedrag / 60) * ($tijd->toeslagavond->toeslagpercentage / 100));
 
+                    // als alleen het begin de dag in tussen het begin en eindtijd van de avondtoeslag ligt,
+                    // tijd tussen "begintijd" van het dag en "eindtijd" van avondtoeslag * (uurtarief * toeslag percentage) = avondtoeslag bedrag
                 } elseif ( $BeginVanDagIsInAvondtoeslag ) {
                     $tijd->totaalAvondToeslagBedrag += $tijd->BeginVanAvondtoeslagurenIsIncompleet * (($tarief->bedrag / 60) * ($tijd->toeslagavond->toeslagpercentage / 100));
 
+                    // als alleen het eind de dag in tussen het begin en eindtijd van de avondtoeslag ligt,
+                    // tijd tussen "eindtijd" van het dag en "begintijd" van avondtoeslag * (uurtarief * toeslag percentage) = avondtoeslag bedrag
                 } elseif ( $EindVanDagIsInAvondtoeslag ) {
                     $tijd->totaalAvondToeslagBedrag += $tijd->EindVanAvondtoeslagurenIsIncompleet * (($tarief->bedrag / 60) * ($tijd->toeslagavond->toeslagpercentage / 100));
 
+                    // als geen van de boventsaand statements zijn uitgevoert, is het avondtoeslag bedrag 0
                 } else {
                     $tijd->totaalAvondToeslagBedrag = null;
                 }
             }
 
-            ///////////////////////berekenen van nachttoeslag bedrag voor elke dag////////////////////////////////////
+            ///////////berekenen van nachttoeslag bedrag voor elke dag///////////
+
+            // als de geregistreerde dag geen "id" van een toeslag in de "ochten toeslag" vreemde sleutel bevat,
+            // is het bedrag van de ochtentoeslag, 0.
             if (!$tijd->toeslagnacht){
                 $tijd->totaalNachtToeslagBedrag = null;
 
+                // als de geregistreerde dag wel een "id" van een toeslag in de "nachttoeslag" vreemde sleutel bevat,
+                // wordt de onstaande deel van de statement uitgevoerd.
             } else {
+
+                // carbon voor begintijd en eind tijd van nachttoeslag zodat het kan worden gebruikt
                 $beginvantoeslagnacht = new Carbon($tijd->toeslagnacht->toeslagbegintijd);
                 $eindvantoeslagnacht = new Carbon($tijd->toeslagnacht->toeslageindtijd);
 
+                // totaal minuten van de nachttoeslag
                 $tijd->nachttoeslaguren = $beginvantoeslagnacht->diffInMinutes($eindvantoeslagnacht);
 
+                // conditie maken voor als de begin en eindtijd van de nachttoeslag tussen de begin en eindtijd van de dag valt
                 $BeginVanToeslagnachtsInDag = $beginvantoeslagnacht->isBetween($beginvandag, $eindvandag);
                 $EindVanToeslagnachtIsInDag = $eindvantoeslagnacht->isBetween($beginvandag, $eindvandag);
 
+                // conditie maken voor als de begin en eindtijd van de dag tussen de begin en eindtijd van de nachttoeslag valt
                 $BeginVanDagIsInNachttoeslag =  $beginvandag->isBetween($beginvantoeslagnacht, $eindvantoeslagnacht);
                 $EindVanDagIsInNachttoeslag =  $eindvandag->isBetween($beginvantoeslagnacht, $eindvantoeslagnacht);
 
+
+                // aantal minuten tussen de begin van het dag en het eind van het nachttoeslag
                 $tijd->BeginVanNachttoeslagurenIsIncompleet = $beginvandag->diffInMinutes($eindvantoeslagnacht);
 
+                // aantal minuten tussen de begin van het nachttoeslag en het eind van het dag
                 $tijd->EindVanNachttoeslagurenIsIncompleet =$beginvantoeslagnacht->diffInMinutes($eindvandag);
 
-                ///////////als begin en eindtijd van nachttoeslag binnen de ingediende tijd valt, gebruikt het de volle tijd van het ingestelde toeslag//////////
+
+                // als de begin en eindtijd van nachttoeslag tussen het begin en eindtijd van de dag ligt, gebruikt het de volle tijd van het nachttoeslag
+                // tijd van nachttoeslag * (uurtarief * toeslag percentage) = nachttoeslag bedrag
                 if ( $BeginVanToeslagnachtsInDag && $EindVanToeslagnachtIsInDag) {
                     $tijd->totaalNachtToeslagBedrag += $tijd->nachttoeslaguren * (($tarief->bedrag / 60) * ($tijd->toeslagnacht->toeslagpercentage / 100));
 
+                    // als het begin en eindtijd van de geregistreerde dag in tussen het begin en eindtijd van de nachttoeslag ligt,
+                    // tijd van dag * (uurtarief * toeslag percentage) = nachttoeslag bedrag
                 } elseif ( $BeginVanDagIsInNachttoeslag && $EindVanDagIsInNachttoeslag ) {
                     $tijd->totaalNachtToeslagBedrag += $tijd->uren * (($tarief->bedrag / 60) * ($tijd->toeslagavond->toeslagpercentage / 100));
 
+                    // als alleen het begin de dag in tussen het begin en eindtijd van de nachttoeslag ligt,
+                    // tijd tussen "begintijd" van het dag en "eindtijd" van ochtend toeslag * (uurtarief * toeslag percentage) = nachttoeslag bedrag
                 } elseif ( $BeginVanDagIsInNachttoeslag ) {
                     $tijd->totaalNachtToeslagBedrag += $tijd->BeginVanNachttoeslagurenIsIncompleet * (($tarief->bedrag / 60) * ($tijd->toeslagnacht->toeslagpercentage / 100));
 
+                    // als alleen het eind de dag in tussen het begin en eindtijd van de nachttoeslag ligt,
+                    // tijd tussen "eindtijd" van het dag en "begintijd" van nachttoeslag * (uurtarief * toeslag percentage) = nachttoeslag bedrag
                 } elseif ( $EindVanDagIsInNachttoeslag ) {
                     $tijd->totaalNachtToeslagBedrag += $tijd->EindVanNachttoeslagurenIsIncompleet * (($tarief->bedrag / 60) * ($tijd->toeslagnacht->toeslagpercentage / 100));
 
+                    // als geen van de boventsaand statements zijn uitgevoert, is het nachttoeslag bedrag 0
                 } else {
                     $tijd->totaalNachtToeslagBedrag = null;
                 }
             }
 
-            //////////////standaard bedrag (bedrag dat geen toeslag heeft) berekenen//////////////
-//            $tijd->totaalstandaardBedrag += ($tarief->bedrag / 60) * ($tijd->uren - $tijd->ochtendtoeslaguren - $tijd->avondtoeslaguren - $tijd->nachttoeslaguren);
+            ////// van elke dag het standaard bedrag (bedrag dat geen toeslag heeft) berekenen, dit is voor het aantal tijd dat niet binnen de toeslag tijden liggen//////
 
-            /////waarde van tijd bepalen als er een toeslag wel of niet aanwezig is.
+            // wordt het aantal gebruikte tijd (in minuten) van de gekoppelde toeslagen opgehaald,
+            // zodat het gebruikt wordt voor het berekenen van de standaard bedrag dat niet verbonden is aan de toeslagen.
+
+            // als totaalNachtToeslagBedrag 0 is, is het gebruikte tijd 0
             if ( !$tijd->totaalNachtToeslagBedrag ) {
                 $tijd->NachtToelsagTijd = null;
+            // aantal gebruikte tijd van de NachtToelsag vinden door "het bereken van de totaalNachtToeslagBedrag" om te draaien
             } else {
                 $tijd->NachtToelsagTijd = $tijd->totaalNachtToeslagBedrag / ($tarief->bedrag / 60) / ($tijd->toeslagnacht->toeslagpercentage / 100);
             }
 
+            // als totaalAvondToeslagBedrag 0 is, is het gebruikte tijd 0
             if ( !$tijd->totaalAvondToeslagBedrag ) {
                 $tijd->AvondToelsagTijd = null;
+                // aantal gebruikte tijd van de AvondToeslag vinden door "het bereken van de totaalAvondToeslagBedrag" om te draaien
             } else {
                 $tijd->AvondToelsagTijd = $tijd->totaalAvondToeslagBedrag / ($tarief->bedrag / 60) / ($tijd->toeslagavond->toeslagpercentage / 100);
             }
 
+            // als totaalOchtendToeslagBedrag 0 is, is het gebruikte tijd 0
             if ( !$tijd->totaalOchtendToeslagBedrag ) {
                 $tijd->OchtendToelsagTijd = null;
+                // aantal gebruikte tijd van de OchtendToeslag vinden door "het bereken van de totaalOchtendToeslagBedrag" om te draaien
             } else {
                 $tijd->OchtendToelsagTijd = $tijd->totaalOchtendToeslagBedrag / ($tarief->bedrag / 60) / ($tijd->toeslagochtend->toeslagpercentage / 100);
             }
 
 
-
+            // hier wordt het standaard bedrag (is niet gekoppelt aan toeslagen) berekent
+            // Standaard bedrag = uurtarief * (tijd van het dag - tijd van ochtend toeslag - tijd van avond toeslag - tijd van nacht toeslag)
             $tijd->totaalstandaardBedrag += ($tarief->bedrag / 60) * ($tijd->uren - $tijd->NachtToelsagTijd - $tijd->AvondToelsagTijd - $tijd->OchtendToelsagTijd );
 
-
-
+            // hier wordt het totaal bedrag van de dag berekent
+            //Totaalbedrag van een dag = Standaard bedrag + ochtendtoeslag bedrag + avondtoeslag bedrag + nachttoeslag bedrag
             $tijd->totaalBedrag += $tijd->totaalOchtendToeslagBedrag + $tijd->totaalAvondToeslagBedrag + $tijd->totaalNachtToeslagBedrag + $tijd->totaalstandaardBedrag;
 
+            // hier wordt het BTW van de dag berekent
+            // Totaalbedrag van een dag * 0.21 = BTW bedrag
             $tijd->btw += $tijd->totaalBedrag * 0.21;
 
+            // hier wordt het uitbetaling van de dag berekent
+            // Totaalbedrag van een dag + BTW bedrag = uitbetaling
             $tijd->uitbetaling += $tijd->btw + $tijd->totaalBedrag;
 
-////////      Bedragen voor het maand
+
+            ///// Hier worden de bedragen voor de gekozen maand berekent
+
+            // deze functie loopt het berekenen van het totaalBedrag van een dag voor elke dag van de gekozen maand,
+            // en telt alle bedragen samen op
             $maandTotaalBedrag += $tijd->totaalBedrag;
+
+            // deze functie loopt het berekenen van het btw van een dag voor elke dag van de gekozen maand,
+            // telt alle bedragen samen op
             $maandbtw += $tijd->btw;
+
+            // deze functie loopt het berekenen van het uitbetaling van een dag voor elke dag van de gekozen maand,
+            // telt alle bedragen samen op
             $maanduitbetaling += $tijd->uitbetaling;
         }
 
-
-//////////////factuur mailen naar//////////////////////////////////////////////////////////////
-        //  $bedrijven = auth()->user()->bedrijven;
-        // $brouwerscontacten = auth()->user()->brouwerscontacten;
-///////////////////////////////////////////////////////////////////////////////////////////////
-
-        //$pdf = PDF::loadView('layouts.user.functietoevoegen.factuur.pdf', compact( 'fdate', 'sdate', 'tijden', 'request'));
         $data["email"] = "gijs@thedarecompany.com";
         $data["title"] = "From ItSolutionStuff.com";
         $data["body"] = "This is Demo";
 
-///////////////////wordt gebruikt voor het verzenden van de factuur////////////////////
-//        sturen naar klant email
+///// variables met waarde aanmaken vooer het verzenden van de factuur////
+
+        // sturen naar de van de klant dat in tabel "klanten" is opgeslagen
         $email = $bedrijf->email;
-//        sturen naar CC: e-mail(brouwers)
+        // sturen naar CC: e-mail(brouwers) dat in tabel "brouwers contacten" is opgeslagen
         $bemail = \Auth::user()->brouwerscontact->email;
-//        subject
+        // maakt automtisch een onderwerp van de gekozen klant en periode
         $subject = "Factuur van {$bedrijf->user->name} {$bedrijf->user->tussenvoegsel} {$bedrijf->user->achternaam} voor de periode {$factuur->startdatum->format('d-m-Y')} t/m {$factuur->einddatum->format('d-m-Y')}";
-//        sendPDF name
+        // maakt automatish aan naam aan voor de PDF bestand
         $sendpdfnaam = "Factuur-".$factuur->naam.".pdf";
-//        invoice maand
+        // toont de periode van de gemaakt factuur in de e-mail
         $invoicemaand = "{$factuur->startdatum->format('d-m-Y')} t/m {$factuur->einddatum->format('d-m-Y')}";
-//        sender
+        // toont da volledige naam van de zpper in de e-mail
         $sender = "{$user->name} {$user->tussenvoegsel} {$user->achternaam}";
-//        ontvanger
+        // toont de naam van de contactpersoon van de klant
         $ontvanger = $bedrijf->contactpersoon;
 
 
+        // de resultaten van totaal bedrag exculesief btw, BTW en totaal bedrag inclusief btw  worden getoond in een PDF bestand
+        // gegevensn van de klant, zpper en periode van de factuur worden op in het bestand getoond
+        $pdf = PDF::loadView('layouts.user.functietoevoegen.factuur.factuur_pdf', compact( 'fdate', 'sdate', 'tijden', 'request', 'uren', 'ochtendtoeslaguren', 'avondtoeslaguren', 'nachttoeslaguren', 'maandTotaalBedrag', 'totaalOchtendToeslagBedrag', 'totaalAvondToeslagBedrag', 'totaalNachtToeslagBedrag', 'totaalstandaardBedrag', 'toeslag', 'toonuren', 'toontoeslaguren', 'bedrijf', 'bedrijven', 'brouwerscontacten',  'user', 'maandbtw', 'maanduitbetaling', 'factuur'));
 
-        $pdf = PDF::loadView('layouts.user.functietoevoegen.factuur.pdf', compact( 'fdate', 'sdate', 'tijden', 'request', 'uren', 'ochtendtoeslaguren', 'avondtoeslaguren', 'nachttoeslaguren', 'maandTotaalBedrag', 'totaalOchtendToeslagBedrag', 'totaalAvondToeslagBedrag', 'totaalNachtToeslagBedrag', 'totaalstandaardBedrag', 'toeslag', 'toonuren', 'toontoeslaguren', 'bedrijf', 'bedrijven', 'brouwerscontacten',  'user', 'maandbtw', 'maanduitbetaling', 'factuur'));
+        // PDF tonen in A4 formaat
         $pdf->setPaper('a4');
 
+        // stuurr de benodigde gegevens naar de laravel functie dat factuur naar de klant zal verzenden.
         Mail::send(new InvoiceMail($email, $bemail, $subject, $sendpdfnaam, $invoicemaand, $sender, $ontvanger, $pdf->output()));
-//        $subject,
 
-//        Mail::send(['layouts.user.functietoevoegen.factuur.pdf', compact( 'fdate', 'sdate', 'tijden', 'request', 'uren', 'toeslaguren', 'totaalBedrag', 'totaalToeslagBedrag', 'totaalstandaardBedrag', 'toeslag', 'toonuren', 'toontoeslaguren', 'bedrijf', 'bedrijven')], $data, function($message)use($data, $pdf) {
-//            $message->to($data["email"], $data["email"])
-//
-//                ->subject($data["title"])
-//
-//                ->attachData($pdf->output(), "invoice.pdf");
-//
-//        });
-
-
-        //      dd('factuur is verzonden');
-//        dd($brouwerscontact);
-//      return $pdf->stream('invoice.pdf');
 
     }
 
 
     /**
-     * Remove the specified resource from storage.
+     * Deze functie maakt een factuur aan en toont het in een PFD bestand, en maakt het downloadbaar
+     * Deze functie berekent ook automatisch de totaal maandbedrag exclusief BTW, de totaal maandbedrag inclusief BTW en
+     * de BTW bedrag.
      *
      * @param Request $request
      * @return \Illuminate\Http\Response
      */
-    public function downloadPDF(Request $request, Factuur $factuur)
+    public function factuur_maken_en_downloaden(Request $request, Factuur $factuur)
     {
 
         $user = auth()->user();
         $bedrijf = $factuur->bedrijf;
 
+        // stuurt de klanten van de gebruiker mee, zodat in deze lijst de gekozen klant wordt gevonden
         $bedrijven = Bedrijf::where('user_id', auth()->user()->id)->get();
 
+        // start en einddatum dat is doorgegeven om de factuur te maken, ophalen zodat de factuur voor de dagen van deze
+        // periode wordt aangemaakt
         $sdate = $factuur->startdatum;
         $fdate = $factuur->einddatum;
 
+        // gegevens aan "tijden" leftjoinen zodat de gegevens dat aan de gewerkte dagen gekoppeld zijn, makkelijk gebruikt kunnen worden
         $tijden = Tijd::selectRaw('tijden.datum AS tijden_datum, toeslagochtend.datum AS toeslagochtend_datum, toeslagavond.datum AS toeslagavond_datum, toeslagnacht.datum AS toeslagnacht_datum, toeslagochtend.*, toeslagavond.*, toeslagnacht.*, tijden.*, TIMESTAMPDIFF(HOUR, begintijd, eindtijd) as uren')
-//        $tijden = Tijd::selectRaw('tijden.datum AS tijden_datum, tijden.*, TIMESTAMPDIFF(HOUR, begintijd, eindtijd) as uren')
 
+            // vreemde sleutel "toeslag_idochtend" van de tijd verbinden met tabel "toeslagen" zodat de "id of waarde" van de vreemde sleutel,
+            // in tabel "toeslagen" gevonden kan worden.
             ->leftJoin('toeslagen as toeslagochtend', function(\Illuminate\Database\Query\JoinClause $join) {
                 $join->on('tijden.toeslag_idochtend', '=', 'toeslagochtend.id');
                 $join->on('toeslagochtend.user_id', '=', 'tijden.user_id');
             })
+            // vreemde sleutel "toeslag_idavond" van de tijd verbinden met tabel "toeslagen" zodat de "id of waarde" van de vreemde sleutel,
+            // in tabel "toeslagen" gevonden kan worden.
             ->leftJoin('toeslagen as toeslagavond', function(\Illuminate\Database\Query\JoinClause$join) {
                 $join->on('tijden.toeslag_idavond', '=', 'toeslagavond.id');
                 $join->on('toeslagavond.user_id', '=', 'tijden.user_id');
             })
+            // vreemde sleutel "toeslag_idnacht" van de tijd verbinden met tabel "toeslagen" zodat de "id of waarde" van de vreemde sleutel,
+            // in tabel "toeslagen" gevonden kan worden.
             ->leftJoin('toeslagen as toeslagnacht', function(\Illuminate\Database\Query\JoinClause$join) {
                 $join->on('tijden.toeslag_idnacht', '=', 'toeslagnacht.id');
                 $join->on('toeslagnacht.user_id', '=', 'tijden.user_id');
             })
-//            ->leftJoin('toeslagen as toeslagochtend', 'tijden.toeslag_idochtend', '=', 'toeslagochtend.id')
-//            ->leftJoin('toeslagen as toeslagavond', 'tijden.toeslag_idavond', '=', 'toeslagavond.id')
-//            ->leftJoin('toeslagen as toeslagnacht', 'tijden.toeslag_idnacht', '=', 'toeslagnacht.id')
 
+            // vreemde sleutel "bedrijf_id" van tijd verbinden met met tabel "bedrijven" zodat de "id of waarde" van de vreemde sleutel,
+            // in tabel "bedrijven" gevonden kan worden.
             ->leftJoin('bedrijven', 'tijden.bedrijf_id', '=', 'bedrijven.id')
 
-            //            tarief voor tijd en toeslag
+            // vreemde sleutel "tarief_id" van tijd verbinden met met tabel "tarieven" zodat de "id of waarde" van de vreemde sleutel,
+            // in tabel "tarieven" gevonden kan worden.
             ->leftJoin('tarieven', 'tijden.tarief_id', '=', 'tarieven.id')
-            //            user info voor tijd en toeslag
+
+            // vreemde sleutel "user_id" van tijd verbinden met met tabel "users" zodat de "id of waarde" van de vreemde sleutel,
+            // in tabel "users" gevonden kan worden.
             ->leftJoin('users', 'tijden.user_id', '=', 'users.id')
 
-//            ->leftJoin('users', 'tarieven.user_id', '=', 'users.id')
-
-
+            // naar de datum van alle gewerkte dagen zoeken voor de doorgeven begin en eind van de gekozen maand (periode), zoeken
             ->whereBetween('tijden.datum', [$sdate, $fdate])
 
+            // naar alle gewerkte dagen zoeken van de doorgeven klant
             ->where('tijden.bedrijf_id', [$bedrijf->id])
+
+            // zoekt voor alle klanten (bedrijven) dat gebruker heeft geregistreerd
             ->where('bedrijven.user_id', auth()->user()->id)
 
-//            ->where('toeslagochtend.user_id', auth()->user()->id)
-//            ->where('toeslagavond.user_id', auth()->user()->id)
-//            ->where('toeslagnacht.user_id', auth()->user()->id)
-
-            //            tarief voor user
+            // zoekt voor alle tarieven dat gebruiker heeft geregistreerd
             ->where('tarieven.user_id', auth()->user()->id)
-            //              userinfoz
+
+            // zoekt naar de "id" van de ingelogde gebruiker
             ->where('users.id', auth()->user()->id)
 
             ->get();
 
+
+        ////// variables aanmaken voor de berekening/////
+
+        // variable voor bedragen
+        // variable voor de bedragen van het totaal maandbedrag exlusief btw, het totaal maandbedrag inclusief btw, en BTW bedrag
         $maanduitbetaling = 0;
         $maandbtw = 0;
         $maandTotaalBedrag = 0;
 
+        // variable voor de bedragen van het ochtend, avond en nachttoeslag
         $totaalOchtendToeslagBedrag = 0;
         $totaalAvondToeslagBedrag = 0;
         $totaalNachtToeslagBedrag = 0;
 
+        // variable voor het bedrag van het uitbetaling (exclusief BTW) van een gewerkte dag
         $totaalstandaardBedrag = 0;
 
-        /////////variable voor alle minuten van het hele dag// tussen begin en eindtijd/////
+
+        // variable voor tijden
+
+        // variable voor alle minuten van de gewerkte dag
         $uren = 0;
 
+        // variable voor alle minuten van de ochtend toeslag
         $ochtendtoeslaguren = 0;
+        // variable voor alle minuten van de avond toeslag
         $avondtoeslaguren = 0;
+        // variable voor alle minuten van de nacht toeslag
         $nachttoeslaguren = 0;
 
+        // variable voor de tijd van de gewerkte dag en toeslagen in uren te tonen
         $toonuren = 0;
         $toontoeslaguren = 0;
 
-        /////////variable voor het hele dag// tussen begin en eind tijd/////
         $dag = new Carbon();
-//dd($tijden);
+
+
+        // statements voor elke gewerkte dag
         foreach($tijden as $tijd) {
+            // voor elke gewerkte dag de vreemde sleutels van de ochtend, avond en nachttoeslag zoeken in tabek "toeslagen"
             $toeslag = Toeslag::selectRaw('*, TIMESTAMPDIFF(HOUR, toeslagbegintijd, toeslageindtijd) as toeslagauren')->where('id', $tijd->toeslag_idochtend)
                 ->where('id', $tijd->toeslag_idavond)
                 ->where('id', $tijd->toeslag_idnacht)
 
+                // zoekt alle voor de toeslagen dat met de gebruiker is gekoppeld
                 ->where('toeslagen.user_id', auth()->user()->id)
-                ///////////////////aparte queries maken voor elke toeslag//////////////////////
-//                ->where('toeslagochtend.user_id', auth()->user()->id)
-//                ->where('toeslagavond.user_id', auth()->user()->id)
-//                ->where('toeslagnacht.user_id', auth()->user()->id)
+
+                // pakt de laatste gemaakte toeslag van elke toeslag
                 ->first();
 
-//            tarief per tijd en toeslag
+
+            // de meeste recente tarief dat de gebruiker heeft geregistreerd opzoeken
             $tarief = \Auth::user()->tarief()
+                // zoekt de uurtarief dat is gekoppelt de geregistreerde dag(tijd)
                 ->where('id', $tijd->tarief_id)
+
+                // zoekt de uurtarief dat is gekoppet aan de ingelogde gebruiker
                 ->where('tarieven.user_id', auth()->user()->id)
-//                ->where('tarieven.user_id', auth()->user()->id)
                 ->first();
 
-///////////////////////////////////////////////////////gebruiken voor nieuwe berekening/////////////////14-12-2022///////////////////////////
-//            $tijdBeginDatum = Carbon::createFromFormat('Y-m-d H:i:s', $tijd->tijden_datum.' '.$tijd->begintijd);
-//            $tijdEindDatum = Carbon::createFromFormat('Y-m-d H:i:s', $tijd->tijden_datum.' '.$tijd->eindtijd);
-//
-//            $startAvond = Carbon::createFromFormat('Y-m-d H:i:s', $tijd->tijden_datum.' 18:00:00');
-//
-//            if() { // Toeslang niet bestaat
-//                 100%
-//            } elseif($tijdBeginDatum->isWeekend()) {
-//                 weekend tarief
-//            } else {
-//
-//                 dagtarief = verschil tussen $tijdBeginDatum en $startAvond
-//                 avondtarief = verschil tussen $startAvond en $tijdEindDatum
-//
-//            }
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////uren in minuten berekenen/////////////////////
+
+            // carbon maken voor begintijd en eintijd van de geregistreerde dag, zodat het gebruikt kan worden
             $beginvandag = new Carbon($tijd->begintijd);
             $eindvandag = new Carbon($tijd->eindtijd);
 
-            ////////////alle minuten van een ingediende dag////////////
+            // alle minuten van een ingediende dag
             $tijd->uren = $beginvandag->diffInMinutes($eindvandag);
 
 
-
-//////////////////uren in uren tonen/////////////////////
-//            $tijd->toonuren = $start->diffInHours($end);
-
-//////////////////toeslaguren in minuten berekenen/////////////////////
-//            $starttoe = new Carbon($toeslag->toeslagbegintijd);
-//            $endtoe = new Carbon($toeslag->toeslageindtijd);
-
-//            $tijd->toeslaguren = $starttoe->diffInMinutes($endtoe);
-
-
-            /////////carbon voor het begin en eindtijd van alle drie toeslagen. wordt gebruikt in berekening/////////////
-
-
-
-
-
-           ///////alle minuten van elk verschillend toeslag (die door de Brouwers medewerker is ingesteld)/////
-
-            ///////////tussen begin en eind tijd van de ingediende dag////////////
-//            $geregistreerdedag = $dag->isBetween($start, $end);
-
- //////////////////////////vergelijking die in de if statement voor bet berkenen van elke toeslag wordt gebruikt.////////////
-            ///////////als de begin en eindtijd van toeslagochtend binnen het geregistreerde dag is/////////////
-
-
-            ///////////als de begin en eindtijd van toeslagavond binnen het geregistreerde dag is/////////////
-
-
-            ///////////als de begin en eindtijd van toeslagnacht binnen het geregistreerde dag is/////////////
-
-
- ///////////////////vergelijking die in de if statement voor bet berkenen van elke toeslag wordt gebruikt.////////////
-            ///////////als de begin en eindtijd van het dag binnen het begin en eindtijd van ochtendtoeslag is geregistreerd/////////////
-
-
-            ///////////als de begin en eindtijd van het dag binnen het begin en eindtijd van avondtoeslag is geregistreerd/////////////
-
-
-            ///////////als de begin en eindtijd van het dag binnen het begin en eindtijd van nachttoeslag is geregistreerd/////////////
-
-
-
-///////////////////vergelijking die in de if statement voor bet berkenen van elke toeslag wordt gebruikt.////////////
-///////////als alleen het begin van het dag binnen het begin en eindtijd van ochtendtoeslag is geregistreerd/////////////
-
-///////////als alleen het begin van het dag binnen het begin en eindtijd van avondtoeslag is geregistreerd/////////////
-
-///////////als alleen het begin van het dag binnen het begin en eindtijd van nachttoeslag is geregistreerd/////////////
-
-
-///////////////////vergelijking die in de if statement voor bet berkenen van elke toeslag wordt gebruikt.////////////
-///////////als alleen het begin van het dag binnen het begin en eindtijd van ochtendtoeslag is geregistreerd/////////////
-
-///////////als alleen het begin van het dag binnen het begin en eindtijd van avondtoeslag is geregistreerd/////////////
-
-///////////als alleen het begin van het dag binnen het begin en eindtijd van nachttoeslag is geregistreerd/////////////
-
-//////////////////berekening voor elk dag van de gekozen maand. factuur berekening///////////////////
-
-
-
             /////////////toeslagen voor elke dag berekenen//////////////
-            ///////////////////////berekenen van avondtoeslag voor elke dag////////////////////////////////////
 
+            ///////berekenen van avondtoeslag voor elke regestreerde dag//////
+
+            // als de geregistreerde dag geen "id" van een toeslag in de "ochten toeslag" vreemde sleutel bevat,
+            // is het bedrag van de ochtentoeslag, 0.
           if (!$tijd->toeslagochtend){
               $tijd->totaalOchtendToeslagBedrag = null;
 
+              // als de geregistreerde dag wel een "id" van een toeslag in de "ochten toeslag" vreemde sleutel bevat,
+              // wordt de onstaande deel van de statement uitgevoerd.
           } else {
 
+              // carbon voor begintijd en eind tijd van ochten toeslag zodat het kan worden gebruikt
               $beginvantoeslagochtend = new Carbon($tijd->toeslagochtend->toeslagbegintijd);
               $eindvantoeslagochtend = new Carbon($tijd->toeslagochtend->toeslageindtijd);
 
+              // totaal minuten van de ochtend toeslag
               $tijd->ochtendtoeslaguren = $beginvantoeslagochtend->diffInMinutes($eindvantoeslagochtend);
 
+              // conditie maken voor als de begin en eindtijd van de ochtend toelslag tussen de begin en eindtijd van de dag valt
               $BeginVanToeslagochtendIsInDag = $beginvantoeslagochtend->isBetween($beginvandag, $eindvandag);
               $EindVanToeslagochtendIsInDag = $eindvantoeslagochtend->isBetween($beginvandag, $eindvandag);
 
+              // conditie maken voor als de begin en eindtijd van de dag tussen de begin en eindtijd van de ochtendtoeslag valt
               $BeginVanDagIsInOchtendtoeslag =  $beginvandag->isBetween($beginvantoeslagochtend, $eindvantoeslagochtend);
               $EindVanDagIsInOchtendtoeslag =  $eindvandag->isBetween($beginvantoeslagochtend, $eindvantoeslagochtend);
 
+              // aantal minuten tussen de begin van het dag en het eind van het toeslag
               $tijd->BeginVanOchtendtoeslagurenIsIncompleet = $beginvandag->diffInMinutes($eindvantoeslagochtend);
 
+              // aantal minuten tussen de begin van het ochtentoeslag en het eind van het dag
               $tijd->EindVanOchtendtoeslagurenIsIncompleet = $eindvandag->diffInMinutes($beginvantoeslagochtend);
 
-              ///////////als begin en eindtijd van ochtendtoeslag binnen de ingediende tijd valt, gebruikt het de volle tijd van het ingestelde toeslag//////////
+
+              // als de begin en eindtijd van ochtendtoeslag tussen het begin en eindtijd van de dag ligt, gebruikt het de volle tijd van het ochtendtoeslag
+              // tijd van ochtendtoeslag * (uurtarief * toeslag percentage) = ochtendtoeslag bedrag
                 if ( $BeginVanToeslagochtendIsInDag && $EindVanToeslagochtendIsInDag) {
                     $tijd->totaalOchtendToeslagBedrag += $tijd->ochtendtoeslaguren * (($tarief->bedrag / 60) * ($tijd->toeslagochtend->toeslagpercentage / 100));
 
+                    // als het begin en eindtijd van de geregistreerde dag in tussen het begin en eindtijd van de ochtendtoeslag ligt,
+                    // tijd van dag * (uurtarief * toeslag percentage) = ochtendtoeslag bedrag
                 } elseif ($BeginVanDagIsInOchtendtoeslag && $EindVanDagIsInOchtendtoeslag) {
                     $tijd->totaalOchtendToeslagBedrag += $tijd->uren * (($tarief->bedrag / 60) * ($tijd->toeslagochtend->toeslagpercentage / 100));//
 
-
+                    // als alleen het begin de dag in tussen het begin en eindtijd van de ochtendtoeslag ligt,
+                    // tijd tussen "begintijd" van het dag en "eindtijd" van ochtend toeslag * (uurtarief * toeslag percentage) = ochtendtoeslag bedrag
                 } elseif ( $BeginVanDagIsInOchtendtoeslag ) {
                     $tijd->totaalOchtendToeslagBedrag += $tijd->BeginVanOchtendtoeslagurenIsIncompleet * (($tarief->bedrag / 60) * ($tijd->toeslagochtend->toeslagpercentage / 100));
 
+                    // als alleen het eind de dag in tussen het begin en eindtijd van de ochtendtoeslag ligt,
+                    // tijd tussen "eindtijd" van het dag en "begintijd" van ochtend toeslag * (uurtarief * toeslag percentage) = ochtendtoeslag bedrag
                 } elseif ( $EindVanDagIsInOchtendtoeslag ) {
                     $tijd->totaalOchtendToeslagBedrag += $tijd->EindVanOchtendtoeslagurenIsIncompleet * (($tarief->bedrag / 60) * ($tijd->toeslagochtend->toeslagpercentage / 100));
 
+                    // als geen van de boventsaand statements zijn uitgevoert, is het ochtendtoeslag bedrag 0
                 } else {
                     $tijd->totaalOchtendToeslagBedrag = null;
                 }
@@ -915,133 +881,195 @@ class FactuurController extends Controller
 
             ///////////////////////berekenen van avondtoeslag voor elke dag//////////////////////
 
+            // als de geregistreerde dag geen "id" van een toeslag in de "avondtoeslag" vreemde sleutel bevat,
+            // is het bedrag van de avondtoeslag, 0.
             if (!$tijd->toeslagavond){
                 $tijd->totaalAvondToeslagBedrag = null;
 
+                // als de geregistreerde dag wel een "id" van een toeslag in de "avondtoeslag" vreemde sleutel bevat,
+                // wordt de onstaande deel van de statement uitgevoerd.
             } else {
 
+                // carbon voor begintijd en eind tijd van avondtoeslag zodat het kan worden gebruikt
                 $beginvantoeslagavond = new Carbon($tijd->toeslagavond->toeslagbegintijd);
                 $eindvantoeslagavond = new Carbon($tijd->toeslagavond->toeslageindtijd);
 
+                // totaal minuten van de avondtoeslag
                 $tijd->avondtoeslaguren = $beginvantoeslagavond->diffInMinutes($eindvantoeslagavond);
 
+                // conditie maken voor als de begin en eindtijd van de avondtoeslag tussen de begin en eindtijd van de dag valt
                 $BeginVanToeslagavondIsInDag = $beginvantoeslagavond->isBetween($beginvandag, $eindvandag);
                 $EindVanToeslagavondIsInDag = $eindvantoeslagavond->isBetween($beginvandag, $eindvandag);
 
+                // conditie maken voor als de begin en eindtijd van de dag tussen de begin en eindtijd van de avondtoeslag valt
                 $BeginVanDagIsInAvondtoeslag =  $beginvandag->isBetween($beginvantoeslagavond, $eindvantoeslagavond);
                 $EindVanDagIsInAvondtoeslag =  $eindvandag->isBetween($beginvantoeslagavond, $eindvantoeslagavond);
 
+                // aantal minuten tussen de begin van het dag en het eind van het avondtoeslag
                 $tijd->BeginVanAvondtoeslagurenIsIncompleet = $beginvandag->diffInMinutes($eindvantoeslagavond);
 
+                // aantal minuten tussen de begin van het avondtoeslag en het eind van het dag
                 $tijd->EindVanAvondtoeslagurenIsIncompleet = $eindvandag->diffInMinutes($beginvantoeslagavond);
 
 
-                ///////////als begin en eindtijd van avondtoeslag binnen de ingediende tijd valt, gebruikt het de volle tijd van het ingestelde toeslag//////////
+                // als de begin en eindtijd van avondtoeslag tussen het begin en eindtijd van de dag ligt, gebruikt het de volle tijd van het avondtoeslag
+                // tijd van avondtoeslag * (uurtarief * toeslag percentage) = avondtoeslag bedrag
                 if ($BeginVanToeslagavondIsInDag && $EindVanToeslagavondIsInDag) {
                     $tijd->totaalAvondToeslagBedrag += $tijd->avondtoeslaguren * (($tarief->bedrag / 60) * ($tijd->toeslagavond->toeslagpercentage / 100));
 
+                    // als het begin en eindtijd van de geregistreerde dag in tussen het begin en eindtijd van de avondtoeslag ligt,
+                    // tijd van dag * (uurtarief * toeslag percentage) = avondtoeslag bedrag
                 } elseif ( $BeginVanDagIsInAvondtoeslag && $EindVanDagIsInAvondtoeslag) {
                     $tijd->totaalAvondToeslagBedrag += $tijd->uren * (($tarief->bedrag / 60) * ($tijd->toeslagavond->toeslagpercentage / 100));
 
+                    // als alleen het begin de dag in tussen het begin en eindtijd van de avondtoeslag ligt,
+                    // tijd tussen "begintijd" van het dag en "eindtijd" van avondtoeslag * (uurtarief * toeslag percentage) = avondtoeslag bedrag
                 } elseif ( $BeginVanDagIsInAvondtoeslag ) {
                     $tijd->totaalAvondToeslagBedrag += $tijd->BeginVanAvondtoeslagurenIsIncompleet * (($tarief->bedrag / 60) * ($tijd->toeslagavond->toeslagpercentage / 100));
 
+                    // als alleen het eind de dag in tussen het begin en eindtijd van de avondtoeslag ligt,
+                    // tijd tussen "eindtijd" van het dag en "begintijd" van avondtoeslag * (uurtarief * toeslag percentage) = avondtoeslag bedrag
                 } elseif ( $EindVanDagIsInAvondtoeslag ) {
                     $tijd->totaalAvondToeslagBedrag += $tijd->EindVanAvondtoeslagurenIsIncompleet * (($tarief->bedrag / 60) * ($tijd->toeslagavond->toeslagpercentage / 100));
 
+                    // als geen van de boventsaand statements zijn uitgevoert, is het avondtoeslag bedrag 0
                 } else {
                     $tijd->totaalAvondToeslagBedrag = null;
                 }
             }
 
             ///////////////////////berekenen van nachttoeslag bedrag voor elke dag////////////////////////////////////
+
+            // als de geregistreerde dag geen "id" van een toeslag in de "ochten toeslag" vreemde sleutel bevat,
+            // is het bedrag van de ochtentoeslag, 0.
             if (!$tijd->toeslagnacht){
                 $tijd->totaalNachtToeslagBedrag = null;
 
+                // als de geregistreerde dag wel een "id" van een toeslag in de "nachttoeslag" vreemde sleutel bevat,
+                // wordt de onstaande deel van de statement uitgevoerd.
             } else {
+
+                // carbon voor begintijd en eind tijd van nachttoeslag zodat het kan worden gebruikt
                 $beginvantoeslagnacht = new Carbon($tijd->toeslagnacht->toeslagbegintijd);
                 $eindvantoeslagnacht = new Carbon($tijd->toeslagnacht->toeslageindtijd);
 
+                // totaal minuten van de nachttoeslag
                 $tijd->nachttoeslaguren = $beginvantoeslagnacht->diffInMinutes($eindvantoeslagnacht);
 
+                // conditie maken voor als de begin en eindtijd van de nachttoeslag tussen de begin en eindtijd van de dag valt
                 $BeginVanToeslagnachtsInDag = $beginvantoeslagnacht->isBetween($beginvandag, $eindvandag);
                 $EindVanToeslagnachtIsInDag = $eindvantoeslagnacht->isBetween($beginvandag, $eindvandag);
 
+                // conditie maken voor als de begin en eindtijd van de dag tussen de begin en eindtijd van de nachttoeslag valt
                 $BeginVanDagIsInNachttoeslag =  $beginvandag->isBetween($beginvantoeslagnacht, $eindvantoeslagnacht);
                 $EindVanDagIsInNachttoeslag =  $eindvandag->isBetween($beginvantoeslagnacht, $eindvantoeslagnacht);
 
+                // aantal minuten tussen de begin van het dag en het eind van het nachttoeslag
                 $tijd->BeginVanNachttoeslagurenIsIncompleet = $beginvandag->diffInMinutes($eindvantoeslagnacht);
 
+                // aantal minuten tussen de begin van het nachttoeslag en het eind van het dag
                 $tijd->EindVanNachttoeslagurenIsIncompleet =$beginvantoeslagnacht->diffInMinutes($eindvandag);
 
-                ///////////als begin en eindtijd van nachttoeslag binnen de ingediende tijd valt, gebruikt het de volle tijd van het ingestelde toeslag//////////
+
+                // als de begin en eindtijd van nachttoeslag tussen het begin en eindtijd van de dag ligt, gebruikt het de volle tijd van het nachttoeslag
+                // tijd van nachttoeslag * (uurtarief * toeslag percentage) = nachttoeslag bedrag
                 if ( $BeginVanToeslagnachtsInDag && $EindVanToeslagnachtIsInDag) {
                     $tijd->totaalNachtToeslagBedrag += $tijd->nachttoeslaguren * (($tarief->bedrag / 60) * ($tijd->toeslagnacht->toeslagpercentage / 100));
 
+                    // als het begin en eindtijd van de geregistreerde dag in tussen het begin en eindtijd van de nachttoeslag ligt,
+                    // tijd van dag * (uurtarief * toeslag percentage) = nachttoeslag bedrag
                 } elseif ( $BeginVanDagIsInNachttoeslag && $EindVanDagIsInNachttoeslag ) {
                     $tijd->totaalNachtToeslagBedrag += $tijd->uren * (($tarief->bedrag / 60) * ($tijd->toeslagavond->toeslagpercentage / 100));
 
+                    // als alleen het begin de dag in tussen het begin en eindtijd van de nachttoeslag ligt,
+                    // tijd tussen "begintijd" van het dag en "eindtijd" van ochtend toeslag * (uurtarief * toeslag percentage) = nachttoeslag bedrag
                 } elseif ( $BeginVanDagIsInNachttoeslag ) {
                     $tijd->totaalNachtToeslagBedrag += $tijd->BeginVanNachttoeslagurenIsIncompleet * (($tarief->bedrag / 60) * ($tijd->toeslagnacht->toeslagpercentage / 100));
 
+                    // als alleen het eind de dag in tussen het begin en eindtijd van de nachttoeslag ligt,
+                    // tijd tussen "eindtijd" van het dag en "begintijd" van nachttoeslag * (uurtarief * toeslag percentage) = nachttoeslag bedrag
                 } elseif ( $EindVanDagIsInNachttoeslag ) {
                     $tijd->totaalNachtToeslagBedrag += $tijd->EindVanNachttoeslagurenIsIncompleet * (($tarief->bedrag / 60) * ($tijd->toeslagnacht->toeslagpercentage / 100));
 
+                    // als geen van de boventsaand statements zijn uitgevoert, is het nachttoeslag bedrag 0
                 } else {
                     $tijd->totaalNachtToeslagBedrag = null;
                 }
             }
 
-            //////////////standaard bedrag (bedrag dat geen toeslag heeft) berekenen//////////////
-//            $tijd->totaalstandaardBedrag += ($tarief->bedrag / 60) * ($tijd->uren - $tijd->ochtendtoeslaguren - $tijd->avondtoeslaguren - $tijd->nachttoeslaguren);
+            ////// van elke dag het standaard bedrag (bedrag dat geen toeslag heeft) berekenen, dit is voor het aantal tijd dat niet binnen de toeslag tijden liggen//////
 
-            /////waarde van tijd bepalen als er een toeslag wel of niet aanwezig is.
+            // wordt het aantal gebruikte tijd (in minuten) van de gekoppelde toeslagen opgehaald,
+            // zodat het gebruikt wordt voor het berekenen van de standaard bedrag dat niet verbonden is aan de toeslagen.
+
+            // als totaalNachtToeslagBedrag 0 is, is het gebruikte tijd 0
            if ( !$tijd->totaalNachtToeslagBedrag ) {
                 $tijd->NachtToelsagTijd = null;
+               // aantal gebruikte tijd van de NachtToelsag vinden door "het bereken van de totaalNachtToeslagBedrag" om te draaien
            } else {
                $tijd->NachtToelsagTijd = $tijd->totaalNachtToeslagBedrag / ($tarief->bedrag / 60) / ($tijd->toeslagnacht->toeslagpercentage / 100);
            }
 
+            // als totaalAvondToeslagBedrag 0 is, is het gebruikte tijd 0
             if ( !$tijd->totaalAvondToeslagBedrag ) {
                 $tijd->AvondToelsagTijd = null;
+                // aantal gebruikte tijd van de AvondToeslag vinden door "het bereken van de totaalAvondToeslagBedrag" om te draaien
             } else {
                 $tijd->AvondToelsagTijd = $tijd->totaalAvondToeslagBedrag / ($tarief->bedrag / 60) / ($tijd->toeslagavond->toeslagpercentage / 100);
             }
 
+            // als totaalOchtendToeslagBedrag 0 is, is het gebruikte tijd 0
             if ( !$tijd->totaalOchtendToeslagBedrag ) {
                 $tijd->OchtendToelsagTijd = null;
+                // aantal gebruikte tijd van de OchtendToeslag vinden door "het bereken van de totaalOchtendToeslagBedrag" om te draaien
             } else {
                 $tijd->OchtendToelsagTijd = $tijd->totaalOchtendToeslagBedrag / ($tarief->bedrag / 60) / ($tijd->toeslagochtend->toeslagpercentage / 100);
             }
 
 
-
+            // hier wordt het standaard bedrag (is niet gekoppelt aan toeslagen) berekent
+            // Standaard bedrag = uurtarief * (tijd van het dag - tijd van ochtend toeslag - tijd van avond toeslag - tijd van nacht toeslag)
             $tijd->totaalstandaardBedrag += ($tarief->bedrag / 60) * ($tijd->uren - $tijd->NachtToelsagTijd - $tijd->AvondToelsagTijd - $tijd->OchtendToelsagTijd );
 
-
-
+            // hier wordt het totaal bedrag van de dag berekent
+            //Totaalbedrag van een dag = Standaard bedrag + ochtendtoeslag bedrag + avondtoeslag bedrag + nachttoeslag bedrag
             $tijd->totaalBedrag += $tijd->totaalOchtendToeslagBedrag + $tijd->totaalAvondToeslagBedrag + $tijd->totaalNachtToeslagBedrag + $tijd->totaalstandaardBedrag;
 
+            // hier wordt het BTW van de dag berekent
+            // Totaalbedrag van een dag * 0.21 = BTW bedrag
             $tijd->btw += $tijd->totaalBedrag * 0.21;
 
+            // hier wordt het uitbetaling van de dag berekent
+            // Totaalbedrag van een dag + BTW bedrag = uitbetaling
             $tijd->uitbetaling += $tijd->btw + $tijd->totaalBedrag;
 
-////////      Bedragen voor het maand
+
+            ///// Hier worden de bedragen voor de gekozen maand berekent
+
+            // deze functie loopt het berekenen van het totaalBedrag van een dag voor elke dag van de gekozen maand,
+            // en telt alle bedragen samen op
             $maandTotaalBedrag += $tijd->totaalBedrag;
+
+            // deze functie loopt het berekenen van het btw van een dag voor elke dag van de gekozen maand,
+            // telt alle bedragen samen op
             $maandbtw += $tijd->btw;
+
+            // deze functie loopt het berekenen van het uitbetaling van een dag voor elke dag van de gekozen maand,
+            // telt alle bedragen samen op
             $maanduitbetaling += $tijd->uitbetaling;
         }
 
-//        dd( $tijd->totaalstandaardBedrag);
-//        download pdf naam
+        // geeft de PFD bestand een naam
         $downloadpdfnaam = "Factuur-".$factuur->naam.".pdf";
 
-;
-        //$pdf = PDF::loadView('layouts.user.functietoevoegen.factuur.pdf', compact( 'fdate', 'sdate', 'tijden', 'request'));
-        $pdf = PDF::loadView('layouts.user.functietoevoegen.factuur.pdf', compact( 'fdate', 'sdate', 'tijden', 'request', 'uren', 'ochtendtoeslaguren', 'avondtoeslaguren', 'nachttoeslaguren','maandTotaalBedrag', 'totaalOchtendToeslagBedrag', 'totaalAvondToeslagBedrag', 'totaalNachtToeslagBedrag', 'totaalstandaardBedrag', 'toonuren', 'bedrijf', 'bedrijven', 'user', 'maandbtw', 'maanduitbetaling', 'factuur' ));
+        // de resultaten van totaal bedrag exculesief btw, BTW en totaal bedrag inclusief btw  worden getoond in een PDF bestand
+        // gegevensn van de klant, zpper en periode van de factuur worden op in het bestand getoond
+        $pdf = PDF::loadView('layouts.user.functietoevoegen.factuur.factuur_pdf', compact( 'fdate', 'sdate', 'tijden', 'request', 'uren', 'ochtendtoeslaguren', 'avondtoeslaguren', 'nachttoeslaguren','maandTotaalBedrag', 'totaalOchtendToeslagBedrag', 'totaalAvondToeslagBedrag', 'totaalNachtToeslagBedrag', 'totaalstandaardBedrag', 'toonuren', 'bedrijf', 'bedrijven', 'user', 'maandbtw', 'maanduitbetaling', 'factuur' ));
+
+        // PDF tonen in A4 formaat
         $pdf->setPaper('a4');
 
-//        dd($tijden);
+        // download de PDF bestand met doorgegeven naam
         return $pdf->stream($downloadpdfnaam);
 
 

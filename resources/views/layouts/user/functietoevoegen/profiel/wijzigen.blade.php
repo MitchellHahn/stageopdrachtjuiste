@@ -3,36 +3,38 @@
 
 
 @section('content')
-    <section class="section">
-        <div class="container-lg height100 containerSupportedContent">
+<section class="section">
+    {{-- pagina voor het wijzgen van de gegevens van de gebruiker (medewerkers module)--}}
 
-            <div class="row">
-                <div class="col-lg">
-                    <div class="titlebox titleboxSupportedContent">
+<div class="container-lg height100 containerSupportedContent">
+    <div class="row">
+        <div class="col-lg">
+            <div class="titlebox titleboxSupportedContent">
+                {{-- Titel en beshcrijving van de pagina --}}
+                <h2 class="title titleSupportedContent">Gegevens aanpassen</h2>
+                <h class="info infoSupportedContent">Profiel gegevens aanpassen.</h>
 
-                    <h2 class="title titleSupportedContent">Gegevens aanpassen</h2>
-                    <h class="info infoSupportedContent">Profiel gegevens aanpassen.</h>
-
-                    </div>
-                </div>
             </div>
+        </div>
+    </div>
 
-            </br>
-            </br>
-            </br>
+    </br>
+    </br>
+    </br>
 
-            <div class="row justify-content-center">
-                <div class="col-md-11">
-                    <div class="float-right">
-                        <a class="createbutton createbuttonSupportedContent" href="{{ route('AProfiel.index') }}">Terug</a>
-                    </div>
-                </div>
+    <div class="row justify-content-center">
+        <div class="col-md-11">
+            <div class="float-right">
+                {{-- Knop om terug te gaan naar de profiel pagina --}}
+                <a class="createbutton createbuttonSupportedContent" href="{{ route('BProfiel.overzicht_profiel_gegevens') }}">Terug</a>
             </div>
+        </div>
+    </div>
 
-            <div class="container-lg " >
-                <div class="row  justify-content-center">
+    <div class="container-lg ">
+        <div class="row  justify-content-center">
 
-                    <div class="col-md-11  sectioninner">
+            <div class="col-md-11  sectioninner">
 
     @if ($errors->any())
         <div class="alert alert-danger">
@@ -45,14 +47,15 @@
         </div>
     @endif
 
-    <form action="{{ route('AProfiel.update',$user->id) }}"  enctype="multipart/form-data" method="POST">
+        {{-- voert de functie uit om de gegevens van de ingelogde gebruiker te wijzigen --}}
+        <form action="{{ route('BProfiel.WijzigingOpslaan',$user->id) }}" enctype="multipart/form-data" method="POST">
         @csrf
         @method('PATCH')
 
-        {{-- tabel tijd--}}
 
         <div class="row justify-content-center">
             <div class="col-sm-5">
+                {{--   toont de woord "Voornaam" en de Voornaam van de ingelogde gebruiker in de invoervak om het aan te passen --}}
                 <div class="row justify-content-center" >
                     <div class="col-8 col-sm-5">
                         <strong>Voornaam:</strong>
@@ -64,6 +67,7 @@
                     </div>
                 </div>
 
+                {{--   toont de woord "Tussenvoegsel" en de Tussenvoegsel van de ingelogde gebruiker in de invoervak om het aan te passen --}}
                 <div class="row justify-content-center">
                     <div class="col-8 col-sm-5">
                         <strong>Tussenvoegsel:</strong>
@@ -75,6 +79,7 @@
                     </div>
                 </div>
 
+                {{--   toont de woord "Achternaam" en de Achternaam van de ingelogde gebruiker in de invoervak om het aan te passen --}}
                 <div class="row justify-content-center">
                     <div class="col-8 col-sm-5">
                         <strong>Achternaam:</strong>
@@ -86,6 +91,7 @@
                     </div>
                 </div>
 
+                {{--   toont de woord "Straat" en de Straat van de ingelogde gebruiker in de invoervak om het aan te passen --}}
                 <div class="row justify-content-center">
                     <div class="col-8 col-sm-5">
                         <strong>Straat:</strong>
@@ -97,6 +103,7 @@
                     </div>
                 </div>
 
+                {{--   toont de woord "Huisnummer" en de Huisnummer van de ingelogde gebruiker in de invoervak om het aan te passen --}}
                 <div class="row justify-content-center">
                     <div class="col-8 col-sm-5">
                         <strong>Huisnummer:</strong>
@@ -108,6 +115,7 @@
                     </div>
                 </div>
 
+                {{--   toont de woord "Toevoeging" en de Toevoeging van de ingelogde gebruiker in de invoervak om het aan te passen --}}
                 <div class="row justify-content-center">
                     <div class="col-8 col-sm-5">
                         <strong>Toevoeging:</strong>
@@ -119,6 +127,7 @@
                     </div>
                 </div>
 
+                {{--   toont de woord "Postcode" en de Postcode van de ingelogde gebruiker in de invoervak om het aan te passen --}}
                 <div class="row justify-content-center">
                     <div class="col-8 col-sm-5">
                         <strong>Postcode:</strong>
@@ -130,6 +139,7 @@
                     </div>
                 </div>
 
+                {{--   toont de woord "Stad" en de Stad van de ingelogde gebruiker in de invoervak om het aan te passen --}}
                 <div class="row justify-content-center">
                     <div class="col-8 col-sm-5">
                         <strong>Stad:</strong>
@@ -141,6 +151,7 @@
                     </div>
                 </div>
 
+                {{--   toont de woord "Land" en de Land van de ingelogde gebruiker in de invoervak om het aan te passen --}}
                 <div class="row justify-content-center">
                     <div class="col-8 col-sm-5">
                         <strong>Land:</strong>
@@ -153,6 +164,7 @@
                 </div>
             </div>
 
+            {{--   toont de woord "KVK-nummer" en de KVK-nummer van de ingelogde gebruiker in de invoervak om het aan te passen --}}
             <div class="col-sm-5">
                 <div class="row justify-content-center">
                     <div class="col-8 col-sm-5">
@@ -165,6 +177,7 @@
                     </div>
                 </div>
 
+                {{--   toont de woord "BTW-nummer" en de BTW-nummer van de ingelogde gebruiker in de invoervak om het aan te passen --}}
                 <div class="row justify-content-center">
                     <div class="col-8 col-sm-5">
                         <strong>BTW-nummer:</strong>
@@ -176,6 +189,7 @@
                     </div>
                 </div>
 
+                {{--   toont de woord "Iban-nummer" en de Iban-nummer van de ingelogde gebruiker in de invoervak om het aan te passen --}}
                 <div class="row justify-content-center">
                     <div class="col-8 col-sm-5">
                         <strong>Iban-nummer:</strong>
@@ -187,6 +201,7 @@
                     </div>
                 </div>
 
+                {{--   toont de woord "Bedrijfsnaam" en de Bedrijfsnaam van de ingelogde gebruiker in de invoervak om het aan te passen --}}
                 <div class="row justify-content-center">
                     <div class="col-8 col-sm-5">
                         <strong>Bedrijfsnaam:</strong>
@@ -198,6 +213,7 @@
                     </div>
                 </div>
 
+                {{--   toont de woord "Telefoonnummer" en de Telefoonnummer van de ingelogde gebruiker in de invoervak om het aan te passen --}}
                 <div class="row justify-content-center">
                     <div class="col-8 col-sm-5">
                         <strong>Telefoonnummer:</strong>
@@ -209,6 +225,7 @@
                     </div>
                 </div>
 
+                {{--   toont de woord "E-mail" en de E-mail van de ingelogde gebruiker in de invoervak om het aan te passen --}}
                 <div class="row justify-content-center">
                     <div class="col-8 col-sm-5">
                         <strong>E-mail:</strong>
@@ -220,6 +237,7 @@
                     </div>
                 </div>
 
+                {{--   toont de woord "Logo" en de Logo van de ingelogde gebruiker in de invoervak om het aan te passen --}}
                 <div class="row justify-content-center">
                     <div class="col-8 col-sm-5">
                         <strong>Logo:</strong>
@@ -233,34 +251,21 @@
             </div>
         </div>
 
-
         </br>
-            {{--            <div class="col-xs-12 col-sm-12 col-md-12">--}}
-            {{--                <div class="form-group">--}}
-            {{--                    <strong>Bedrijf:</strong>--}}
-            {{--                    <label for="">--}}
-            {{--                        <select name="bedrijf_id">--}}
-            {{--                            @foreach($bedrijven as $bedrijf)--}}
-            {{--                                <option value="{{$bedrijf->id}}">{{$bedrijf->bedrijfsnaam}}</option>--}}
-            {{--                            @endforeach--}}
-            {{--                        </select>--}}
-            {{--                    </label>--}}
-            {{--                </div>--}}
-            {{--            </div>--}}
+        </br>
 
-            {{--knop voor aanpassen--}}
+            {{--knop dat de huidige gegevens van de ingelogde vervangt met de nieuwe ingevoerde gegevens--}}
         <div class="row justify-content-center">
             <div class="col-sm-1.5">
-                <button type="submit" class="createbutton createbuttonSupportedContent">Submit</button>
+                <button type="submit" class="createbutton createbuttonSupportedContent">Aanpassen</button>
             </div>
         </div>
 
     </form>
-                    </div>
-                </div>
             </div>
         </div>
-        </div>
-    </section>
+    </div>
+</div>
+</div>
+</section>
 @endsection
-

@@ -9,31 +9,18 @@ class Tarief extends Model
 {
     use HasFactory;
 
+    // gebruikt tabel tarieven van de databse
     protected $table = 'tarieven';
 
+    // de kolomen dat van tabel "tarieven" worden gebruikt
     protected $fillable = [
-        //table toeslag
         'bedrag', 'user_id',
 
     ];
 
-
-    public function toeslagen()
-    {
-        return $this->hasMany(Toeslag::class );
-    }
-
-    public function tijden()
-    {
-        return $this->hasManyThrough(Tijd::class,Toeslag::class );
-    }
-
-//    public function users()
-//    {
-//        return $this->hasOneThrough(User::class,Toeslag::class );
-//    }
-
-    public function users()
+    // een Tarief is gekoppelt 1 gebruiker
+    // via vreemde sleutel kloppelen aan "user" model of class
+      public function users()
     {
         return $this->hasOne(User::class );
     }

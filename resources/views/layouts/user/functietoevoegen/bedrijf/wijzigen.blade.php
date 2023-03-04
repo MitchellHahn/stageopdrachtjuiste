@@ -1,19 +1,16 @@
 @extends('layouts.app')
 
-
 @section('content')
-
-    <?php //SHOW van ZZPer module waar hij/zij een bedrijf kan tonen?>
-    <?php //bedrijf info tonen?>
-
 <section class="section">
+    {{-- pagina voor het wijzgen van de gegevens van de gebruiker (medewerkers module)--}}
+
     <div class="container-lg height100 containerSupportedContent">
         <div class="row">
             <div class="col-lg">
                 <div class="titlebox titleboxSupportedContent">
-
-                <h2 class="title titleSupportedContent">Klanten</h2>
-                <h class="info infoSupportedContent">Gegevens van de geselecteerde klant.</h>
+                    {{-- Titel en beshcrijving van de pagina --}}
+                    <h2 class="title titleSupportedContent">Klant wijzigen</h2>
+                    <h class="info infoSupportedContent">Gegevens van geselecteerde klant aanpassen.</h>
 
                 </div>
             </div>
@@ -26,25 +23,37 @@
         <div class="row justify-content-center">
             <div class="col-md-11">
                 <div class="float-right">
-                    <a class="createbutton createbuttonSupportedContent" href="{{ route('Klanten.index') }}">Terug</a>
+                    {{-- Knop om terug te gaan naar de bedrijven (klanten) overzicht pagina --}}
+                    <a class="createbutton createbuttonSupportedContent" href="{{ route('Klanten.overzicht_alle_klanten') }}">Terug</a>
                 </div>
             </div>
         </div>
-{{--    </div>--}}
 
-        <div class="container-lg height73"  style="background-color:;align-self:flex-end">
-            <div class="row height100 justify-content-center">
-                <div class="col-md-11 height100 sectioninner">
+    <div class="container-lg height73"  style="background-color:;align-self:flex-end">
+        <div class="row height100 justify-content-center">
 
-    @if ($message = Session::get('success'))
-        <div class="alert alert-success">
-            <p>{{ $message }}</p>
+            <div class="col-md-11 height100 sectioninner">
+
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            <strong>Whoops!</strong> There were some problems with your input.<br><br>
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
         </div>
     @endif
 
-{{--    <div class="container-lg">--}}
+        {{-- voert de functie uit om de gegevens van de bedrijf te wijzigen --}}
+        <form action="{{ route('Klanten.WijzigingOpslaan',$bedrijf->id) }}" method="POST">
+        @csrf
+        @method('PATCH')
+
+
         <div class="row justify-content-center">
             <div class="col-sm-5">
+                {{--   toont de woord "Klantnaam" en de Klantnaam van de bedrijf in de invoervak om het aan te passen --}}
                 <div class="row justify-content-center" >
                     <div class="col-8 col-sm-5">
                         <strong>Klantnaam:</strong>
@@ -56,6 +65,7 @@
                     </div>
                 </div>
 
+                {{--   toont de woord "Contactpersoon" en de Contactpersoon van de bedrijf in de invoervak om het aan te passen --}}
                 <div class="row justify-content-center">
                     <div class="col-8 col-sm-5">
                         <strong>Contactpersoon:</strong>
@@ -67,6 +77,7 @@
                     </div>
                 </div>
 
+                {{--   toont de woord "Debnummer" en de Debnummer van de bedrijf in de invoervak om het aan te passen --}}
                 <div class="row justify-content-center">
                     <div class="col-8 col-sm-5">
                         <strong>Debnummer:</strong>
@@ -78,6 +89,7 @@
                     </div>
                 </div>
 
+                {{--   toont de woord "Email" en de Email van de bedrijf in de invoervak om het aan te passen --}}
                 <div class="row justify-content-center">
                     <div class="col-8 col-sm-5">
                         <strong>Email:</strong>
@@ -88,10 +100,10 @@
                         </label>
                     </div>
                 </div>
+            </div>
 
-{{--            </div>--}}
-
-{{--            <div class="col-sm-5">--}}
+            {{--   toont de woord "Straat" en de Straat van de bedrijf in de invoervak om het aan te passen --}}
+            <div class="col-sm-5">
                 <div class="row justify-content-center">
                     <div class="col-8 col-sm-5">
                         <strong>Straat:</strong>
@@ -103,6 +115,7 @@
                     </div>
                 </div>
 
+                {{--   toont de woord "Huisnummer" en de Huisnummer van de bedrijf in de invoervak om het aan te passen --}}
                 <div class="row justify-content-center">
                     <div class="col-8 col-sm-5">
                         <strong>Huisnummer:</strong>
@@ -114,7 +127,8 @@
                     </div>
                 </div>
 
-                <div class="row justify-content-center">
+                {{--   toont de woord "Toevoeging" en de Toevoeging van de bedrijf in de invoervak om het aan te passen --}}
+               <div class="row justify-content-center">
                     <div class="col-8 col-sm-5">
                         <strong>Toevoeging:</strong>
                     </div>
@@ -125,6 +139,7 @@
                     </div>
                 </div>
 
+                {{--   toont de woord "Postcode" en de Postcode van de bedrijf in de invoervak om het aan te passen --}}
                 <div class="row justify-content-center">
                     <div class="col-8 col-sm-5">
                         <strong>Postcode:</strong>
@@ -136,6 +151,7 @@
                     </div>
                 </div>
 
+                {{--   toont de woord "Stad" en de Stad van de bedrijf in de invoervak om het aan te passen --}}
                 <div class="row justify-content-center">
                     <div class="col-8 col-sm-5">
                         <strong>Stad:</strong>
@@ -147,6 +163,7 @@
                     </div>
                 </div>
 
+                {{--   toont de woord "Land" en de Land van de bedrijf in de invoervak om het aan te passen --}}
                 <div class="row justify-content-center">
                     <div class="col-8 col-sm-5">
                         <strong>Land:</strong>
@@ -157,14 +174,24 @@
                         </label>
                     </div>
                 </div>
-{{--            </div>--}}
+            </div>
         </div>
 
+        </br>
+        </br>
+
+            {{--knop voor de wijziging van de bedrijfs gegevens, opslaan--}}
+        <div class="row justify-content-center">
+            <div class="col-sm-1.5">
+                <button type="submit" class="createbutton createbuttonSupportedContent">Opslaan</button>
+            </div>
+        </div>
+
+    </form>
+</div>
 </div>
 </div>
 </div>
 </div>
 </section>
 @endsection
-
-

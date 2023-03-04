@@ -6,15 +6,7 @@
 
     <div class="container-xxl height100 no-padding">
 
-    <?php //pagina van ZZPer module waar hij/zij uren en toeslag kunnen invoeren en facturen aanmaken?>
-        <?php // uren en toeslag toevoegen?>
-
-        {{--    <div class="row">--}}
-        {{--        <div class="col-lg-12 margin-tb">--}}
-        {{--            <div class="pull-left">--}}
-        {{--            </div>--}}
-        {{--        </div>--}}
-        {{--    </div>--}}
+        {{--            pagina van zzper module waar de gebruiker zijn profiel gegevens kan bekijken --}}
 
         @if ($message = Session::get('success'))
             <div class="alert alert-success">
@@ -31,56 +23,35 @@
     <div class="row justify-content-center height10">
     </div>
 
-<br>
-    <br>
-    <div class="row justify-content-center">
-                       <h3 class="profiletitle" >Mijn gegevens</h3>
-    </div>
-    </br>
-</br>
+        <br>
+            <br>
+                    {{-- titel van de pagina--}}
+                    <div class="row justify-content-center">
+                  <h3 class="profiletitle" >Mijn gegevens</h3>
+                </div>
+            </br>
+        </br>
 
-<br>
-           <div class="row justify-content-center ">
-
-                    <img src="{{ url('uploads/logos/'.$user->logo) }}" width="190" height="190" class="logo " />
-
-
-           </div>
-</br>
-{{--     <br>--}}
-{{--            <div class="row justify-content-center height5">--}}
-{{--                <div class="col-7 col-sm-4 col-md-3 col-lg-8 col-xl-6 collumntextSupportedContent">--}}
-{{--                    <b>Voornaam:</b> {{ $user->name }}--}}
-{{--                </div>--}}
-{{--            </div>--}}
-{{----}}
-{{----}}
-{{--            <div class="row justify-content-center height5">--}}
-{{--                <div class="col-7 col-sm-4 col-md-3 col-lg-8 col-xl-6 collumntextSupportedContent">--}}
-{{--                    <b>Tussenvoegsel:</b> {{ $user->tussenvoegsel }}--}}
-{{--                </div>--}}
-{{--            </div>--}}
-{{----}}
-{{--            <div class="row justify-content-center height5">--}}
-{{--                <div class="col-7 col-sm-4 col-md-3 col-lg-8 col-xl-6 collumntextSupportedContent">--}}
-{{--                    <b>Achternaam:</b> {{ $user->achternaam }}--}}
-{{--                </div>--}}
-{{--            </div>--}}
-{{--    </br>--}}
-
+        <br>
+            <div class="row justify-content-center ">
+                {{--logo of foto van de ingelogde gebruiker tonen--}}
+                <img src="{{ url('uploads/logos/'.$user->logo) }}" width="190" height="190" class="logo " />
+            </div>
+        </br>
             <br>
             <br>
 
 <div class="row justify-content-center height14">
 
-    <form action="{{ route('BProfiel.destroy',$user->id) }}" method="POST">
+    <form action="{{ route('BProfiel.verwijderen',$user->id) }}" method="POST">
 
-                    <a class="createbutton createbuttonSupportedContent" href="{{ route('BProfiel.edit',$user->id) }}">Aanpassen</a>
+                    {{--   knop om de profiel gegevens van de ingelogde gebruiker te wijzigen     --}}
+                    <a class="createbutton createbuttonSupportedContent" href="{{ route('BProfiel.wijzigen',$user->id) }}">Aanpassen</a>
 
                     @csrf
-                    @method('DELETE')
-                    <br>
-                    <a class="createbutton createbuttontarief createbuttonSupportedContent" href="{{ route('BProfieltarief.create') }}">Uurtarief wijzigen</a>
+                <br>
+                    {{--toonte de venseter waarin de uurtarief van de ingelogde gebruiker gewijzgd kan worden--}}
+                    <a class="createbutton createbuttontarief createbuttonSupportedContent" href="{{ route('BProfieltarief.aanmaken') }}">Uurtarief wijzigen</a>
                     <br>
 
                 </form>
@@ -90,20 +61,18 @@
                         @auth
                             <form action="{{ route('logout') }}" method="post">
                                 @csrf
+                                {{--knop en functie voor het uitloggen --}}
+
                                 <input type="submit" class="logoutbtn createbutton createbuttontarief createbuttonSupportedContent" style="background-color:  #C3C2C2;" value="Uitloggen" />
 
                             </form>
                         @endauth
                     </div>
 
-
-
-
             </br>
             </br>
         </div>
 
-{{--            ///////////////////////////////////////////////////////////////////////////////////--}}
 
             <div class="col-lg-9 section height110" style="align-self:flex-end;">
                 <div class="row justify-content-center height100">
@@ -111,7 +80,7 @@
 
             {{--top spacing van text--}}
 
-
+                {{--   Toont het woord "voornaam" en de naam de ingelogde gebruiker --}}
                 <div class="row justify-content-center">
                     <div class="col-11 col-sm-9 collumntextSupportedContent">
                 <table class="table ">
@@ -119,55 +88,79 @@
                         <th>Naam:</th>
                         <td>{{$user->name }}</td>
                     </tr>
+
+                    {{--   Toont het woord "Tussenvoegesel en achternaam" en de Tussenvoegesel en achternaam van de ingelogde gebruiker --}}
                     <tr>
                         <th>Tussenvoegesel en achternaam:</th>
                         <td>{{ $user->tussenvoegsel }} {{ $user->achternaam }}</td>
                     </tr>
+
+                    {{--   Toont het woord "Straat" en de Straat van de ingelogde gebruiker --}}
+
                     <tr>
                         <th>Straat:</th>
                         <td>{{ $user->straat }}</td>
-
                     </tr>
+
+                    {{--   Toont het woord "Huisnummer en Toevoeging" en de Huisnummer en Toevoeging van de ingelogde gebruiker --}}
                     <tr>
                         <th>Huisnummer en
                             Toevoeging:</th>
                         <td>{{ $user->huisnummer }}
                             {{ $user->toevoeging }}</td>
                     </tr>
+
+                    {{--   Toont het woord "Postcode en Stad" en de Postcode en Stad van de ingelogde gebruiker --}}
                     <tr>
                         <th>Postcode en
                             Stad:</th>
                         <td>{{ $user->postcode }}
                             {{ $user->stad }}</td>
                     </tr>
+
+                    {{--   Toont het woord "Land" en de Land van de ingelogde gebruiker --}}
                     <tr>
                         <th>Land:</th>
                         <td>{{ $user->land }}</td>
                     </tr>
+
+                    {{--   Toont het woord "Uurtarief" en de Uurtarief van de ingelogde gebruiker --}}
                     <tr>
                         <th>Uurtarief:</th>
-                        <td>€{{ $tarief?->bedrag }}</td>
+                        <td>€{{ $tarief->bedrag }}</td>
                     </tr>
+
+                    {{--   Toont het woord "E-mail" en de E-mail van de ingelogde gebruiker --}}
                     <tr>
                         <th>E-mail:</th>
                         <td>{{ $user->email }}</td>
                     </tr>
+
+                    {{--   Toont het woord "Telefoonnummer" en de Telefoonnummer van de ingelogde gebruiker --}}
                     <tr>
                         <th>Telefoonnummer:</th>
                         <td>{{ $user->telefoonnumer }}</td>
                     </tr>
+
+                    {{--   Toont het woord "Kvknummer" en de Kvknummer van de ingelogde gebruiker --}}
                     <tr>
                         <th>Kvknummer:</th>
                         <td>{{ $user->kvknummer }}</td>
                     </tr>
+
+                    {{--   Toont het woord "BTW-nummer" en de BTW-nummer van de ingelogde gebruiker --}}
                     <tr>
                         <th>BTW-nummer:</th>
                         <td>{{ $user->btwnummer }}</td>
                     </tr>
+
+                    {{--   Toont het woord "Iban-nummer" en de Iban-nummer van de ingelogde gebruiker --}}
                     <tr>
                         <th>Iban-nummer:</th>
                         <td>{{ $user->ibannummer }}</td>
                     </tr>
+
+                    {{--   Toont het woord "Bedrijfsnaam" en de Bedrijfsnaam van de ingelogde gebruiker --}}
                     <tr>
                         <th>Bedrijfsnaam:</th>
                         <td>{{ $user->bedrijfsnaam }}</td>
@@ -176,8 +169,7 @@
 
                 </table>
                     </div>
-                {{--    {!! $tijden ->links() !!}--}}
-{{--            </div>--}}
+
             </div>
         </div>
         </div>

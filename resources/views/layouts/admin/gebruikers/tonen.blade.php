@@ -2,14 +2,14 @@
 
 @section('content')
 
-    <?php //pagina van ZZPer module waar hij/zij uren en toeslag kunnen invoeren en facturen aanmaken?>
+{{-- pagin voor het tonen van de gebruiker (medewerkers module)--}}
     <section class="section">
       <div class="container-xl height100 containerSupportedContent" style="align-self:flex-end;">
 
           <div class="row">
               <div class="col-xl">
                   <div class="titlebox titleboxSupportedContent">
-
+                      {{-- Titel en beshcrijving van de pagina --}}
                       <h2 class="title titleSupportedContent">Gebruikers</h2>
                       <h class="info infoSupportedContent">Profiel van de gebruiker.</h>
 
@@ -24,24 +24,16 @@
             <div class="row justify-content-center">
                 <div class="col-md-11">
                     <div class="float-right">
-                        <a class="createbutton createbuttonSupportedContent" href="{{ route('Gebruikers.index') }}">Terug</a>
+                        {{-- Knop om terug te geaan de gebruikers overzicht pagina --}}
+                        <a class="createbutton createbuttonSupportedContent" href="{{ route('Gebruikers.overzicht') }}">Terug</a>
                     </div>
                 </div>
             </div>
-{{--    </div>--}}
 
           <div class="container-lg " >
               <div class="row  justify-content-center">
                   <div class="col-md-11  sectioninner">
 
-    <?php // uren en toeslag toevoegen?>
-
-{{--          <div class="container-xl height73" >--}}
-{{--              <div class="row height100 justify-content-center">--}}
-{{--                  <div class="col-xl height100 sectioninner" style="align-self:flex-end;">--}}
-{{----}}
-{{--                      <div class="row justify-content-center">--}}
-{{--                          <div class="col-lg">--}}
 
     @if ($message = Session::get('success'))
         <div class="alert alert-success">
@@ -51,6 +43,8 @@
 
           <div class="row justify-content-center">
               <div class="col-sm-5">
+
+                  {{--   toont de woord "Voornaam" en de Voornaam van de gebruiker  --}}
                   <div class="row justify-content-center" >
                       <div class="col-8 col-sm-5">
                           <strong>Voornaam:</strong>
@@ -62,6 +56,7 @@
                       </div>
                   </div>
 
+                  {{--   toont de woord "Tussenvoegsel" en de Tussenvoegsel van de gebruiker  --}}
                   <div class="row justify-content-center" >
                       <div class="col-8 col-sm-5">
                           <strong>Tussenvoegsel:</strong>
@@ -73,6 +68,7 @@
                       </div>
                   </div>
 
+                  {{--   toont de woord "Achternaam" en de Achternaam van de gebruiker  --}}
                   <div class="row justify-content-center">
                       <div class="col-8 col-sm-5">
                           <strong>Achternaam:</strong>
@@ -84,6 +80,7 @@
                       </div>
                   </div>
 
+                  {{--   toont de woord "Straat" en de Straat van de gebruiker  --}}
                   <div class="row justify-content-center" >
                       <div class="col-8 col-sm-5">
                           <strong>Straat:</strong>
@@ -95,8 +92,7 @@
                       </div>
                   </div>
 
-
-
+                  {{--   toont de woord "Huisnummer" en de Huisnummer van de gebruiker  --}}
                   <div class="row justify-content-center" >
                       <div class="col-8 col-sm-5">
                           <strong>Huisnummer:</strong>
@@ -108,8 +104,7 @@
                       </div>
                   </div>
 
-
-
+                  {{--   toont de woord "Toevoeging" en de Toevoeging van de gebruiker  --}}
                   <div class="row justify-content-center">
                       <div class="col-8 col-sm-5">
                           <strong>Toevoeging:</strong>
@@ -121,8 +116,7 @@
                       </div>
                   </div>
 
-
-
+                  {{--   toont de woord "Postcode" en de Postcode van de gebruiker  --}}
                   <div class="row justify-content-center">
                       <div class="col-8 col-sm-5">
                           <strong>Postcode:</strong>
@@ -134,8 +128,7 @@
                       </div>
                   </div>
 
-
-
+                  {{--   toont de woord "Stad" en de Stad van de gebruiker  --}}
                   <div class="row justify-content-center">
                       <div class="col-8 col-sm-5">
                           <strong>Stad:</strong>
@@ -147,8 +140,7 @@
                       </div>
                   </div>
 
-
-
+                  {{--   toont de woord "Land" en de Land van de gebruiker  --}}
                   <div class="row justify-content-center">
                       <div class="col-8 col-sm-5">
                           <strong>Land:</strong>
@@ -162,7 +154,7 @@
               </div>
 
               <div class="col-sm-5">
-
+                  {{--   toont de woord "Telefoonnummer" en de Telefoonnummer van de gebruiker  --}}
                   <div class="row justify-content-center">
                       <div class="col-8 col-sm-5">
                           <strong>Telefoonnummer:</strong>
@@ -174,6 +166,7 @@
                       </div>
                   </div>
 
+                  {{--   toont de woord "E-mail" en de E-mail van de gebruiker  --}}
                   <div class="row justify-content-center">
                       <div class="col-8 col-sm-5">
                           <strong>E-mail:</strong>
@@ -185,6 +178,7 @@
                       </div>
                   </div>
 
+                  {{--   toont de woord "KVK-nummer" en de KVK-nummer van de gebruiker  --}}
                   <div class="row justify-content-center">
                       <div class="col-8 col-sm-5">
                           <strong>KVK-nummer:</strong>
@@ -196,6 +190,7 @@
                       </div>
                   </div>
 
+                  {{--   toont de woord "BTW-nummer" en de BTW-nummer van de gebruiker  --}}
                   <div class="row justify-content-center">
                       <div class="col-8 col-sm-5">
                           <strong>BTW-nummer:</strong>
@@ -207,6 +202,7 @@
                       </div>
                   </div>
 
+                  {{--   toont de woord "Iban-nummer" en de Iban-nummer van de gebruiker  --}}
                   <div class="row justify-content-center">
                       <div class="col-8 col-sm-5">
                           <strong>Iban-nummer:</strong>
@@ -218,6 +214,7 @@
                       </div>
                   </div>
 
+                  {{--   toont de woord "Bedrijfsnaam" en de Bedrijfsnaam van de gebruiker  --}}
                   <div class="row justify-content-center">
                       <div class="col-8 col-sm-5">
                           <strong>Bedrijfsnaam:</strong>
@@ -229,9 +226,10 @@
                       </div>
                   </div>
 
+                  {{--   toont de woord "Soort gebruiker" en de Soort gebruiker van de gebruiker  --}}
                   <div class="row justify-content-center">
                       <div class="col-8 col-sm-5">
-                          <strong>Account type:</strong>
+                          <strong>Soort gebruiker:</strong>
                       </div>
                       <div class="col-8 col-sm-7" >
                           <label>
@@ -246,20 +244,9 @@
               </div>
           </div>
 
-{{--    <form action="{{ route('AProfiel.destroy',$user->id) }}" method="POST">--}}
-
-        {{--                        <a class="btn btn-info" href="{{ route('Bedrijven.show',$bedrijf->id) }}">Show</a>--}}
-{{--        <a class="btn btn-primary" href="{{ route('AProfiel.edit',$user->id) }}">Edit</a>--}}
-
-
         @csrf
         @method('DELETE')
 
-{{--    </form>--}}
-
-    {{--        @endforeach--}}
-
-    {{--    {!! $tijden ->links() !!}--}}
     </div>
     </div>
     </div>

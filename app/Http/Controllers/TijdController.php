@@ -25,72 +25,23 @@ class TijdController extends Controller
 {
 
     /**
-     * controller voor het indienen van uren en toeslag. gekoppeld aan Toevoegen.blade
-     */
-    /**
-    * /**
-     * Display a listing of the resource.
+     * Deze functie toont de uren of gewerkte dagen dat de zpper heeft ingediend
+     *
      * @param  \App\Models\Tijd  $tijd
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
      */
-    public function index()
+    public function overzicht_van_alle_gewerkte_dagen_van_zpper()
     {
 
-     //   $tijden = Tijd::latest()->paginate(5);
-
-     //   return view('layouts.user.Toevoegen',compact('tijden'))
-     //       ->with('i', (request()->input('page', 1) - 1) * 5);
-//////////////////////////////
-//        $tijden = Tijd::with('toeslagen')->get();
-
-////////// toon tijden voor ingelogde user////////////
-//                                                                  $tijden = auth()->user()->tijden()->orderByDesc('datum')->get();
-
-//        $tijden = Tijd::orderBy('datum','DESC');
-
-        $tijden = Tijd::where('user_id', \Auth::user()?->id)
+        ////toont de uren de dat zpper heeft ingediend, in een lijst (van oudste naar neiuweste datum)///
+        $tijden = Tijd::where('user_id', \Auth::user()->id)
             ->orderBy('id', 'DESC')
             ->get();
 
-//        dd($tijden);
-
-// $btijd = Tijd::begintijd('H:i');
-
-//                                                $tijden = Tijd::where('bedrijf_id', \DB::table('bedrijven')?->id)->leftJoin('bedrijven', 'bedrijven.user_id', '=', 'user.id')
-//
-//                                                    ->where('bedrijven.user_id', auth()->user()->id)
-//                                                    ->orderBy('id', 'DESC')
-//                                                    ->get();
-
-
-                                                                            $bedrijven = auth()->user()->bedrijven;
-//        dd($bedrijven);
-
-//        $bedrijf = $tijd->bedrijf;
-
-
+        //////toont het klant (bedrijf) van elke gewerkte dag/////
         $bedrijven = Bedrijf::where('user_id', auth()->user()->id)->get();
 
-//        $tijden->bedrijf_id = $bedrijf;
-
-
-       // $tijd = Tijd::where('user_id', auth()->user()->id)->get();
-
-//        $tijd->bedrijf_id = Bedrijf::where('user_id', auth()->user()->id)->get;
-
-        //$bedrijf = Bedrijf::Class;
-        //$bedrijf = $tijden->$bedrijf;
-
-       // $tijden = $bedrijf->tijden;
-    //    $bedrijf = auth()->user()->bedrijf;
-
-     //       $tijd = $bedrijf->tijd;
-
-//    Bedrijf::begintijd()
-//    ->format('%H:%I:%S');
-//
-//        Bedrijf::eindtijd()
-//            ->format('%H:%I:%S');
+        ////berekent en toont de totaal uren van elke gewerkte dag///
 foreach ($tijden as $tijd){
         $start = new Carbon($tijd->begintijd);
         $end = new Carbon($tijd->eindtijd);
@@ -100,37 +51,41 @@ foreach ($tijden as $tijd){
 
         return view('layouts.user.UrenToevoegen',compact('tijden', 'bedrijven'))
            ->with('i', (request()->input('page', 1) - 1) * 4);
-
-  //      $users = Auth::users()->load('tijden');
-  //      return view('layouts.user.Toevoegen', ['users' => $users]);
-
     }
 
+
     /**
-     * Show the form for creating a new resource.
+     * Deze functie toont het venster waarin er een gewerkte dag of uren wordt geregistreerd.
+     *
      * @param  \App\Models\Tijd  $tijd
      * @return \Illuminate\Contracts\View\View
      */
-    public function create(Tijd $tijd)
+    //maakt gebruikt van model "tijd"
+    public function aanmaken(Tijd $tijd)
     {
+
+        // stuurt alle klanten (bedrijven) dat zpper heeft geregistreerd mee, zodat ze geselecteerd kunnen worden wanneer de
+        // gewerkte dag wordt aangemaakt
         $bedrijven = Bedrijf::where('user_id', auth()->user()->id)->get();
 
-
-
-        return view('layouts.user.functietoevoegen.create', compact('bedrijven'));
+        return view('layouts.user.functietoevoegen.aanmaken', compact('bedrijven'));
     }
 
-    /**
-     * Store a newly created resource in storage.
 
+    /**
+     * Deze functie slaat ingegvulde gegevens van de gewerkte dag op in tabel "tijden".
+     * Deze detecteerd en selecteert automatisch de juiste toeslag dat gekoppelt moet worden, en vult het in de "toeslag_idochtend", "toeslag_idavond", "toeslag_idnacht" vreemde sleutel
+     * Deze functie vult ook automtiasch de "user_id" en "bedrijf_id" vreemde sleutel in
+     *
     *@param  \App\Models\Toeslag $toeslag
     *@param  \App\Models\Feestdag $feestdag
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function store(Request $request, Toeslag $toeslag, Feestdag $feestdag)
+    public function opslaan(Request $request, Toeslag $toeslag, Feestdag $feestdag)
     {
-
+        // controleert als alle invoervakken zijn ingevuld
+        // haalt ook de ingevuld gegevens op
         $request->validate([
             //table tijd
             'begintijd' => 'required',
@@ -143,307 +98,389 @@ foreach ($tijden as $tijd){
             'bedrijf_id' => 'required',
 
         ]);
-//// om toeslag_id automatisch op te slaan wanneer er een tijd wordt aangemaakt/gestoort
+
+        // via model "Tijd" wordt alvast een werkte dag aangemaakt
         $tijd = Tijd::create($request->all());
 
 
-///////////////////////////////////carbon voor datum///////////////////////////
+
+///////////////code om de juiste toeslag_id automatisch op te slaan wanneer er een tijd wordt registreert (automatisering)///////////
+
+        // carbon voor doorgegeven datum, zodat het kan worden gebruikt
         $datum = new Carbon($tijd->datum);
 
+        // alle geregistreerde feestdagen ophalen zodat de functie weet wat de vakantie dagen zijn.
         $feestdagen = Feestdag::all('datum')->pluck('datum')->toArray();
 
-
-///////////////carbon voor begin en eindtijd van dag///////////////
+        // carbon voor het doorgegeven begin en eindtijd van het dag, zodat het kan worden gebruikt
         $dagbegintijd = new Carbon($tijd->begintijd);
         $dageindtijd = new Carbon($tijd->eindtijd);
 
-////////////////////////////////////////////////////////week//////////////////////////////////////////
-        ////////(begintijd)meeste recente toeslagen voor weekdagen(ochtend, avond en nacht)/////////////
+
+        /////////////////////////////////////weekdag en weektoeslagen/////////////////////////////
+/////id, begintijd en eindtijd van de meest recente week toeslagen ophalen/////
+        // van de meeste recente toeslagen (ochtend, avond en nacht) van een weekdag, de "begintijd" ophalen
         $toeslagweekochtendbegintijd = Toeslag::where('soort', '1')->where('user_id', auth()->user()->id)->latest('created_at')->first()->toeslagbegintijd;
         $toeslagweekavondbegintijd = Toeslag::where('soort', '2')->where('user_id', auth()->user()->id)->latest('created_at')->first()->toeslagbegintijd;
         $toeslagweeknachtbegintijd = Toeslag::where('soort', '3')->where('user_id', auth()->user()->id)->latest('created_at')->first()->toeslagbegintijd;
 
-        ////////(eindtijd)meeste recente toeslagen voor weekdagen(ochtend, avond en nacht)/////////////
+        // van de meeste recente toeslagen (ochtend, avond en nacht) van een weekdag, de "eindtijd" ophalen
         $toeslagweekochtendeindtijd = Toeslag::where('soort', '1')->where('user_id', auth()->user()->id)->latest('created_at')->first()->toeslageindtijd;
         $toeslagweekavondeindtijd = Toeslag::where('soort', '2')->where('user_id', auth()->user()->id)->latest('created_at')->first()->toeslageindtijd;
         $toeslagweeknachteindtijd = Toeslag::where('soort', '3')->where('user_id', auth()->user()->id)->latest('created_at')->first()->toeslageindtijd;
 
-
-        ////////(id)meeste recente toeslagen voor weekdagen(ochtend, avond en nacht)/////////////
+        // van de meeste recente toeslagen (ochtend, avond en nacht) van een weekdag, de "id" ophalen
         $toeslagweekochtendid = Toeslag::where('soort', '1')->where('user_id', auth()->user()->id)->latest('created_at')->first()->id;
         $toeslagweekavondid = Toeslag::where('soort', '2')->where('user_id', auth()->user()->id)->latest('created_at')->first()->id;
         $toeslagweeknachtid = Toeslag::where('soort', '3')->where('user_id', auth()->user()->id)->latest('created_at')->first()->id;
 
 
-/////////////////////////////////////////////weekend////////////////////////////////////////////////////////
-        ////////(begintijd)meeste recente toeslagen voor weekenddagen(ochtend, avond en nacht)/////////////
-        $toeslagweekendochtendbegintijd = Toeslag::where('soort', '4')->where('user_id', auth()->user()->id)->latest('created_at')->first()->toeslagbegintijd;
-        $toeslagweekendavondbegintijd = Toeslag::where('soort', '5')->where('user_id', auth()->user()->id)->latest('created_at')->first()->toeslagbegintijd;
-        $toeslagweekendnachtbegintijd = Toeslag::where('soort', '6')->where('user_id', auth()->user()->id)->latest('created_at')->first()->toeslagbegintijd;
-
-        ////////(eindtijd)meeste recente toeslagen voor weekenddagen(ochtend, avond en nacht)/////////////
-        $toeslagweekendochtendeindtijd = Toeslag::where('soort', '4')->where('user_id', auth()->user()->id)->latest('created_at')->first()->toeslageindtijd;
-        $toeslagweekendavondeindtijd = Toeslag::where('soort', '5')->where('user_id', auth()->user()->id)->latest('created_at')->first()->toeslageindtijd;
-        $toeslagweekendnachteindtijd = Toeslag::where('soort', '6')->where('user_id', auth()->user()->id)->latest('created_at')->first()->toeslageindtijd;
-
-        ////////(id)meeste recente toeslagen voor weekdagen(ochtend, avond en nacht)/////////////
-        $toeslagweekendochtendid = Toeslag::where('soort', '4')->where('user_id', auth()->user()->id)->latest('created_at')->first()->id;
-        $toeslagweekendavondid = Toeslag::where('soort', '5')->where('user_id', auth()->user()->id)->latest('created_at')->first()->id;
-        $toeslagweekendnachtid = Toeslag::where('soort', '6')->where('user_id', auth()->user()->id)->latest('created_at')->first()->id;
-
-/////////////////////////////////////////////weekdag///////////////////////////////////////////////////////////////////////////
-////////////////als geregistreerde begintijd van weektoeslag binnen de tijd week valt. begintijd van week toeslag///////////////////////////////////
+/////als geregistreerde "begintijd" van weektoeslag binnen de begintijd en eindtijd van de doorgegeven weekdag valt./////
+        // carbon voor het begintijd van de ochtendtoeslag, avondtoesslag en nachttoeslag van een weekdag, zodat het gebruikt kan worden
         $carbontoeslagweekochtendbegintijd = new Carbon($toeslagweekochtendbegintijd);
         $carbontoeslagweekavondbegintijd = new Carbon($toeslagweekavondbegintijd);
         $carbontoeslagweeknachtbegintijd = new Carbon($toeslagweeknachtbegintijd);
 
+        // conditie maken voor: als de begintijd van de ochtendtoeslag, avondtoeslag en nachttoeslag van een weekdag, binnen de begintijd en eindtijd van de doorgegeven dag ligt.
         $weekochtendbegin = $carbontoeslagweekochtendbegintijd->isBetween($dagbegintijd, $dageindtijd);
         $weekavondbegin = $carbontoeslagweekavondbegintijd->isBetween($dagbegintijd, $dageindtijd);
         $weeknachtbegin = $carbontoeslagweeknachtbegintijd->isBetween($dagbegintijd, $dageindtijd);
-////////////////als geregistreerde eind tijd van de toeslag binnen de tijd week valt. eindtijd van weektoeslag///////////////////////////////////
+
+////als geregistreerde "eindtijd" van de toeslag binnen de tijd week valt. eindtijd van weektoeslag////
+        // carbon voor het eindtijd van de ochtendtoeslag, avondtoesslag en nachttoeslag van een weekdag, zodat het gebruikt kan worden
         $carbontoeslagweekochtendeindtijd = new Carbon($toeslagweekochtendeindtijd);
         $carbontoeslagweekavondeindtijd = new Carbon($toeslagweekavondeindtijd);
         $carbontoeslagweeknachteindtijd = new Carbon($toeslagweeknachteindtijd);
 
+        // conditie maken voor: als de eindtijd van de ochtendtoeslag, avondtoeslag en nachttoeslag van een weekdag, binnen de begintijd en eindtijd van de doorgegeven dag ligt.
         $weekochtendeind = $carbontoeslagweekochtendeindtijd->isBetween($dagbegintijd, $dageindtijd);
         $weekavondeind = $carbontoeslagweekavondeindtijd->isBetween($dagbegintijd, $dageindtijd);
         $weeknachteind = $carbontoeslagweeknachteindtijd->isBetween($dagbegintijd, $dageindtijd);
-//////////als geregistreerde tijd binnen de toeslag week valt. begintijd////////////////
+
+////conditie maken voor: als geregistreerde begintijd van de doorgegeven dag binnen de begintijd en eindtijd van de weektoeslagen valt/////
         $weekochtendbegintijd = $dagbegintijd->isBetween($carbontoeslagweekochtendbegintijd, $carbontoeslagweekochtendeindtijd);
         $weekavondbegintijd = $dagbegintijd->isBetween($carbontoeslagweekavondbegintijd, $carbontoeslagweekavondeindtijd);
         $weeknachtbegintijd = $dagbegintijd->isBetween($carbontoeslagweeknachtbegintijd, $carbontoeslagweeknachteindtijd);
 
-/////////////////////////////////////////////weekenddag/////////////////////////////////////////////////////////////////////////////////
-////////////////als geregistreerde begintijd van weekendtoeslag binnen de tijd weekend valt. begintijd van weekend toeslag///////////////////////////////////
+
+        ////////////////////////////weekenddag en weekendtoeslagen//////////////////////////
+////id, begintijd en eindtijd van de meest recente weekend toeslagen ophalen/////
+        // van de meest recente toeslagen (ochtend, avond en nacht) voor een weekenddag, de begintijd ophalen
+        $toeslagweekendochtendbegintijd = Toeslag::where('soort', '4')->where('user_id', auth()->user()->id)->latest('created_at')->first()->toeslagbegintijd;
+        $toeslagweekendavondbegintijd = Toeslag::where('soort', '5')->where('user_id', auth()->user()->id)->latest('created_at')->first()->toeslagbegintijd;
+        $toeslagweekendnachtbegintijd = Toeslag::where('soort', '6')->where('user_id', auth()->user()->id)->latest('created_at')->first()->toeslagbegintijd;
+
+        // van de meest recente toeslagen (ochtend, avond en nacht) voor een weekenddag, de eindtijd ophalen
+        $toeslagweekendochtendeindtijd = Toeslag::where('soort', '4')->where('user_id', auth()->user()->id)->latest('created_at')->first()->toeslageindtijd;
+        $toeslagweekendavondeindtijd = Toeslag::where('soort', '5')->where('user_id', auth()->user()->id)->latest('created_at')->first()->toeslageindtijd;
+        $toeslagweekendnachteindtijd = Toeslag::where('soort', '6')->where('user_id', auth()->user()->id)->latest('created_at')->first()->toeslageindtijd;
+
+        // van de meest recente toeslagen (ochtend, avond en nacht) voor een weekenddag, de "id" ophalen
+        $toeslagweekendochtendid = Toeslag::where('soort', '4')->where('user_id', auth()->user()->id)->latest('created_at')->first()->id;
+        $toeslagweekendavondid = Toeslag::where('soort', '5')->where('user_id', auth()->user()->id)->latest('created_at')->first()->id;
+        $toeslagweekendnachtid = Toeslag::where('soort', '6')->where('user_id', auth()->user()->id)->latest('created_at')->first()->id;
+
+
+/////als geregistreerde begintijd van weekendtoeslag binnen de tijd weekend valt. begintijd van weekend toeslag////
+        // carbon voor het "begintijd" van de ochtendtoeslag, avondtoesslag en nachttoeslag van een weekenddag, zodat het gebruikt kan worden
         $carbontoeslagweekendochtendbegintijd = new Carbon($toeslagweekendochtendbegintijd);
         $carbontoeslagweekendavondbegintijd = new Carbon($toeslagweekendavondbegintijd);
         $carbontoeslagweekendnachtbegintijd = new Carbon($toeslagweekendnachtbegintijd);
 
+        // conditie maken voor: als de "begintijd" van de ochtendtoeslag, avondtoeslag en nachttoeslag van een weekenddag, binnen de begintijd en eindtijd van de doorgegeven dag ligt.
         $weekendochtendbegin = $carbontoeslagweekendochtendbegintijd->isBetween($dagbegintijd, $dageindtijd);
         $weekendavondbegin = $carbontoeslagweekendavondbegintijd->isBetween($dagbegintijd, $dageindtijd);
         $weekendnachtbegin = $carbontoeslagweekendnachtbegintijd->isBetween($dagbegintijd, $dageindtijd);
-////////////////als geregistreerde eindtijd van weekendtoeslag binnen de tijd weekend valt. eindtijd van weekend toeslag///////////////////////////////////
+
+/////als geregistreerde eindtijd van weekendtoeslag binnen de tijd weekend valt. eindtijd van weekend toeslag////
+        // carbon voor het "eindtijd" van de ochtendtoeslag, avondtoesslag en nachttoeslag van een "weekenddag", zodat het gebruikt kan worden
         $carbontoeslagweekendochtendeindtijd = new Carbon($toeslagweekendochtendeindtijd);
         $carbontoeslagweekendavondeindtijd = new Carbon($toeslagweekendavondeindtijd);
         $carbontoeslagweekendnachteindtijd = new Carbon($toeslagweekendnachteindtijd);
 
+        // conditie maken voor: als de "eindtijd" van de ochtendtoeslag, avondtoeslag en nachttoeslag van een "weekenddag", binnen de begintijd en eindtijd van de doorgegeven dag ligt.
         $weekendochtendeind = $carbontoeslagweekendochtendeindtijd->isBetween($dagbegintijd, $dageindtijd);
         $weekendavondeind = $carbontoeslagweekendavondeindtijd->isBetween($dagbegintijd, $dageindtijd);
         $weekendnachteind = $carbontoeslagweekendnachteindtijd->isBetween($dagbegintijd, $dageindtijd);
-//////////als geregistreerde tijd binnen de toeslag week valt. begintijd////////////////
-        $weekendochtendbegintijd = $dagbegintijd->isBetween($carbontoeslagweekochtendbegintijd, $carbontoeslagweekochtendeindtijd);
-        $weekendavondbegintijd = $dagbegintijd->isBetween($carbontoeslagweekavondbegintijd, $carbontoeslagweekavondeindtijd);
-        $weekendnachtbegintijd = $dagbegintijd->isBetween($carbontoeslagweeknachtbegintijd, $carbontoeslagweeknachteindtijd);
+
+////conditie maken voor: als geregistreerde begintijd van de doorgegeven dag binnen de begintijd en eindtijd van de weektoeslagen valt/////
+        $weekendochtendbegintijd = $dagbegintijd->isBetween($carbontoeslagweekendochtendbegintijd, $carbontoeslagweekendochtendeindtijd);
+        $weekendavondbegintijd = $dagbegintijd->isBetween($carbontoeslagweekendavondbegintijd, $carbontoeslagweekendavondeindtijd);
+        $weekendnachtbegintijd = $dagbegintijd->isBetween($carbontoeslagweekendnachtbegintijd, $carbontoeslagweekendnachteindtijd);
 
 
-        //////////////controleren als het datum een feestdag is en weekendtoeslag koppelen///////////////////
+
+//// if statements voor het automatisch invullen van de ochtend, avond en nachttoeslag vreemde sleutels van een geregistreerde dag
+
+        // als de "datum" van de geregistreerde dag in tabel "feestdagen" is geregistreerd voert het de rest van deze statment uit.(weekend toeslagen wordt gebruikt)
         if(in_array($datum->format('Y-m-d'), $feestdagen)) {
 
-          if ($toeslagweekendochtendbegintijd = $weekendochtendbegin) {
+          // als de begintijd van de geregistreerde dag binnen de begintijd en eindtijd van de meeste recente ochtendtoeslag van een weekenddag valt,
+          // wordt de "id" van de meeste recente ochtendtoeslag van een weekenddag, ingevuld in de "toeslag_idochtend" vreemde sleutel van de geregistreerde dag.
+          if ($weekendochtendbegin) {
               $tijd->toeslag_idochtend = $toeslagweekendochtendid;
-          } elseif ($toeslagweekendochtendeindtijd = $weekendochtendeind) {
+
+          // als de eindtijd van de ochtendtoeslag van een weekenddag binnen de begintijd en eindtijd van de geregistreerde dag valt,
+          // wordt de "id" van de meeste recente ochtendtoeslag van een weekenddag, ingevuld in de "toeslag_idochtend" vreemde sleutel van de geregistreerde dag.
+          } elseif ($weekendochtendeind) {
               $tijd->toeslag_idochtend = $toeslagweekendochtendid;
-          } elseif ($dagbegintijd = $weekendochtendbegintijd){
+
+          // als de begintijd van de ochtendtoeslag van een weekenddag binnen de begintijd en eindtijd van de geregistreerde dag valt,
+          // wordt de "id" van de meeste recente ochtendtoeslag van een weekenddag, ingevuld in de "toeslag_idochtend" vreemde sleutel van de geregistreerde dag.
+          } elseif ($weekendochtendbegintijd){
               $tijd->toeslag_idochtend = $toeslagweekendochtendid;
+
+          // als geen van de boven staande condities van deze if statement zijn gekozen , wordt "null" ingevuld in de "toeslag_idochtend" vreemde sleutel van de geregistreerde dag.
           } else {
               $tijd->toeslag_idochtend = null;
           }
 
-          if ($toeslagweekendavondbegintijd = $weekendavondbegin) {
+
+          // als de begintijd van de geregistreerde dag binnen de begintijd en eindtijd van de meeste recente avondtoeslag van een weekenddag valt,
+          // wordt de "id" van de meeste recente avondtoeslag van een weekenddag, ingevuld in de "toeslag_idavond" vreemde sleutel van de geregistreerde dag.
+          if ($weekendavondbegin) {
               $tijd->toeslag_idavond = $toeslagweekendavondid;
-          } elseif ($toeslagweekendavondeindtijd = $weekendavondeind){
+
+          // als de eindtijd van de avondtoeslag van een weekenddag binnen de begintijd en eindtijd van de geregistreerde dag valt,
+          // wordt de "id" van de meeste recente avondtoeslag van een weekenddag, ingevuld in de "toeslag_idavond" vreemde sleutel van de geregistreerde dag.
+          } elseif ($weekendavondeind){
               $tijd->toeslag_idavond = $toeslagweekendavondid;
-          } elseif ($dagbegintijd = $weekendavondbegintijd){
+
+          // als de begintijd van de avondtoeslag van een weekenddag binnen de begintijd en eindtijd van de geregistreerde dag valt,
+          // wordt de "id" van de meeste recente avondtoeslag van een weekenddag, ingevuld in de "toeslag_idavond" vreemde sleutel van de geregistreerde dag.
+          } elseif ($weekendavondbegintijd){
               $tijd->toeslag_idavond = $toeslagweekendavondid;
+
+          // als geen van de boven staande condities van deze if statement zijn gekozen, wordt "null" ingevuld in de "toeslag_idavond" vreemde sleutel van de geregistreerde dag.
           } else {
               $tijd->toeslag_idavond = null;
           }
 
-          if ($toeslagweekendnachtbegintijd = $weekendnachtbegin) {
+
+          // als de begintijd van de geregistreerde dag binnen de begintijd en eindtijd van de meeste recente nachttoeslag van een weekenddag valt,
+          // wordt de "id" van de meeste recente nachttoeslag van een weekenddag, ingevuld in de "toeslag_idnacht" vreemde sleutel van de geregistreerde dag.
+          if ($weekendnachtbegin) {
               $tijd->toeslag_idnacht = $toeslagweekendnachtid;
-          } elseif ($toeslagweekendnachteindtijd = $weekendnachteind){
+
+          // als de eindtijd van de nachttoeslag van een weekenddag binnen de begintijd en eindtijd van de geregistreerde dag valt,
+          // wordt de "id" van de meeste recente nachttoeslag van een weekenddag, ingevuld in de "toeslag_idnacht" vreemde sleutel van de geregistreerde dag.
+          } elseif ($weekendnachteind){
               $tijd->toeslag_idnacht = $toeslagweekendnachtid;
-          } elseif ($dagbegintijd = $weekendnachtbegintijd){
+
+          // als de begintijd van de nachttoeslag van een weekenddag binnen de begintijd en eindtijd van de geregistreerde dag valt,
+          // wordt de "id" van de meeste recente nachttoeslag van een weekenddag, ingevuld in de "toeslag_idnacht" vreemde sleutel van de geregistreerde dag.
+          } elseif ($weekendnachtbegintijd){
               $tijd->toeslag_idnacht = $toeslagweekendnachtid;
+
+          // als geen van de bovenstaande condities van deze if statement zijn gekozen, wordt "null" ingevuld in de "toeslag_idnacht" vreemde sleutel van de geregistreerde dag.
           } else {
               $tijd->toeslag_idnacht = null;
           }
 
-          //////////////controleren als het datum een weekenddag is en weekendtoeslag koppelen///////////////////
 
-      } elseif ($datum->isWeekend()) {
+          //////////////controleren als het datum een weekenddag is, en weekendtoeslag koppelen///////////////////
 
-            if ($toeslagweekendochtendbegintijd = $weekendochtendbegin) {
+        // als de "datum" van de geregistreerde dag een weekenddag is, voert het de rest van deze statement uit.(weekend toeslagen wordt gebruikt)
+        } elseif ($datum->isWeekend()) {
+
+            // als de begintijd van de geregistreerde dag binnen de begintijd en eindtijd van de meeste recente ochtendtoeslag van een weekenddag valt,
+            // wordt de "id" van de meeste recente ochtendtoeslag van een weekenddag, ingevuld in de "toeslag_idochtend" vreemde sleutel van de geregistreerde dag.
+            if ($weekendochtendbegin) {
                 $tijd->toeslag_idochtend = $toeslagweekendochtendid;
-            } elseif ($toeslagweekendochtendeindtijd = $weekendochtendeind) {
+
+            // als de eindtijd van de ochtendtoeslag van een weekenddag binnen de begintijd en eindtijd van de geregistreerde dag valt,
+            // wordt de "id" van de meeste recente ochtendtoeslag van een weekenddag, ingevuld in de "toeslag_idochtend" vreemde sleutel van de geregistreerde dag.
+            } elseif ($weekendochtendeind) {
                 $tijd->toeslag_idochtend = $toeslagweekendochtendid;
-            } elseif ($dagbegintijd = $weekendochtendbegintijd){
+
+            // als de begintijd van de ochtendtoeslag van een weekenddag binnen de begintijd en eindtijd van de geregistreerde dag valt,
+            // wordt de "id" van de meeste recente ochtendtoeslag van een weekenddag, ingevuld in de "toeslag_idochtend" vreemde sleutel van de geregistreerde dag.
+            } elseif ($weekendochtendbegintijd){
                 $tijd->toeslag_idochtend = $toeslagweekendochtendid;
+
+            // als geen van de bovenstaande condities van deze if statement zijn gekozen, wordt "null" ingevuld in de "toeslag_idochtend" vreemde sleutel van de geregistreerde dag.
             } else {
                 $tijd->toeslag_idochtend = null;
             }
 
-            if ($toeslagweekendavondbegintijd = $weekendavondbegin) {
+
+            // als de begintijd van de geregistreerde dag binnen de begintijd en eindtijd van de meeste recente avondtoeslag van een weekenddag valt,
+            // wordt de "id" van de meeste recente avondtoeslag van een weekenddag, ingevuld in de "toeslag_idavond" vreemde sleutel van de geregistreerde dag.
+            if ($weekendavondbegin) {
                 $tijd->toeslag_idavond = $toeslagweekendavondid;
-            } elseif ($toeslagweekendavondeindtijd = $weekendavondeind){
+
+            // als de eindtijd van de avondtoeslag van een weekenddag binnen de begintijd en eindtijd van de geregistreerde dag valt,
+            // wordt de "id" van de meeste recente avondtoeslag van een weekenddag, ingevuld in de "toeslag_idavond" vreemde sleutel van de geregistreerde dag.
+            } elseif ($weekendavondeind){
                 $tijd->toeslag_idavond = $toeslagweekendavondid;
-            } elseif ($dagbegintijd = $weekendavondbegintijd){
+
+            // als de begintijd van de avondtoeslag van een weekenddag binnen de begintijd en eindtijd van de geregistreerde dag valt,
+            // wordt de "id" van de meeste recente avondtoeslag van een weekenddag, ingevuld in de "toeslag_idavond" vreemde sleutel van de geregistreerde dag.
+            } elseif ($weekendavondbegintijd){
                 $tijd->toeslag_idavond = $toeslagweekendavondid;
+
+            // als geen van de boven staande condities van deze if statement zijn gekozen , wordt "null" ingevuld in de "toeslag_idnacht" vreemde sleutel van de geregistreerde dag.
             } else {
                 $tijd->toeslag_idavond = null;
             }
 
-            if ($toeslagweekendnachtbegintijd = $weekendnachtbegin) {
+
+            // als de begintijd van de geregistreerde dag binnen de begintijd en eindtijd van de meeste recente nachttoeslag van een weekenddag valt,
+            // wordt de "id" van de meeste recente nachttoeslag van een weekenddag, ingevuld in de "toeslag_idnacht" vreemde sleutel van de geregistreerde dag.
+            if ($weekendnachtbegin) {
                 $tijd->toeslag_idnacht = $toeslagweekendnachtid;
-            } elseif ($toeslagweekendnachteindtijd = $weekendnachteind){
+
+            // als de eindtijd van de nachttoeslag van een weekenddag binnen de begintijd en eindtijd van de geregistreerde dag valt,
+            // wordt de "id" van de meeste recente nachttoeslag van een weekenddag, ingevuld in de "toeslag_idnacht" vreemde sleutel van de geregistreerde dag.
+            } elseif ($weekendnachteind){
                 $tijd->toeslag_idnacht = $toeslagweekendnachtid;
-            } elseif ($dagbegintijd = $weekendnachtbegintijd){
+
+            // als de begintijd van de nachttoeslag van een weekenddag binnen de begintijd en eindtijd van de geregistreerde dag valt,
+            // wordt de "id" van de meeste recente nachttoeslag van een weekenddag, ingevuld in de "toeslag_idnacht" vreemde sleutel van de geregistreerde dag.
+            } elseif ($weekendnachtbegintijd){
                 $tijd->toeslag_idnacht = $toeslagweekendnachtid;
+
+            // als geen van de boven staande condities van deze if statement zijn gekozen , wordt "null" ingevuld in de "toeslag_idnacht" vreemde sleutel van de geregistreerde dag.
             } else {
                 $tijd->toeslag_idnacht = null;
             }
 
-            //////////////controleren als het datum een weekdag is en weektoeslag koppelen///////////////////
-      } elseif ($datum->isWeekday ()) {
 
-          if ($toeslagweekochtendbegintijd = $weekochtendbegin) {
+            //////////////controleren als het datum een weekdag is en weektoeslag koppelen///////////////////
+
+          // als de "datum" van de geregistreerde dag een weekdag is, voert het de rest van deze statement uit.(week toeslagen wordt gebruikt)
+        } elseif ($datum->isWeekday ()) {
+
+          // als de begintijd van de geregistreerde dag binnen de begintijd en eindtijd van de meeste recente ochtendtoeslag van een weekdag valt,
+          // wordt de "id" van de meeste recente ochtendtoeslag van een weekdag, ingevuld in de "toeslag_idochtend" vreemde sleutel van de geregistreerde dag.
+          if ($weekochtendbegin) {
               $tijd->toeslag_idochtend = $toeslagweekochtendid;
-          } elseif ($toeslagweekochtendeindtijd = $weekochtendeind){
+
+          // als de eindtijd van de ochtendtoeslag van een weekdag binnen de begintijd en eindtijd van de geregistreerde dag valt,
+          // wordt de "id" van de meeste recente ochtendtoeslag van een weekdag, ingevuld in de "toeslag_idochtend" vreemde sleutel van de geregistreerde dag.
+          } elseif ($weekochtendeind){
               $tijd->toeslag_idochtend = $toeslagweekochtendid;
-          } elseif ($dagbegintijd = $weekochtendbegintijd){
+
+          // als de begintijd van de ochtendtoeslag van een weekdag binnen de begintijd en eindtijd van de geregistreerde dag valt,
+          // wordt de "id" van de meeste recente ochtendtoeslag van een weekdag, ingevuld in de "toeslag_idochtend" vreemde sleutel van de geregistreerde dag.
+          } elseif ($weekochtendbegintijd){
               $tijd->toeslag_idochtend = $toeslagweekochtendid;
+
+          // als geen van de bovenstaande condities van deze if statement zijn gekozen, wordt "null" ingevuld in de "toeslag_idochtend" vreemde sleutel van de geregistreerde dag.
           } else {
               $tijd->toeslag_idochtend = null;
           }
 
-          if ($toeslagweekochtendbegintijd = $weekavondbegin) {
+
+          // als de begintijd van de geregistreerde dag binnen de begintijd en eindtijd van de meeste recente avondtoeslag van een weekdag valt,
+          // wordt de "id" van de meeste recente avondtoeslag van een weekdag, ingevuld in de "toeslag_idavond" vreemde sleutel van de geregistreerde dag.
+          if ($weekavondbegin) {
               $tijd->toeslag_idavond = $toeslagweekavondid;
-          } elseif ($toeslagweekavondeindtijd = $weekavondeind){
+
+          // als de eindtijd van de avondtoeslag van een weekdag binnen de begintijd en eindtijd van de geregistreerde dag valt,
+          // wordt de "id" van de meeste recente avondtoeslag van een weekdag, ingevuld in de "toeslag_idavond" vreemde sleutel van de geregistreerde dag.
+          } elseif ($weekavondeind){
               $tijd->toeslag_idavond = $toeslagweekavondid;
-          } elseif($dagbegintijd = $weekavondbegintijd) {
+
+          // als de begintijd van de avondtoeslag van een weekdag binnen de begintijd en eindtijd van de geregistreerde dag valt,
+          // wordt de "id" van de meeste recente avondtoeslag van een weekdag, ingevuld in de "toeslag_idavond" vreemde sleutel van de geregistreerde dag.
+          } elseif($weekavondbegintijd) {
               $tijd->toeslag_idavond = $toeslagweekavondid;
+
+          // als geen van de boven staande condities van deze if statement zijn gekozen , wordt "null" ingevuld in de "toeslag_idavond" vreemde sleutel van de geregistreerde dag.
           }  else {
               $tijd->toeslag_idavond = null;
           }
 
-          if ($toeslagweekochtendbegintijd = $weeknachtbegin) {
+
+          // als de begintijd van de geregistreerde dag binnen de begintijd en eindtijd van de meeste recente nachttoeslag van een weekdag valt,
+          // wordt de "id" van de meeste recente nachttoeslag van een weekdag, ingevuld in de "toeslag_idnacht" vreemde sleutel van de geregistreerde dag.
+          if ($weeknachtbegin) {
               $tijd->toeslag_idnacht = $toeslagweeknachtid;
-          } elseif($toeslagweeknachteindtijd = $weeknachteind) {
+
+          // als de eindtijd van de nachttoeslag van een weekdag binnen de begintijd en eindtijd van de geregistreerde dag valt,
+          // wordt de "id" van de meeste recente nachttoeslag van een weekdag, ingevuld in de "toeslag_idnacht" vreemde sleutel van de geregistreerde dag.
+          } elseif($weeknachteind) {
               $tijd->toeslag_idnacht = $toeslagweeknachtid;
-          } elseif($dagbegintijd = $weeknachtbegintijd) {
+
+          // als de begintijd van de nachttoeslag van een weekdag binnen de begintijd en eindtijd van de geregistreerde dag valt,
+          // wordt de "id" van de meeste recente nachttoeslag van een weekdag, ingevuld in de "toeslag_idnacht" vreemde sleutel van de geregistreerde dag.
+          } elseif($weeknachtbegintijd) {
               $tijd->toeslag_idnacht = $toeslagweeknachtid;
+
+          // als geen van de boven staande condities van deze if statement zijn gekozen , wordt "null" ingevuld in de "toeslag_idnacht" vreemde sleutel van de geregistreerde dag.
           } else {
               $tijd->toeslag_idnacht = null;
           }
 
       }
-/////////////////////////////////////
+        // einde if statement
+
+        // vult de "id" van de ingelogde gebruiker automatisch in "user_id" vreemde sleutel van de geregistreerde dag.
         $tijd->user_id = Auth::user()->id;
+
+        // vult de "id" van de meest recente uurtarief, automatisch in "tarief_id" vreemde sleutel van de geregistreerde dag.
         $tijd->tarief_id = Tarief::where('user_id', auth()->user()->id)->latest('created_at')->first()->id;
 
+        // slaat geregisrtreerde dag op in tabel "tijden"
         $tijd->save();
 
-
-////////berekende uren per tijd(dag)//voor factuur////////////////
-//       Tijd::selectRaw("id, begintijd, eindtijd, TIMESTAMPDIFF(HOUR, begintijd, eindtijd) as uren")->get();
-//////////////////////////////////////////////////////////////////
-
-        ///////directen naar de blade om toeslag in te dienen////
-         return redirect()->route('UToevoegen.index')
+         return redirect()->route('UToevoegen.overzicht_gewerkte_dagen')
              ->with('success','Uren zijn opgeslagen');
-
     }
 
     /**
-     * Display the specified resource.
+     * Deze functie toont de toeslagen dat gekoppeld zijn aan de geregistreerde dag.
+     * Stuur de gegevens om naar de "tonen" venster om het te tonen.
      *
      * @param  \App\Models\Tijd  $tijd
      * @return \Illuminate\Contracts\View\View
      */
-    public function show(Tijd $tijd)
+    public function tonen(Tijd $tijd)
     {
 
-        $toeslag = $tijd->toeslag;
-        $tarieven = Tarief::where('user_id', auth()->user()->id)->get();
+       // toeslageb van dat gekoppeld zijn aan de geselecteerd dag, worden meer gestuurd
+        $toeslagochtend = $tijd->toeslag_idochtend;
+        $toeslagavond = $tijd->toeslag_idavond;
+        $toeslagnacht = $tijd->toeslag_idnacht;
 
+        $toeslagen = Tijd::where('toeslag_idnacht', \Auth::user()->id)
+            ->where('toeslag_idavond' , \Auth::user()->id)
+            ->where('toeslag_idochtend' , \Auth::user()->id)
+            ->orderBy('id', 'DESC')
+            ->get();
 
-        $totaalToeslagBedrag = 0;
-        $totaalstandaardBedrag = 0;
-        $uren = 0;
-        $toeslaguren = 0;
-        $toonuren = 0;
-        $toontoeslaguren = 0;
-
-
-//            tarief per tijd en toeslag
-            $tarief = \Auth::user()->tarief()
-                ->where('id', $toeslag->tarief_id)
-                ->where('tarieven.user_id', auth()->user()->id)
-//                ->where('tarieven.user_id', auth()->user()->id)
-                ->first();
-
-//////////////////uren in minuten berekenen/////////////////////
-            $start = new Carbon($tijd->begintijd);
-            $end = new Carbon($tijd->eindtijd);
-
-            $tijd->uren = $start->diffInMinutes($end);
-//////////////////uren in uren tonen/////////////////////
-            $tijd->toonuren = $start->diffInHours($end);
-
-//////////////////toeslaguren in minuten berekenen/////////////////////
-            $starttoe = new Carbon($toeslag->toeslagbegintijd);
-            $endtoe = new Carbon($toeslag->toeslageindtijd);
-            $tijd->toeslaguren = $starttoe->diffInMinutes($endtoe);
-
-//////////////////toeslaguren in uren tonen/////////////////////
-//            $toonstarttoe = new Carbon($toeslag->toeslagbegintijd);
-//            $toonendtoe = new Carbon($toeslag->toeslageindtijd);
-            $tijd->toontoeslaguren = $starttoe->diffInHours($endtoe);
-
-//            $tijd->toeslaguren = $starttoe->diff($endtoe)->format('%H:%i:%s');
-
-            $tijd->totaalToeslagBedrag += $tijd->toeslaguren * (($tarief->bedrag / 60) * ($toeslag->toeslagpercentage / 100));
-//            $tijd->totaalToeslagBedrag = round($tijd->totaalToeslagBedrag, 2);
-
-            $tijd->totaalstandaardBedrag += ($tarief->bedrag / 60) * ($tijd->uren - $tijd->toeslaguren);
-//            $tijd->totaalstandaardBedrag = round($tijd->totaalstandaardBedrag, 2);
-
-            $tijd->totaalBedrag += $tijd->totaalToeslagBedrag + $tijd->totaalstandaardBedrag;
-//            $tijd->totaalBedrag = round($tijd->totaalBedrag, 2);
-
-            $tijd->btw += $tijd->totaalBedrag * 0.21;
-//            $tijd->btw = round($tijd->btw, 2);
-
-            $tijd->uitbetaling += $tijd->btw + $tijd->totaalBedrag;
-//            $tijd->uitbetaling = round($tijd->uitbetaling, 2);
-
-
-
-        return view('layouts.user.functietoevoegen.show',compact('toeslag', 'tarieven', 'tijd'));
+        return view('layouts.user.functietoevoegen.tonen',compact( 'toeslagen', 'toeslagochtend', 'toeslagavond', 'toeslagnacht',  'tijd'));
     }
 
+
     /**
-     * Show the form for editing the specified resource.
+     * Deze functoe toont de venster waarin de geregistreerde dag wordt gewijzigt.
+     * Suurt ook alle klanten (bedrijven) van de zpper naar de ventser zodat ze kunnen worden geselecteerd.
      *
      * @param  \App\Models\Tijd  $tijd
      * @return \Illuminate\Contracts\View\View
      */
-    public function edit(Tijd  $tijd)
+    public function wijzigen(Tijd  $tijd)
     {
+        // toont alle klant dat de zpper heeft registreert
         $bedrijven = Bedrijf::where('user_id', auth()->user()->id)->get();
 
-        return view('layouts.user.functietoevoegen.edit',compact('tijd','bedrijven'));
+        return view('layouts.user.functietoevoegen.wijzigen',compact('tijd','bedrijven'));
     }
 
     /**
-     * Update the specified resource in storage.
+     * Deze functie vervangt de huidige gegevens met de nieuwe gewijzgde gegevens van geregistreerde dag.
+     * De gegevens worden in tabel "tijden opgeslagen"
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \App\Models\Tijd  $tijd
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(Request $request, Tijd $tijd)
+    public function WijzigingOpslaan(Request $request, Tijd $tijd)
     {
+       // controleert als all invoer vakken zijn gevuld.
+       // halt de ingevoerd gegevens op
         $validated = $request->validate([
             //table tijd
             'begintijd' => 'required',
@@ -456,27 +493,28 @@ foreach ($tijden as $tijd){
             'bedrijf_id' => 'required',
         ]);
 
-//      $tijd = new Tijd();
-
+        // slaat de ingevoerde gegevens op in tabel "tijden"
+        // de ingevoerde gegevens vervangen huidge gegevens
         $tijd->update($validated);
 
-
-           return redirect()->route('UToevoegen.index')
+           return redirect()->route('UToevoegen.overzicht_gewerkte_dagen')
             ->with('success','Uren zijn aangepast');
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Deze functie verwijdert de geregistreerde dagen
+     * Rijen van tabel "tijden" worden verwijderd.
      *
      * @param  \App\Models\Tijd  $tijd
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function destroy(Tijd $tijd)
+    public function verwijderen(Tijd $tijd)
     {
+        // via de model "tijden" worden geregistreerde dagen van tabel "tijden" verwijdert
         $tijd->delete();
 
-        return redirect()->route('UToevoegen.index')
-            ->with('success','Uren en toeslag zijn verwijderd');
+        return redirect()->route('UToevoegen.overzicht_gewerkte_dagen')
+            ->with('success','Uren zijn verwijderd');
 
     }
 

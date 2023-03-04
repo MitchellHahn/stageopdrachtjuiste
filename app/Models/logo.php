@@ -11,10 +11,11 @@ class logo extends Model
 {
     use HasFactory;
 
+    // gebruikt tabel logo van de databse
     protected $table = 'logo';
 
+    // de kolomen dat van tabel "logo" worden gebruikt
     protected $fillable = [
-        //table toeslag
         'blogo',
 
     ];

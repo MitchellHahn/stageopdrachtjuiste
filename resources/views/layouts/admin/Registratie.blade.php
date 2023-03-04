@@ -7,6 +7,7 @@
     <div class="row">
         <div class="col-lg">
             <div class="titlebox titleboxSupportedContent">
+                {{-- Titel en beshcrijving van de pagina --}}
                 <h2 class="title titleSupportedContent">Registratie formulier</h2>
                 <h class="info infoSupportedContent">Hier registreer je een gebruiker</h>
 
@@ -34,9 +35,11 @@
         </div>
     @endif
 
-    <form action="{{ route('Registratie.store') }}" method="POST">
+
+    <form action="{{ route('Registratie.gebruiker_registreren') }}" method="POST">
         @csrf
 
+        {{--   toont de woord "Naam" en invoervak naast     --}}
         <div class="row justify-content-center">
             <div class="col-sm-5">
                 <div class="row justify-content-center" >
@@ -50,6 +53,7 @@
                     </div>
                 </div>
 
+                {{--   toont de woord "Tussenvoegsel" en invoervak naast     --}}
                 <div class="row justify-content-center">
                     <div class="col-8 col-sm-5">
                         <strong>Tussenvoegsel:</strong>
@@ -61,6 +65,7 @@
                     </div>
                 </div>
 
+                {{--   toont de woord "Achternaam" en invoervak naast     --}}
                 <div class="row justify-content-center">
                     <div class="col-8 col-sm-5">
                         <strong>Achternaam:</strong>
@@ -72,6 +77,7 @@
                     </div>
                 </div>
 
+                {{--   toont de woord "Straat" en invoervak naast     --}}
                 <div class="row justify-content-center">
                     <div class="col-8 col-sm-5">
                         <strong>Straat:</strong>
@@ -83,6 +89,7 @@
                     </div>
                 </div>
 
+                {{--   toont de woord "Huisnummer" en invoervak naast     --}}
                 <div class="row justify-content-center">
                     <div class="col-8 col-sm-5">
                         <strong>Huisnummer:</strong>
@@ -94,6 +101,7 @@
                     </div>
                 </div>
 
+                {{--   toont de woord "Toevoeging" en invoervak naast     --}}
                 <div class="row justify-content-center">
                     <div class="col-8 col-sm-5">
                         <strong>Toevoeging:</strong>
@@ -105,6 +113,7 @@
                     </div>
                 </div>
 
+                {{--   toont de woord "Postcode" en invoervak naast     --}}
                 <div class="row justify-content-center">
                     <div class="col-8 col-sm-5">
                         <strong>Postcode:</strong>
@@ -116,6 +125,7 @@
                     </div>
                 </div>
 
+                {{--   toont de woord "Postcode" en invoervak naast     --}}
                 <div class="row justify-content-center">
                     <div class="col-8 col-sm-5">
                         <strong>Stad:</strong>
@@ -127,6 +137,7 @@
                     </div>
                 </div>
 
+                {{--   toont de woord "Land" en invoervak naast     --}}
                 <div class="row justify-content-center">
                     <div class="col-8 col-sm-5">
                         <strong>Land:</strong>
@@ -140,7 +151,7 @@
             </div>
 
             <div class="col-sm-5">
-
+                {{--   toont de woord "Telefoonnummer" en invoervak naast     --}}
                 <div class="row justify-content-center">
                     <div class="col-8 col-sm-5">
                         <strong>Telefoonnummer:</strong>
@@ -152,6 +163,7 @@
                     </div>
                 </div>
 
+                {{--   toont de woord "Kvk-nummer" en invoervak naast     --}}
                 <div class="row justify-content-center">
                     <div class="col-8 col-sm-5">
                         <strong>Kvk-nummer:</strong>
@@ -163,6 +175,7 @@
                     </div>
                 </div>
 
+                {{--   toont de woord "BTW-nummer" en invoervak naast     --}}
                 <div class="row justify-content-center">
                     <div class="col-8 col-sm-5">
                         <strong>BTW-nummer:</strong>
@@ -174,6 +187,7 @@
                     </div>
                 </div>
 
+                {{--   toont de woord "Iban-nummer" en invoervak naast     --}}
                 <div class="row justify-content-center">
                     <div class="col-8 col-sm-5">
                         <strong>Iban-nummer:</strong>
@@ -185,6 +199,7 @@
                     </div>
                 </div>
 
+                {{--   toont de woord "Bedrijfsnaam" en invoervak naast     --}}
                 <div class="row justify-content-center">
                     <div class="col-8 col-sm-5">
                         <strong>Bedrijfsnaam:</strong>
@@ -196,6 +211,7 @@
                     </div>
                 </div>
 
+                {{--   toont de woord "E-mail" en invoervak naast     --}}
                 <div class="row justify-content-center">
                     <div class="col-8 col-sm-5">
                         <strong>E-mail:</strong>
@@ -207,13 +223,15 @@
                     </div>
                 </div>
 
+                {{--   toont de woord "Soort gebruiker" en invoervak naast     --}}
                 <div class="row justify-content-center">
                     <div class="col-8 col-sm-5">
-                        <strong>Account type:</strong>
+                        <strong>Soort gebruiker:</strong>
                     </div>
                     <div class="col-8 col-sm-7">
                         <label>
                             <select name="account_type" class="form-control">
+                                {{--toont drown menu voor het kiezen van gebruiker of admin--}}
                                 <option value="0">Gebruiker</option>
                                 <option value="1">Admin</option>
                             </select>
@@ -228,6 +246,7 @@
 
         <div class="row justify-content-center">
             <div class="col-sm-1.5">
+                    {{--Knop dat de ingevoerde gegevens van de gebruiker opslaat--}}
                     <button type="submit" class="createbutton createbuttonSupportedContent">Registreren</button>
             </div>
         </div>

@@ -1,13 +1,14 @@
 @extends('layouts.app')
 
 @section('content')
-
+{{-- pagina voor het aanmaken van klant (zzper module)--}}
 <section class="section">
     <div class="container-lg height100 containerSupportedContent">
 
         <div class="row">
             <div class="col-lg">
                 <div class="titlebox titleboxSupportedContent">
+                    {{-- Titel en beshcrijving van de pagina --}}
                     <h2 class="title titleSupportedContent">Klanten registreren</h2>
                     <p class="info infoSupportedContent">Hier registreer je een klant.</p>
 
@@ -22,7 +23,8 @@
         <div class="row justify-content-center">
             <div class="col-md-11">
                 <div class="float-right">
-                    <a class="createbutton createbuttonSupportedContent" href="{{ route('Klanten.index') }}">Terug</a>
+                    {{-- Knop om terug te geaan de klanten (bedrijven) overzicht pagina --}}
+                    <a class="createbutton createbuttonSupportedContent" href="{{ route('Klanten.overzicht_alle_klanten') }}">Terug</a>
                 </div>
             </div>
         </div>
@@ -33,7 +35,8 @@
 
             <div class="col-md-11 height100 sectioninner">
 
-    @if ($errors->any())
+                {{-- toont melding als de iets niet goed is opgeslagen--}}
+            @if ($errors->any())
         <div class="alert alert-danger">
             <strong>Woops!</strong> There were some problems with your input.<br><br>
             <ul>
@@ -43,16 +46,14 @@
             </ul>
         </div>
     @endif
-
-    <form action="{{ route('Klanten.store') }}" method="POST">
+               {{-- slaat de KLant (bedrijf) met de ingevoerd gegevens op --}}
+    <form action="{{ route('Klanten.opslaan') }}" method="POST">
         @csrf
-
-{{--        <div class="row justify-content-center">--}}
-{{--            <div class="col-sm-9" >--}}
-
 
 <div class="row justify-content-center">
     <div class="col-sm-5">
+
+        {{--   toont de woord "Klantnaam" en de invoervak van de Klantnaam van de bedrijf  --}}
         <div class="row justify-content-center" >
             <div class="col-8 col-sm-5">
                 <strong>Klantnaam:</strong>
@@ -64,6 +65,7 @@
             </div>
         </div>
 
+        {{--   toont de woord "Contactpersoon" en de invoervak van de Contactpersoon van de bedrijf  --}}
         <div class="row justify-content-center">
             <div class="col-8 col-sm-5">
                 <strong>Contactpersoon:</strong>
@@ -75,6 +77,7 @@
             </div>
         </div>
 
+        {{--   toont de woord "Debnummer" en de invoervak van de Debnummer van de bedrijf  --}}
         <div class="row justify-content-center">
             <div class="col-8 col-sm-5">
                 <strong>Debnummer:</strong>
@@ -86,6 +89,7 @@
             </div>
         </div>
 
+        {{--   toont de woord "Email" en de invoervak van de Email van de bedrijf  --}}
         <div class="row justify-content-center">
             <div class="col-8 col-sm-5">
                 <strong>Email:</strong>
@@ -98,6 +102,7 @@
         </div>
     </div>
 
+    {{--   toont de woord "Straat" en de invoervak van de Straat van de bedrijf  --}}
     <div class="col-sm-5">
          <div class="row justify-content-center">
              <div class="col-8 col-sm-5">
@@ -110,6 +115,7 @@
              </div>
          </div>
 
+        {{--   toont de woord "Huisnummer" en de invoervak van de Huisnummer van de bedrijf  --}}
         <div class="row justify-content-center">
             <div class="col-8 col-sm-5">
                  <strong>Huisnummer:</strong>
@@ -121,6 +127,7 @@
              </div>
          </div>
 
+        {{--   toont de woord "Toevoeging" en de invoervak van de Toevoeging van de bedrijf  --}}
         <div class="row justify-content-center">
             <div class="col-8 col-sm-5">
                     <strong>Toevoeging:</strong>
@@ -132,6 +139,7 @@
                 </div>
             </div>
 
+        {{--   toont de woord "Postcode" en de invoervak van de Postcode van de bedrijf  --}}
         <div class="row justify-content-center">
             <div class="col-8 col-sm-5">
                  <strong>Postcode:</strong>
@@ -143,6 +151,7 @@
              </div>
          </div>
 
+        {{--   toont de woord "Stad" en de invoervak van de Stad van de bedrijf  --}}
         <div class="row justify-content-center">
             <div class="col-8 col-sm-5">
                  <strong>Stad:</strong>
@@ -154,6 +163,7 @@
              </div>
          </div>
 
+        {{--   toont de woord "Land" en de invoervak van de Land van de bedrijf  --}}
         <div class="row justify-content-center">
              <div class="col-8 col-sm-5">
                  <strong>Land:</strong>
@@ -170,7 +180,7 @@
         </br>
         </br>
 
-        {{--knop voor aanpassen--}}
+        {{--knop voor opslaan van de ingevoerd bedrijfs gegevens--}}
         <div class="row justify-content-center">
             <div class="col-sm-1.5">
                 <button type="submit" class="createbutton createbuttonSupportedContent">Registreren</button>
@@ -183,6 +193,5 @@
 </div>
 </div>
 </section>
-{{--</div>--}}
 
 @endsection

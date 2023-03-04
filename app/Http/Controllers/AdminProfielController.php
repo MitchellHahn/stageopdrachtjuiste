@@ -8,127 +8,52 @@ use Illuminate\Http\Request;
 
 class AdminProfielController extends Controller
 {
+
     /**
-     * Display a listing of the resource.
+     * deze functie haalt alle huidige gegevens op van de ingelogde gebruiker(Brouwers medewerker), van tabel "users"
+     * en stuurt het naar de "profiel" pagina (view of balde) om het te tonen
      *
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
      */
-    public function index()
+    public function overzicht_profiel_gegevens()
     {
+
+        // haalt de huidige gegevens op van de ingelogde gebruiker van tabel "users", via de Auth middleware
         $user = auth()->user();
 
-//        $user->user;
-
+        // stuurt het naar de "profiel" pagina (view of balde) om het te tonen
         return view('layouts.admin.Profiel',compact('user'))
             ->with('i', (request()->input('page', 1) - 1) * 4);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
 
     /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function store(Request $request)
-    {
-        $request->validate([
-            //table users
-//            'name' => 'required',
-//            'tussenvoegsel' => '',
-//            'achternaam' => 'required',
-//            'straat' => 'required',
-//            'huisnummer' => 'required',
-//            'toevoeging' => 'required',
-//            'postcode' => 'required',
-//            'stad' => 'required',
-//            'land' => 'required',
-//            'telefoonnumer' => '',
-//            'email' => 'required',
-
-            'name' => 'required',
-            'tussenvoegsel' => '',
-            'achternaam' => 'required',
-            'straat' => 'required',
-            'huisnummer' => 'required',
-            'toevoeging' => '',
-            'postcode' => 'required',
-            'stad' => 'required',
-            'land' => 'required',
-            'telefoonnumer' => '',
-            'email' => 'required',
-            'kvknummer' => '',
-            'btwnummer' => '',
-            'ibannummer' => '',
-            'bedrijfsnaam' => '',
-
-        ]);
-
-        $user = UserProfiel::create($request->all());
-
-        $user->id = Auth::user()->id;
-//
-        $user->save();
-
-        return redirect()->route('AProfiel.index')
-            ->with('success', 'user gegevens zijn opgeslagen');
-
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
+     * deze functie toont de venster (view) waarin de gegevens van tabel user, van de ingelogde gebruiker gewijzigd kunnen worden.
+     * deze functie toont ook de huidge gegevens van de ingelogde gebruiker in de "gegevens wijzigen" venster.
      *
      * @param \App\Models\UserProfiel $user
      * @return \Illuminate\Contracts\View\View
      */
-    public function edit(UserProfiel $user)
+    public function gegevens_wijzigen(UserProfiel $user)
     {
-        return view('layouts.admin.profiel.edit', compact('user'));
+        // toont view "wijzigen" waarin de wijzigingen kunnen worden doorgegeven
+        return view('layouts.admin.profiel.wijzigen', compact('user'));
     }
 
-
     /**
-     * Update the specified resource in storage.
+     * deze functie slaat de gewijzigde gegevens van de gebruiker op in tabel user.
+     * deze functie vervangt de huidige data met de nieuwe (gewijzigde) data.
      *
      * @param \Illuminate\Http\Request $request
      * @param \App\Models\UserProfiel $user
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(Request $request, UserProfiel $user)
+    public function wijziging_opslaan(Request $request, UserProfiel $user)
     {
+
+        // haalt de data op van elke invoer vak en controleert als ze wel of niet leeg mogen zijn.
         $request->validate([
             //tabel users
-//            'name' => 'required',
-//            'tussenvoegsel' => '',
-//            'achternaam' => 'required',
-//            'straat' => 'required',
-//            'huisnummer' => 'required',
-//            'toevoeging' => 'required',
-//            'postcode' => 'required',
-//            'stad' => 'required',
-//            'land' => 'required',
-//            'telefoonnumer' => '',
-//            'email' => 'required',
 
             'name' => 'required',
             'tussenvoegsel' => '',
@@ -147,10 +72,9 @@ class AdminProfielController extends Controller
             'bedrijfsnaam' => '',
             'logo' => 'image|mimes:gif,png,jpg,jpeg|max:2048'
 
-
         ]);
 
-
+        // alle data dat in de invoervaken staan worden opgehaald
         $data = $request->all();
 
         if($request->logo) {
@@ -160,26 +84,10 @@ class AdminProfielController extends Controller
             $data["logo"] = $imageName;
         }
 
+        // alle nieuwe ingevoerde gegevens, zal de huidige gegevens van de account van de ingelogde gebruiker vervangen in tabel "users"
         $user->update($data);
 
-//        $user->update($data);
-
-        return redirect()->route('AProfiel.index')
+        return redirect()->route('AProfiel.profiel')
             ->with('success', 'Gegevens zijn aangepast');
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param \App\Models\UserProfiel $user
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function destroy(UserProfiel $user)
-    {
-        $user->delete();
-
-        return redirect()->route('AProfiel.index')
-            ->with('success', 'User is verwijderd');
-
     }
 }

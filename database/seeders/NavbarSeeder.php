@@ -39,7 +39,7 @@ class NavbarSeeder extends Seeder
 
             [
                 'name' => 'Toevoegen',
-                'route' => 'UToevoegen.index',
+                'route' => 'UToevoegen.overzicht_gewerkte_dagen',
                 'ordering' => 4,
             ]
         ];

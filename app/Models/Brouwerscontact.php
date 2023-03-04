@@ -10,16 +10,18 @@ class Brouwerscontact extends Model
 {
     use HasFactory;
 
+    // gebruikt tabel brouwerscontacten van de databse
     protected $table = 'brouwerscontacten';
 
+    // de kolomen dat van tabel "brouwerscontacten" worden gebruikt
     protected $fillable = [
-        //table tijd
         'email'
     ];
 
+    // een brouwerscontact is gekoppelt 1 gebruiker
+    // via vreemde sleutel kloppelen aan "User" model of class
     public function user()
     {
         return $this->belongsTo(User::class );
-//        return $this->hasOne(User::class );
     }
 }

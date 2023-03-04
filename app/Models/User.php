@@ -13,11 +13,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class User extends Authenticatable
 {
+    // standaard laravel functies gebruiken
     use HasApiTokens, HasFactory, Notifiable, Impersonate;
+
+    // gebruikt tabel users van de databse
     protected $table = 'users';
 
     /**
-     * The attributes that are mass assignable.
+     * de kolomen dat van tabel users worden gebruikt
      *
      * @var array<int, string>
      */
@@ -47,6 +50,7 @@ class User extends Authenticatable
 
     ];
 
+    // geen extra spatie als de gebruikersnaam geen tussen voegsel heeft
     public function getLastName(): ?string {
         $nameLast = $this->achternaam;
 
@@ -57,38 +61,43 @@ class User extends Authenticatable
         return $nameLast;
     }
 
+    // een gebruiker is gekoppelt aan meerdere toeslagen
+    // via vreemde sleutel kloppelen aan "Toeslag" model of class
     public function toeslagen()
     {
         return $this->hasMany( related: Toeslag::class);
     }
 
+    // een gebruiker is gekoppelt aan meerdere tijden
+    // via vreemde sleutel kloppelen aan "Tijd" model of class
     public function tijden()
     {
-//        return $this->hasManyThrough( related: Tijd::class, through: Toeslag::class, firstKey:  );
         return $this->hasMany( Tijd::class );
     }
 
-//    public function tarief()
-//    {
-//        return $this->hasManyThrough( Tarief::class, Toeslag::class );
-//    }
-
+    // een gebruiker is gekoppelt aan meerdere tarieven
+    // via vreemde sleutel kloppelen aan "tarief" model of class
     public function tarief()
     {
         return $this->hasMany( Tarief::class );
     }
 
-
+    // een gebruiker is gekoppelt aan meerdere bedrijven
+    // via vreemde sleutel kloppelen aan "bedrijven" model of class
     public function bedrijven()
     {
         return $this->hasMany(Bedrijf::class );
     }
 
+    // een gebruiker is gekoppelt aan 1 brouwerscontact
+    // via vreemde sleutel kloppelen aan "brouwerscontact" model of class
     public function brouwerscontact()
     {
         return $this->hasOne(Brouwerscontact::class );
     }
 
+    // een gebruiker is gekoppelt aan meerdere facturen
+    // via vreemde sleutel kloppelen aan "factuur" model of class
     public function factuur()
     {
         return $this->hasOne(Factuur::class );
